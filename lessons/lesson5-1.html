@@ -1,0 +1,266 @@
+﻿<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Урок 5.1: Системы координат</title>
+<link href="../styles.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="../lesson-quiz.js"></script>
+</head>
+<body>
+<header>
+<div class="container">
+<a class="course-title-link" href="../index.html">
+<h1>🎨 Графическое программирование на C#</h1>
+</a>
+</div>
+</header>
+<main class="lesson-container">
+<a class="back-link" href="../modules/module5.html">← Вернуться к модулю 5</a>
+<div class="lesson-header">
+<h1>Урок 5.1: Системы координат</h1>
+<div class="lesson-meta">
+<span>Модуль 5</span>
+<span>⏱️ ~1.5 часа</span>
+</div>
+</div>
+<div class="lesson-content">
+<div class="tabs-container">
+<div class="tabs-nav">
+<button class="tab-button active" data-tab="theory">📚 Теория</button>
+<button class="tab-button" data-tab="practice">💻 Практика</button>
+<button class="tab-button" data-tab="tests">✅ Тесты</button>
+</div>
+<div class="tab-content active" data-tab="theory">
+<div class="learning-objectives">
+<h3>📌 Ключевые моменты этого урока:</h3>
+<ul style="margin: 10px 0;">
+<li>Экранные координаты: (0,0) в левом верхнем углу, Y растёт вниз</li>
+<li>Математические координаты: (0,0) в центре, Y растёт вверх (инвертировано!)</li>
+<li>Преобразование: screenX = (mathX - min) / (max - min) × width</li>
+<li>ScaleTransform и TranslateTransform используются для смены систем</li>
+<li>При отображении данных всегда масштабируйте оси в зависимости от диапазона данных</li>
+</ul>
+</div>
+<h2>Математическая vs экранная координаты</h2>
+<p>В математике координаты начинаются снизу слева, Y увеличивается вверх. На экране координаты начинаются сверху слева, Y увеличивается вниз.</p>
+<div class="code-block"><pre><code class="language-csharp">// Преобразование математических координат в экранные
+private Point MathToScreen(float mathX, float mathY, 
+    float minX, float maxX, float minY, float maxY,
+    int screenWidth, int screenHeight)
+{
+    float screenX = (mathX - minX) / (maxX - minX) * screenWidth;
+    float screenY = screenHeight - (mathY - minY) / (maxY - minY) * screenHeight;
+    return new Point((int)screenX, (int)screenY);
+}</code></pre></div>
+<h2>Преобразование координат</h2>
+<div class="code-block"><pre><code class="language-csharp">// Установка системы координат для Graphics
+Graphics g = e.Graphics;
+
+// Переместить начало координат в центр
+g.TranslateTransform(this.Width / 2, this.Height / 2);
+
+// Инвертировать Y (математическая система)
+g.ScaleTransform(1, -1);
+
+// Теперь (0,0) в центре, Y растет вверх</code></pre></div>
+<h2>Масштабирование осей</h2>
+<div class="code-block"><pre><code class="language-csharp">// Масштабирование для отображения данных
+private void DrawGraph(Graphics g, float[] data, 
+    float minValue, float maxValue)
+{
+    float scaleX = this.Width / (float)data.Length;
+    float scaleY = this.Height / (maxValue - minValue);
+    
+    for (int i = 0; i &lt; data.Length - 1; i++)
+    {
+        float x1 = i * scaleX;
+        float y1 = (data[i] - minValue) * scaleY;
+        float x2 = (i + 1) * scaleX;
+        float y2 = (data[i + 1] - minValue) * scaleY;
+        
+        g.DrawLine(Pens.Blue, x1, y1, x2, y2);
+    }
+}</code></pre></div>
+<h2>Сетка координат</h2>
+<div class="code-block"><pre><code class="language-csharp">private void DrawGrid(Graphics g, float minX, float maxX, 
+    float minY, float maxY, float stepX, float stepY)
+{
+    // Вертикальные линии
+    for (float x = minX; x &lt;= maxX; x += stepX)
+    {
+        Point screenPoint = MathToScreen(x, minY, ...);
+        g.DrawLine(Pens.LightGray, screenPoint.X, 0, 
+            screenPoint.X, this.Height);
+    }
+    
+    // Горизонтальные линии
+    for (float y = minY; y &lt;= maxY; y += stepY)
+    {
+        Point screenPoint = MathToScreen(minX, y, ...);
+        g.DrawLine(Pens.LightGray, 0, screenPoint.Y,
+            this.Width, screenPoint.Y);
+    }
+}</code></pre>
+</div>
+<h2>📝 Пример задания — декартова система координат (Task13)</h2>
+<p>Рисует оси X и Y с тиками и метками, серую сетку и синусоиду в математической системе координат с центром посередине формы:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class Task13_CoordinateSystem : Form
+    {
+        public Task13_CoordinateSystem()
+        {
+            Text = "Задание 13 — Система координат";
+            Size = new Size(600, 450);
+            BackColor = Color.White;
+            DoubleBuffered = true;
+            Paint += Form1_Paint;
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            Rectangle area = ClientRectangle;
+            int originX = area.Width / 2;
+            int originY = area.Height / 2;
+
+            // Оси
+            g.DrawLine(Pens.Black, 30, originY, area.Width - 30, originY);
+            g.DrawLine(Pens.Black, originX, 30, originX, area.Height - 30);
+            g.DrawString("X", SystemFonts.DefaultFont, Brushes.Black, area.Width - 25, originY + 5);
+            g.DrawString("Y", SystemFonts.DefaultFont, Brushes.Black, originX + 5, 15);
+
+            int step = 50;
+            int maxVal = Math.Min((area.Width / 2 - 30) / step,
+                                   (area.Height / 2 - 30) / step);
+
+            using (Font font = new Font("Segoe UI", 8))
+            using (Pen gridPen = new Pen(Color.LightGray, 1))
+            {
+                for (int i = -maxVal; i &lt;= maxVal; i++)
+                {
+                    if (i == 0) continue;
+                    int x = originX + i * step;
+                    int y = originY - i * step;
+
+                    // Тики и метки оси X
+                    g.DrawLine(Pens.Black, x, originY - 4, x, originY + 4);
+                    g.DrawString(i.ToString(), font, Brushes.Black, x - 6, originY + 6);
+
+                    // Тики и метки оси Y
+                    g.DrawLine(Pens.Black, originX - 4, y, originX + 4, y);
+                    g.DrawString(i.ToString(), font, Brushes.Black, originX + 6, y - 6);
+
+                    // Сетка
+                    g.DrawLine(gridPen, x, 30, x, area.Height - 30);
+                    g.DrawLine(gridPen, 30, y, area.Width - 30, y);
+                }
+            }
+
+            // График sin(x)
+            var pts = new List&lt;PointF&gt;();
+            for (float x = -(float)Math.PI * 2; x &lt;= Math.PI * 2; x += 0.05f)
+            {
+                float y = (float)Math.Sin(x);
+                pts.Add(new PointF(originX + x * step, originY - y * step));
+            }
+            using (Pen pen = new Pen(Color.Red, 2))
+                g.DrawLines(pen, pts.ToArray());
+
+            g.DrawString("y = sin(x)",
+                new Font("Segoe UI", 10, FontStyle.Bold), Brushes.Red,
+                area.Width - 120, 40);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="tab-content" data-tab="practice">
+<h2>Практическое задание</h2>
+<div class="practice-section">
+<h3>Задание: Система координат</h3>
+<ol class="practice-steps">
+<li>Создайте систему координат с центром в середине формы</li>
+<li>Нарисуйте сетку и оси X, Y с подписями</li>
+<li>Реализуйте преобразование математических координат в экранные</li>
+</ol>
+</div>
+<div class="practice-section">
+<h3>Задание по аналогии: Декартова система с функцией (Task13)</h3>
+<p>По аналогии с <code>Task13_CoordinateSystem</code> создайте форму с полноценной декартовой системой координат.</p>
+<ol class="practice-steps">
+<li>Вычислите <code>originX = Width / 2</code>, <code>originY = Height / 2</code> — центр координат.</li>
+<li>Нарисуйте оси X и Y от края до края через центр.</li>
+<li>В цикле нарисуйте тики и числовые метки с шагом 50px по обеим осям (пропустите i=0).</li>
+<li>Нарисуйте серую сетку тем же шагом.</li>
+<li>Постройте любую функцию (например, cos(x)) в виде набора точек <code>PointF</code>, используя формулу: <code>sx = originX + x * step</code>, <code>sy = originY - y * step</code>. Соедините их через <code>g.DrawLines</code>.</li>
+</ol>
+<div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task13" class="lesson-image task-screenshot" src="../images/tasks/task13_coordinate_system.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task13)</p></div><div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task13" class="lesson-image task-screenshot" src="../images/tasks/task13_coordinate_system.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task13)</p></div><div class="practice-tip">
+<strong>💡 Совет:</strong> Делайте шаг по x достаточно маленьким (0.05 рад) — чем меньше шаг, тем плавнее кривая.
+                </div>
+</div>
+</div>
+<div class="tab-content" data-tab="tests">
+<div class="test-section">
+<h2>Проверка знаний</h2>
+<p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+<div class="question" data-correct="1">
+<div class="question-text">1. В математической системе координат Y увеличивается:</div>
+<ul class="answer-options">
+<li class="answer-option">Вниз</li>
+<li class="answer-option">Вверх</li>
+<li class="answer-option">Вправо</li>
+<li class="answer-option">Влево</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="0">
+<div class="question-text">2. Для преобразования математических координат в экранные нужно:</div>
+<ul class="answer-options">
+<li class="answer-option">Инвертировать Y и масштабировать</li>
+<li class="answer-option">Только масштабировать</li>
+<li class="answer-option">Только инвертировать</li>
+<li class="answer-option">Ничего не делать</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="0">
+<div class="question-text">3. Как преобразовать математические координаты в экранные?</div>
+<ul class="answer-options">
+<li class="answer-option">Использовать формулы масштабирования и смещения</li>
+<li class="answer-option">Использовать метод Transform</li>
+<li class="answer-option">Использовать свойство Coordinates</li>
+<li class="answer-option">Использовать функцию Convert</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="navigation">
+<a class="nav-btn secondary" href="../modules/module5.html">← К модулю</a>
+<a class="nav-btn" href="lesson5-2.html">Следующий урок →</a>
+</div>
+</div></main>
+<footer>
+<div class="container">
+<p>© 2026 Курс "Графическое программирование на C#"</p>
+</div>
+</footer>
+</body>
+</html>

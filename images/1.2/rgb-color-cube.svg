@@ -1,0 +1,63 @@
+<svg width="450" height="400" viewBox="0 0 450 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="450" height="400" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="225" y="25" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">Цветовой куб RGB</text>
+  
+  <!-- 3D Cube representation -->
+  <g transform="translate(225, 200)">
+    <!-- Back faces (darker) -->
+    <polygon points="-100,-50 0,-100 100,-50 0,0" fill="#880000" stroke="#660000" stroke-width="1"/>
+    <polygon points="0,-100 100,-50 100,50 0,0" fill="#008800" stroke="#006600" stroke-width="1"/>
+    <polygon points="0,-100 -100,-50 -100,50 0,0" fill="#000088" stroke="#000066" stroke-width="1"/>
+    
+    <!-- Front faces (lighter) -->
+    <polygon points="-100,-50 0,0 100,-50 0,-100" fill="#ff0000" stroke="#cc0000" stroke-width="1" opacity="0.8"/>
+    <polygon points="0,0 100,50 100,-50 0,-100" fill="#00ff00" stroke="#00cc00" stroke-width="1" opacity="0.8"/>
+    <polygon points="0,0 -100,50 -100,-50 0,-100" fill="#0000ff" stroke="#0000cc" stroke-width="1" opacity="0.8"/>
+    
+    <!-- Corner dots -->
+    <circle cx="-100" cy="-50" r="5" fill="#ff0000"/>
+    <circle cx="100" cy="-50" r="5" fill="#00ff00"/>
+    <circle cx="0" cy="-100" r="5" fill="#0000ff"/>
+    <circle cx="0" cy="0" r="5" fill="#ffffff"/>
+    <circle cx="-100" cy="50" r="5" fill="#000000"/>
+    <circle cx="100" cy="50" r="5" fill="#ffff00"/>
+    <circle cx="0" cy="100" r="5" fill="#00ffff"/>
+    <circle cx="-100" cy="50" r="5" fill="#ff00ff"/>
+  </g>
+  
+  <!-- Axes labels -->
+  <text x="340" y="200" font-family="Arial, sans-serif" font-size="14" fill="#00ff00" font-weight="bold">G →</text>
+  <text x="225" y="50" font-family="Arial, sans-serif" font-size="14" fill="#0000ff" font-weight="bold">↓ B</text>
+  <text x="225" y="350" font-family="Arial, sans-serif" font-size="14" fill="#ff0000" font-weight="bold">R ↑</text>
+  
+  <!-- Corner labels -->
+  <text x="80" y="145" font-family="Arial, sans-serif" font-size="9" fill="#333" font-weight="bold">Красный</text>
+  <text x="80" y="157" font-family="Arial, sans-serif" font-size="8" fill="#666">(255,0,0)</text>
+  
+  <text x="330" y="145" font-family="Arial, sans-serif" font-size="9" fill="#333" font-weight="bold">Зеленый</text>
+  <text x="330" y="157" font-family="Arial, sans-serif" font-size="8" fill="#666">(0,255,0)</text>
+  
+  <text x="205" y="95" font-family="Arial, sans-serif" font-size="9" fill="#333" font-weight="bold">Синий</text>
+  <text x="205" y="107" font-family="Arial, sans-serif" font-size="8" fill="#666">(0,0,255)</text>
+  
+  <text x="205" y="195" font-family="Arial, sans-serif" font-size="9" fill="#333" font-weight="bold">Белый</text>
+  <text x="205" y="207" font-family="Arial, sans-serif" font-size="8" fill="#666">(255,255,255)</text>
+  
+  <text x="80" y="245" font-family="Arial, sans-serif" font-size="9" fill="#333" font-weight="bold">Черный</text>
+  <text x="80" y="257" font-family="Arial, sans-serif" font-size="8" fill="#666">(0,0,0)</text>
+  
+  <text x="330" y="245" font-family="Arial, sans-serif" font-size="9" fill="#333" font-weight="bold">Желтый</text>
+  <text x="330" y="257" font-family="Arial, sans-serif" font-size="8" fill="#666">(255,255,0)</text>
+  
+  <text x="205" y="305" font-family="Arial, sans-serif" font-size="9" fill="#333" font-weight="bold">Бирюзовый</text>
+  <text x="205" y="317" font-family="Arial, sans-serif" font-size="8" fill="#666">(0,255,255)</text>
+  
+  <!-- Note -->
+  <rect x="25" y="325" width="400" height="60" rx="4" fill="#fff3cd" stroke="#ffc107" stroke-width="1"/>
+  <text x="225" y="345" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle" font-weight="bold">Каждая точка в кубе = уникальный цвет</text>
+  <text x="225" y="360" font-family="Arial, sans-serif" font-size="9" fill="#666" text-anchor="middle">R (0-255) × G (0-255) × B (0-255) = 16,777,216 цветов</text>
+  <text x="225" y="375" font-family="Arial, sans-serif" font-size="9" fill="#666" text-anchor="middle">Любой цвет можно получить смешиванием красного, зеленого и синего</text>
+</svg>

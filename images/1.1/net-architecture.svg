@@ -1,0 +1,53 @@
+<svg width="600" height="500" viewBox="0 0 600 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="600" height="500" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="300" y="30" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#333">Архитектура .NET</text>
+  
+  <!-- Step 1: C# Code -->
+  <rect x="150" y="50" width="300" height="50" rx="8" fill="#68217A" stroke="#512474" stroke-width="2"/>
+  <text x="300" y="80" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle">Ваш код C# (.cs файлы)</text>
+  
+  <!-- Arrow 1 -->
+  <line x1="300" y1="100" x2="300" y2="130" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Step 2: C# Compiler -->
+  <rect x="150" y="130" width="300" height="50" rx="8" fill="#00A4EF" stroke="#008ACD" stroke-width="2"/>
+  <text x="300" y="160" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle">Компилятор C#</text>
+  
+  <!-- Arrow 2 -->
+  <line x1="300" y1="180" x2="300" y2="210" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Step 3: IL Code -->
+  <rect x="150" y="210" width="300" height="50" rx="8" fill="#F25022" stroke="#D23618" stroke-width="2"/>
+  <text x="300" y="240" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle">IL код (Intermediate Language)</text>
+  
+  <!-- Arrow 3 -->
+  <line x1="300" y1="260" x2="300" y2="290" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Step 4: CLR JIT -->
+  <rect x="150" y="290" width="300" height="50" rx="8" fill="#7FBA00" stroke="#639800" stroke-width="2"/>
+  <text x="300" y="320" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle">CLR JIT (Just-In-Time)</text>
+  
+  <!-- Arrow 4 -->
+  <line x1="300" y1="340" x2="300" y2="370" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Step 5: Machine Code -->
+  <rect x="150" y="370" width="300" height="50" rx="8" fill="#FFB900" stroke="#E6A800" stroke-width="2"/>
+  <text x="300" y="400" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle">Машинный код процессора</text>
+  
+  <!-- Arrow 5 -->
+  <line x1="300" y1="420" x2="300" y2="450" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Step 6: Execution -->
+  <rect x="150" y="450" width="300" height="40" rx="8" fill="#00B4D8" stroke="#0096B4" stroke-width="2"/>
+  <text x="300" y="475" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle">Выполнение</text>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+</svg>

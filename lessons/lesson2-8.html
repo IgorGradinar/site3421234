@@ -1,0 +1,521 @@
+﻿<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Урок 2.8: Загрузка изображений</title>
+<link href="../styles.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="../lesson-quiz.js"></script>
+</head>
+<body>
+<header>
+<div class="container">
+<h1>🎨 Графическое программирование на C#</h1>
+</div>
+</header>
+<main class="lesson-container">
+<a class="back-link" href="../modules/module2.html">← Вернуться к модулю 2</a>
+<div class="lesson-header">
+<h1>Урок 2.8: Загрузка изображений</h1>
+<div class="lesson-meta">
+<span>Модуль 2</span>
+<span>⏱️ ~1.5 часа</span>
+</div>
+</div>
+<div class="lesson-content">
+<div class="tabs-container">
+<div class="tabs-nav">
+<button class="tab-button active" data-tab="theory">📚 Теория</button>
+<button class="tab-button" data-tab="practice">💻 Практика</button>
+<button class="tab-button" data-tab="tests">✅ Тесты</button>
+</div>
+<div class="tab-content active" data-tab="theory">
+<div class="learning-objectives">
+<h3>📌 Ключевые моменты этого урока:</h3>
+<ul style="margin: 10px 0;">
+<li>Image — базовый класс для всех изображений</li>
+<li>Bitmap —실конкретная реализация для растровых изображений (BMP, PNG, JPG и т.д.)</li>
+<li>DrawImage рисует изображение на Graphics поверхности</li>
+<li>Изображение можно масштабировать, обрезать и трансформировать</li>
+<li>Правильно используйте using для освобождения памяти</li>
+<li>InterpolationMode влияет на качество масштабирования</li>
+<li>Можно работать с пикселями напрямую через GetPixel/SetPixel</li>
+</ul>
+</div>
+<h2>Image и Bitmap — классы для работы с растровыми изображениями</h2>
+<h3>Разница между Image и Bitmap:</h3>
+<ul>
+<li><strong>Image</strong> — это абстрактный базовый класс для всех изображений</li>
+<li><strong>Bitmap</strong> — конкретная реализация для растровых изображений (матрица пикселей)</li>
+<li>Bitmap может быть создана из файла, памяти или с нуля</li>
+</ul>
+<h3>Создание пустого Bitmap'а (для рисования в памяти):</h3>
+<div class="code-block"><pre><code class="language-csharp">// Создание пустого изображения размером 800x600 пикселей
+Bitmap bmp = new Bitmap(800, 600);
+
+// Создание с определенным форматом пикселя
+Bitmap bmp32bit = new Bitmap(800, 600, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+// Копирование существующего Bitmap'а
+Bitmap bmpCopy = new Bitmap(originalBitmap);</code></pre></div>
+<h2>Загрузка изображения из файла</h2>
+<h3>Простая загрузка:</h3>
+<div class="code-block"><pre><code class="language-csharp">// Самый простой способ
+Bitmap bmp = new Bitmap("image.jpg");
+Image img = Image.FromFile("photo.png");
+
+// Работаем с изображением
+int width = bmp.Width;
+int height = bmp.Height;</code></pre></div>
+<h3>С обработкой ошибок (РЕКОМЕНДУЕТСЯ):</h3>
+<div class="code-block"><pre><code class="language-csharp">try
+{
+    Bitmap bmp = new Bitmap("image.jpg");
+    // Работа с изображением
+    bmp.Dispose();  // Освобождать вручную
+}
+catch (FileNotFoundException)
+{
+    MessageBox.Show("Файл не найден!");
+}
+catch (Exception ex)
+{
+    MessageBox.Show("Ошибка загрузки: " + ex.Message);
+}</code></pre></div>
+<h3>С using блоком (ЛУЧШИЙ СПОСОБ):</h3>
+<p>Автоматически вызывает Dispose() когда переменная выходит из области видимости:</p>
+<div class="code-block"><pre><code class="language-csharp">// Безопасная загрузка с автоматическим освобождением
+using (Bitmap bmp = new Bitmap("image.jpg"))
+{
+    // Работа с изображением
+    int w = bmp.Width;
+    int h = bmp.Height;
+} // Automatically Dispose() called here</code></pre></div>
+<h3>OpenFileDialog для выбора файла:</h3>
+<div class="code-block"><pre><code class="language-csharp">OpenFileDialog openFileDialog = new OpenFileDialog();
+openFileDialog.Filter = "Image files (*.jpg;*.png;*.bmp)|*.jpg;*.png;*.bmp|All files (*.*)|*.*";
+openFileDialog.Title = "Выберите изображение";
+
+if (openFileDialog.ShowDialog() == DialogResult.OK)
+{
+    try
+    {
+        currentBitmap = new Bitmap(openFileDialog.FileName);
+        this.Invalidate();  // Перерисовать форму
+    }
+    catch (Exception ex)
+    {
+        MessageBox.Show("Ошибка: " + ex.Message);
+    }
+}</code></pre></div>
+<h2>DrawImage — рисование изображения</h2>
+<h3>Простое рисование (исходный размер):</h3>
+<div class="code-block"><pre><code class="language-csharp">// Рисуем изображение в точке (x, y)
+g.DrawImage(image, 10, 10);
+
+// С использованием PointF
+g.DrawImage(image, new PointF(50, 50));</code></pre></div>
+<h3>Рисование с масштабированием:</h3>
+<div class="code-block"><pre><code class="language-csharp">// Рисуем с новым размером (200x150 пикселей)
+g.DrawImage(image, 10, 10, 200, 150);
+
+// Or in a Rectangle
+Rectangle destRect = new Rectangle(10, 10, 200, 150);
+g.DrawImage(image, destRect);</code></pre></div>
+<h3>Рисование части изображения (обрезка):</h3>
+<div class="code-block"><pre><code class="language-csharp">// Извлекаем часть исходного изображения
+Rectangle srcRect = new Rectangle(0, 0, 100, 100);  // Что взять из исходника
+
+// И рисуем ее в другом размере
+Rectangle destRect = new Rectangle(10, 10, 200, 200);  // Куда и в каком размере
+
+g.DrawImage(image, destRect, srcRect, GraphicsUnit.Pixel);</code></pre></div>
+<h2>Масштабирование изображений</h2>
+<h3>Простое масштабирование без сохранения пропорций:</h3>
+<div class="code-block"><pre><code class="language-csharp">// Растянуть на 300x200, независимо от оригинального размера
+g.DrawImage(image, 10, 10, 300, 200);</code></pre></div>
+<h3>Масштабирование с сохранением пропорций (ПРАВИЛЬНО):</h3>
+<div class="code-block"><pre><code class="language-csharp">private Size CalculateNewSize(int originalWidth, int originalHeight, int maxWidth, int maxHeight)
+{
+    // Считаем пропорции
+    double aspectRatio = (double)originalWidth / originalHeight;
+    
+    int newWidth = maxWidth;
+    int newHeight = (int)(newWidth / aspectRatio);
+    
+    // Если высота не влезает, обрезаем по ширине
+    if (newHeight &gt; maxHeight)
+    {
+        newHeight = maxHeight;
+        newWidth = (int)(newHeight * aspectRatio);
+    }
+    
+    return new Size(newWidth, newHeight);
+}
+
+// Использование
+Size newSize = CalculateNewSize(image.Width, image.Height, 200, 150);
+g.DrawImage(image, 10, 10, newSize.Width, newSize.Height);</code></pre></div>
+<h3>Высококачественное масштабирование (InterpolationMode):</h3>
+<p>По умолчанию Graphics масштабирует быстро, но качество может быть плохим. Улучших качество:</p>
+<div class="code-block"><pre><code class="language-csharp">using System.Drawing.Drawing2D;
+
+// Установка высокого качества интерполяции (медленнее, но красиво)
+g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+g.DrawImage(image, 10, 10, 400, 300);
+
+// Другие режимы интерполяции
+// InterpolationMode.Bilinear — хороший компромисс между качеством и скоростью
+// InterpolationMode.NearestNeighbor — быстро, но низкое качество
+// InterpolationMode.HighQualityBicubic — лучшее качество</code></pre></div>
+<h2>Сохранение изображений</h2>
+<h3>Сохранение в разных форматах:</h3>
+<div class="code-block"><pre><code class="language-csharp">using System.Drawing.Imaging;
+
+Bitmap bmp = new Bitmap(800, 600);
+// ... рисуем что-то ...
+
+// JPEG (с качеством)
+bmp.Save("output.jpg", ImageFormat.Jpeg);
+
+// PNG (без потер качества, но больше размер)
+bmp.Save("output.png", ImageFormat.Png);
+
+// BMP (большой размер)
+bmp.Save("output.bmp", ImageFormat.Bmp);
+
+// GIF (для анимированных или низкоцветных)
+bmp.Save("output.gif", ImageFormat.Gif);</code></pre></div>
+<h3>Сохранение с контролем качества (JPEG):</h3>
+<div class="code-block"><pre><code class="language-csharp">using System.Drawing.Imaging;
+
+EncoderParameters encParams = new EncoderParameters(1);
+encParams.Param[0] = new EncoderParameter(Encoder.Quality, 90L);  // 0-100
+
+ImageCodecInfo jpegCodecInfo = GetEncoderInfo("image/jpeg");
+bmp.Save("output.jpg", jpegCodecInfo, encParams);
+
+// Вспомогательная функция
+private static ImageCodecInfo GetEncoderInfo(string mimeType)
+{
+    int j = 0;
+    ImageCodecInfo[] encoders = ImageCodecInfo.GetImageEncoders();
+    while (j &lt; encoders.Length)
+    {
+        if (encoders[j].MimeType == mimeType)
+            return encoders[j];
+        j++;
+    }
+    return null;
+}</code></pre></div>
+<h2>Работа с пикселями</h2>
+<h3>GetPixel и SetPixel (медленные, но простые):</h3>
+<div class="code-block"><pre><code class="language-csharp">Bitmap bmp = new Bitmap("image.jpg");
+
+// Получить цвет пикселя
+Color pixel = bmp.GetPixel(x, y);
+int red = pixel.R;
+int green = pixel.G;
+int blue = pixel.B;
+
+// Установить цвет пикселя
+bmp.SetPixel(x, y, Color.Red);
+bmp.SetPixel(x, y, Color.FromArgb(128, 255, 0, 0));  // С прозрачностью</code></pre></div>
+<h3>Быстрая работа с пикселями через LockBits:</h3>
+<div class="code-block"><pre><code class="language-csharp">using System.Drawing.Imaging;
+
+Bitmap bmp = new Bitmap("image.jpg");
+
+// Блокируем область для быстрого доступа
+Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+BitmapData bmpData = bmp.LockBits(rect, ImageLockMode.ReadWrite, bmp.PixelFormat);
+
+IntPtr ptr = bmpData.Scan0;
+int bytes = Math.Abs(bmpData.Stride) * bmp.Height;
+byte[] rgbValues = new byte[bytes];
+
+System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
+
+// Работаем с массивом пикселей (очень быстро)
+// ...
+
+System.Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes);
+bmp.UnlockBits(bmpData);</code></pre></div>
+<h2>Создание эффектов с изображениями</h2>
+<h3>Прозрачность (Alpha Blending):</h3>
+<div class="code-block"><pre><code class="language-csharp">using System.Drawing.Drawing2D;
+
+ColorMatrix colorMatrix = new ColorMatrix();
+// Устанавливаем прозрачность (0.5 = 50%)
+colorMatrix.Matrix33 = 0.5f;
+
+ImageAttributes imageAttr = new ImageAttributes();
+imageAttr.SetColorMatrix(colorMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+
+Rectangle rect = new Rectangle(10, 10, 200, 200);
+g.DrawImage(image, rect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, imageAttr);</code></pre></div>
+<h3>Оттенки серого:</h3>
+<div class="code-block"><pre><code class="language-csharp">ColorMatrix colorMatrix = new ColorMatrix(new float[][]
+{
+    new float[] {0.299f, 0.299f, 0.299f, 0, 0},
+    new float[] {0.587f, 0.587f, 0.587f, 0, 0},
+    new float[] {0.114f, 0.114f, 0.114f, 0, 0},
+    new float[] {0, 0, 0, 1, 0},
+    new float[] {0, 0, 0, 0, 1}
+});
+
+ImageAttributes imageAttr = new ImageAttributes();
+imageAttr.SetColorMatrix(colorMatrix);
+
+g.DrawImage(image, new Rectangle(10, 10, 200, 200), 0, 0, image.Width, image.Height, 
+    GraphicsUnit.Pixel, imageAttr);</code></pre></div>
+<h2>Best Practices при работе с изображениями</h2>
+<ul>
+<li>✅ Всегда используйте using блоки или вызывайте Dispose()</li>
+<li>✅ Кэшируйте загруженные изображения (не загружайте каждый раз)</li>
+<li>✅ Используйте HighQualityBicubic при масштабировании больших изображений</li>
+<li>✅ Проверяйте размер файла перед загрузкой (может быть очень большим)</li>
+<li>✅ Используйте JPEG для фото, PNG для графики и скриншотов</li>
+<li>✅ Обрезайте и масштабируйте изображения в памяти перед сохранением</li>
+<li>🚫 Не загружайте изображения в UI потоке для больших файлов (заморозится)</li>
+<li>🚫 Не закрывайте Bitmap пока он нужен Graphics</li>
+</ul>
+<h2>📝 Пример задания — загрузка и масштабирование (Task05)</h2>
+<p>Программа показывает оригинальное изображение и два его уменьшенных варианта. Если файл не найден — генерирует тестовое изображение программно:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class Task05_ImageTransform : Form
+    {
+        private Image myImage;
+
+        public Task05_ImageTransform()
+        {
+            Text = "Задание 5 — Изображение и трансформация";
+            Size = new Size(650, 500);
+            BackColor = Color.White;
+            DoubleBuffered = true;
+            Paint += Form1_Paint;
+            Load += (s, e) =&gt;
+            {
+                try   { myImage = Image.FromFile("image.jpg"); }
+                catch { myImage = GenerateTestImage(300, 200); }
+            };
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            if (myImage == null) return;
+            Graphics g = e.Graphics;
+            int y = 40;
+
+            g.DrawImage(myImage, 10, y);
+            g.DrawString("Оригинал", SystemFonts.DefaultFont, Brushes.Black,
+                10, y + myImage.Height + 2);
+
+            g.DrawImage(myImage, 320, y, 100, 80);
+            g.DrawString("100x80", SystemFonts.DefaultFont, Brushes.Black, 320, y + 82);
+
+            g.DrawImage(myImage, 320, y + 100, 200, 150);
+            g.DrawString("200x150", SystemFonts.DefaultFont, Brushes.Black, 320, y + 252);
+        }
+
+        private static Bitmap GenerateTestImage(int w, int h)
+        {
+            Bitmap bmp = new Bitmap(w, h);
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.Clear(Color.LightSkyBlue);
+                using (Pen pen = new Pen(Color.DarkBlue, 3))
+                {
+                    g.DrawEllipse(pen, 20, 20, w - 40, h - 40);
+                    g.DrawRectangle(pen, 50, 50, w - 100, h - 100);
+                }
+                g.DrawString("TEST IMAGE",
+                    new Font("Arial", 24, FontStyle.Bold), Brushes.DarkRed, 30, h / 2 - 15);
+            }
+            return bmp;
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            myImage?.Dispose();
+            base.OnFormClosed(e);
+        }
+    }
+}</code></pre>
+</div>
+<h2>📝 Пример задания — обрезка изображения (Task12)</h2>
+<p>Программа отображает оригинал и центральную 50% часть изображения, выделяя область обрезки красным прямоугольником:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class Task12_ImageCrop : Form
+    {
+        private Image img;
+
+        public Task12_ImageCrop()
+        {
+            Text = "Задание 12 — Обрезка изображения";
+            Size = new Size(700, 450);
+            BackColor = Color.White;
+            DoubleBuffered = true;
+            Paint += Form1_Paint;
+            Load += (s, e) =&gt;
+            {
+                try   { img = Image.FromFile("image.jpg"); }
+                catch { img = GenerateTestImage(300, 200); }
+            };
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            if (img == null) return;
+            Graphics g = e.Graphics;
+
+            g.DrawImage(img, 10, 40);
+            g.DrawString("Оригинал", SystemFonts.DefaultFont,
+                Brushes.Black, 10, 20);
+
+            // Исходный прямоугольник — центральные 50%
+            Rectangle src = new Rectangle(
+                img.Width / 4, img.Height / 4,
+                img.Width / 2, img.Height / 2);
+            Rectangle dest = new Rectangle(330, 40, 300, 200);
+            g.DrawImage(img, dest, src, GraphicsUnit.Pixel);
+            g.DrawString("Центральная часть (srcRect)",
+                SystemFonts.DefaultFont, Brushes.Black, 330, 20);
+
+            // Визуальная рамка вырезанной области на оригинале
+            g.DrawRectangle(Pens.Red,
+                10 + src.X, 40 + src.Y, src.Width, src.Height);
+        }
+
+        private static Bitmap GenerateTestImage(int w, int h)
+        {
+            Bitmap bmp = new Bitmap(w, h);
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.Clear(Color.LightYellow);
+                for (int i = 0; i &lt; 5; i++)
+                    for (int j = 0; j &lt; 5; j++)
+                        g.DrawString(i + "," + j,
+                            new Font("Arial", 14), Brushes.Black,
+                            i * (w / 5), j * (h / 5));
+            }
+            return bmp;
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            img?.Dispose();
+            base.OnFormClosed(e);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="tab-content" data-tab="practice">
+<h2>Практическое задание</h2>
+<div class="practice-section">
+<h3>Задание: Загрузка и отображение изображений</h3>
+<ol class="practice-steps">
+<li>Создайте форму с кнопкой "Загрузить изображение"</li>
+<li>Используйте OpenFileDialog для выбора файла</li>
+<li>Загрузите изображение используя Image.FromFile</li>
+<li>Отобразите изображение с сохранением пропорций</li>
+<li>Попробуйте масштабировать изображение</li>
+</ol>
+</div>
+<div class="practice-section">
+<h3>Задание по аналогии: Отображение в нескольких размерах (Task05)</h3>
+<p>По аналогии с <code>Task05_ImageTransform</code> создайте форму, которая демонстрирует одно изображение в трёх вариантах размера.</p>
+<ol class="practice-steps">
+<li>В событии <code>Load</code> загрузите любой файл через <code>Image.FromFile</code>. Если файл не найден — создайте тестовое изображение через <code>Bitmap</code> и <code>Graphics.FromImage</code>.</li>
+<li>В обработчике <code>Paint</code> нарисуйте оригинальное изображение в левой части формы.</li>
+<li>Рядом нарисуйте его же в размере 100×80 и 200×150 с помощью перегрузки <code>g.DrawImage(img, x, y, width, height)</code>.</li>
+<li>Под каждым изображением выведите его размер текстом.</li>
+<li>Освободите изображение в <code>OnFormClosed</code>.</li>
+</ol>
+<div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task05" class="lesson-image task-screenshot" src="../images/tasks/task05_image_transform.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task05)</p></div><div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task05" class="lesson-image task-screenshot" src="../images/tasks/task05_image_transform.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task05)</p></div><div class="practice-tip">
+<strong>💡 Совет:</strong> Храните изображение как поле класса, а не локальную переменную — иначе оно будет удалено сборщиком мусора до того, как Paint его нарисует.
+                </div>
+</div>
+<div class="practice-section">
+<h3>Задание по аналогии: Обрезка по прямоугольнику (Task12)</h3>
+<p>По аналогии с <code>Task12_ImageCrop</code> создайте форму, которая обрезает и отображает часть изображения.</p>
+<ol class="practice-steps">
+<li>Загрузите изображение (или создайте тестовое).</li>
+<li>Отобразите оригинал в левой части формы.</li>
+<li>Задайте <code>Rectangle src</code> — любую прямоугольную область внутри изображения (например, верхнюю треть).</li>
+<li>Используйте перегрузку <code>g.DrawImage(img, dest, src, GraphicsUnit.Pixel)</code> для вывода вырезанной части в правой части формы.</li>
+<li>Нарисуйте красный прямоугольник поверх оригинала, показывающий вырезанную область.</li>
+</ol>
+<div class="practice-tip">
+<strong>💡 Совет:</strong> <code>srcRect</code> задаётся в пикселях исходного изображения, а <code>destRect</code> — в пикселях экрана. Они могут быть разного размера.
+                </div>
+</div>
+</div>
+<div class="tab-content" data-tab="tests">
+<div class="test-section">
+<h2>Проверка знаний</h2>
+<p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+<div class="question" data-correct="1">
+<div class="question-text">1. Какой класс используется для работы с растровыми изображениями?</div>
+<ul class="answer-options">
+<li class="answer-option">Image</li>
+<li class="answer-option">Bitmap</li>
+<li class="answer-option">Picture</li>
+<li class="answer-option">Graphic</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="0">
+<div class="question-text">2. Какой метод используется для рисования изображения?</div>
+<ul class="answer-options">
+<li class="answer-option">DrawImage</li>
+<li class="answer-option">ShowImage</li>
+<li class="answer-option">DisplayImage</li>
+<li class="answer-option">RenderImage</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="2">
+<div class="question-text">3. Как загрузить изображение из файла?</div>
+<ul class="answer-options">
+<li class="answer-option">Bitmap.Load("file.jpg")</li>
+<li class="answer-option">new Bitmap().Load("file.jpg")</li>
+<li class="answer-option">Image.FromFile("file.jpg") или new Bitmap("file.jpg")</li>
+<li class="answer-option">Bitmap.Open("file.jpg")</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+</div>
+<div class="navigation">
+<a class="nav-btn secondary" href="lesson2-7.html">← Предыдущий урок</a>
+<a class="nav-btn" href="../modules/module3.html">Следующий модуль →</a>
+</div>
+</div></div></div></main>
+<footer>
+<div class="container">
+<p>© 2026 Курс "Графическое программирование на C#"</p>
+</div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Инструкция по установке - C# Графическое программирование</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="course-title-link">
+                <h1>🛠️ Инструкция по установке среды разработки</h1>
+            </a>
+            <p class="subtitle">Все необходимое для начала работы с курсом</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="back-button-container">
+            <a href="index.html" class="btn-secondary">← Вернуться на главную</a>
+        </div>
+
+        <section class="setup-guide">
+            <div class="setup-card">
+                <h2>📋 Требования к системе</h2>
+                <ul class="requirements-list">
+                    <li><strong>ОС:</strong> Windows 7 SP1 или новее (рекомендуется Windows 10/11)</li>
+                    <li><strong>Процессор:</strong> Intel или AMD с поддержкой SSE2</li>
+                    <li><strong>ОЗУ:</strong> Минимум 2GB (рекомендуется 4GB+)</li>
+                    <li><strong>Дисковое пространство:</strong> ~5GB для .NET Framework и Visual Studio</li>
+                    <li><strong>Интернет:</strong> Требуется для скачивания и установки</li>
+                </ul>
+            </div>
+
+            <div class="setup-card">
+                <h2>🔧 Шаг 1: Установка Visual Studio Community</h2>
+                
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Скачайте Visual Studio Community</h3>
+                        <p>Это бесплатная профессиональная IDE от Microsoft, идеально подходит для обучения.</p>
+                        <a href="https://visualstudio.microsoft.com/ru/downloads/" target="_blank" class="btn-link">
+                            📥 Скачать Visual Studio Community
+                        </a>
+                        <img src="images/download.png" alt="Скачать Visual Studio" class="setup-image">
+                        <p class="note">Выбирите версию для вашей ОС (Windows x86 или x64)</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Запустите установщик</h3>
+                        <p>Найдите скачанный файл (обычно в папке Downloads) и запустите его двойным кликом.</p>
+                        <img src="images/installer.png" alt="Иконка инсталлятора" class="setup-image">
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Выберите рабочую нагрузку</h3>
+                        <p>При установке выберите:</p>
+                        <div class="workload-option">
+                            <input type="checkbox" checked disabled>
+                            <span><strong>.NET desktop development</strong> - для Windows Forms приложений</span>
+                        </div>
+                        <div class="workload-option">
+                            <input type="checkbox" checked disabled>
+                            <span><strong>.NET Framework development tools</strong> - дополнительные инструменты</span>
+                        </div>
+                        <img src="images/workload.png" alt="Выбор рабочей нагрузки" class="setup-image">
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Завершите установку</h3>
+                        <p>Нажмите кнопку "Install" и дождитесь завершения (может занять 10-30 минут).</p>
+                        <div class="info-box">
+                            ⏱️ <strong>Совет:</strong> Во время установки вы можете распечатать первые уроки курса или прочитать цель курса
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setup-card">
+                <h2>📁 Шаг 2: Установка .NET Framework</h2>
+                
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Проверьте установлен ли .NET Framework</h3>
+                        <p>Откройте Command Prompt (cmd) и введите:</p>
+                        <div class="code-example">
+                            <code>reg query "HKLM\SOFTWARE\Microsoft\NET Framework Setup\NDP"</code>
+                        </div>
+                        <p class="note">Вы должны увидеть версии .NET Framework (обычно 4.x)</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Если нужна установка</h3>
+                        <p>Скачайте с официального сайта Microsoft:</p>
+                        <a href="https://dotnet.microsoft.com/download/dotnet-framework" target="_blank" class="btn-link">
+                            📥 Скачать .NET Framework
+                        </a>
+                        <p class="note">Выбирите версию 4.7.2 или выше</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setup-card">
+                <h2>🚀 Шаг 3: Создайте первый проект</h2>
+                
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Откройте Visual Studio</h3>
+                        <p>Найдите иконку Visual Studio на рабочем столе или в меню Пуск.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Создайте новый проект</h3>
+                        <p>На стартовом экране нажмите кнопку <strong>"Создать проект"</strong> (Create a new project)</p>
+                        <p class="note">Если у вас уже открыт другой проект, выберите: <strong>Файл → Создать → Проект</strong></p>
+                        <img src="images/newproject.png" alt="Выбор типа проекта" class="setup-image">
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Выберите тип проекта</h3>
+                        <p>Поищите <strong>"Windows Forms App"</strong> и выберите вариант <strong>".NET Framework"</strong> (НЕ .NET Core)</p>
+                        <div class="warning-box">
+                            ⚠️ <strong>Важно:</strong> Убедитесь что выбираете "Windows Forms App (.NET Framework)", а не "Windows Forms (WinUI)"
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Нажмите Create</h3>
+                        <p>Visual Studio создаст новый проект с готовой формой.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>Запустите проект</h3>
+                        <p>Нажмите <strong>F5</strong> или найдите кнопку "Start" (▶️) на панели инструментов.</p>
+                        <p class="success">✅ Если появилось окно формы - всё работает! Вы готовы к курсу!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setup-card">
+                <h2>🐛 Решение типичных проблем</h2>
+                
+                <div class="problem">
+                    <h3>❌ Проблема: "Windows Forms App" не видна в шаблонах</h3>
+                    <p><strong>Решение:</strong></p>
+                    <ol>
+                        <li>Откройте Visual Studio Installer</li>
+                        <li>Нажмите "Modify" рядом с установленным Visual Studio</li>
+                        <li>Убедитесь что ".NET desktop development" выбран</li>
+                        <li>Нажмите "Modify" и разрешите установку</li>
+                    </ol>
+                </div>
+
+                <div class="problem">
+                    <h3>❌ Проблема: Ошибка при попытке запустить (F5)</h3>
+                    <p><strong>Решение:</strong></p>
+                    <ol>
+                        <li>Проверьте что .NET Framework установлен (см. Шаг 2)</li>
+                        <li>Перезагрузите Visual Studio</li>
+                        <li>Если всё ещё не работает, переустановите .NET Framework v4.7.2+</li>
+                    </ol>
+                </div>
+
+                <div class="problem">
+                    <h3>❌ Проблема: "The .NET Framework version is not supported"</h3>
+                    <p><strong>Решение:</strong></p>
+                    <ol>
+                        <li>Откройте Properties проекта (правый клик на проект)</li>
+                        <li>Перейдите на вкладку "Application"</li>
+                        <li>Измените "Target Framework" на 4.7.2 или выше</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="setup-card">
+                <h2>✅ Проверка что всё готово</h2>
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check1">
+                        <label for="check1">Visual Studio Community установлен и запускается</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check2">
+                        <label for="check2">.NET Framework 4.7.2+ установлен</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check3">
+                        <label for="check3">Создан и запущен первый Windows Forms проект</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check4">
+                        <label for="check4">Окно формы отображается при нажатии F5</label>
+                    </div>
+                </div>
+                <p class="success-large" id="successMessage" style="display: none;">🎉 Если все пункты выполнены - вы готовы начать курс!</p>
+            </div>
+
+            <div class="setup-card quick-links">
+                <h2>🔗 Полезные ссылки</h2>
+                <div class="links-grid">
+                    <a href="https://visualstudio.microsoft.com/ru/downloads/" target="_blank" class="link-item">
+                        <span class="link-icon">💻</span>
+                        <span>Visual Studio Community</span>
+                    </a>
+                    <a href="https://dotnet.microsoft.com/download/dotnet-framework" target="_blank" class="link-item">
+                        <span class="link-icon">📦</span>
+                        <span>.NET Framework</span>
+                    </a>
+                    <a href="https://docs.microsoft.com/ru-ru/dotnet/" target="_blank" class="link-item">
+                        <span class="link-icon">📚</span>
+                        <span>Документация .NET</span>
+                    </a>
+                    <a href="https://learn.microsoft.com/ru-ru/dotnet/desktop/winforms/" target="_blank" class="link-item">
+                        <span class="link-icon">📖</span>
+                        <span>Windows Forms Docs</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="next-step">
+                <h3>Дальше:</h3>
+                <p>После успешной установки перейдите к первому модулю курса</p>
+                <a href="modules/module1.html" class="btn-primary">Начать Модуль 1 →</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Курс "Графическое программирование на C#"</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('.checklist-item input[type="checkbox"]');
+            const successMessage = document.getElementById('successMessage');
+
+            function checkAllCheckboxes() {
+                const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+                if (successMessage) {
+                    successMessage.style.display = allChecked ? 'block' : 'none';
+                }
+            }
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', checkAllCheckboxes);
+            });
+
+            // Проверка при загрузке страницы (для сохраненных чекбоксов)
+            checkAllCheckboxes();
+        });
+    </script>
+</body>
+</html>

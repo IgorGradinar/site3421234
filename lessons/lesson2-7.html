@@ -1,0 +1,539 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 2.7: Текст и шрифты</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="../lesson-quiz.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🎨 Графическое программирование на C#</h1>
+        </div>
+    </header>
+
+    <main class="lesson-container">
+        <a href="../modules/module2.html" class="back-link">← Вернуться к модулю 2</a>
+        
+        <div class="lesson-header">
+            <h1>Урок 2.7: Текст и шрифты</h1>
+            <div class="lesson-meta">
+                <span>Модуль 2</span>
+                <span>⏱️ ~1.5 часа</span>
+            </div>
+        </div>
+
+        <div class="lesson-content">
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" data-tab="theory">📚 Теория</button>
+                <button class="tab-button" data-tab="practice">💻 Практика</button>
+                <button class="tab-button" data-tab="tests">✅ Тесты</button>
+            </div>
+            
+            <div class="tab-content active" data-tab="theory">
+            <div class="learning-objectives">
+                <h3>📌 Ключевые моменты этого урока:</h3>
+                <ul style="margin: 10px 0;">
+                    <li>Font определяет шрифт (название, размер, стиль)</li>
+                    <li>Размер шрифта указывается в пунктах (points) = 1/72 дюйма</li>
+                    <li>DrawString рисует текст (вместо других примитивов)</li>
+                    <li>StringFormat контролирует форматирование текста</li>
+                    <li>MeasureString показывает размер текста перед рисованием</li>
+                    <li>TextAlign влияет на то, как выравнивается текст</li>
+                    <li>Нужно вызывать Dispose() на созданных Font'ах</li>
+                </ul>
+            </div>
+
+            <h2>Font — определение внешнего вида текста</h2>
+            <p>Font определяет шрифт для рисования текста. Включает название, размер, стиль (жирный, курсив и т.д.).</p>
+            
+            <h3>Создание шрифта:</h3>
+            <div class="code-block"><pre><code class="language-csharp">// Простой шрифт (семейство и размер)
+Font font1 = new Font("Arial", 12);
+
+// Со стилем (Bold, Italic и т.д.)
+Font font2 = new Font("Times New Roman", 16, FontStyle.Bold);
+Font font3 = new Font("Courier New", 14, FontStyle.Italic);
+
+// Комбинирование стилей
+Font font4 = new Font("Arial", 12, FontStyle.Bold | FontStyle.Underline);
+
+// Системный шрифт (берет из Windows)
+Font systemFont = SystemFonts.DefaultFont;
+Font messageBoxFont = SystemFonts.MessageBoxFont;</code></pre></div>
+
+            <h3>Доступные семейства шрифтов:</h3>
+            <p>Некоторые стандартные шрифты, которые есть почти на каждом Windows:</p>
+            <ul>
+                <li><strong>Arial</strong> — читаемый, без засечек (Sans-Serif)</li>
+                <li><strong>Times New Roman</strong> — классический, с засечками (Serif)</li>
+                <li><strong>Courier New</strong> — моноширинный (для кода)</li>
+                <li><strong>Calibri, Segoe UI</strong> — современные Windows шрифты</li>
+                <li><strong>Comic Sans MS</strong> — забавный, неформальный</li>
+            </ul>
+
+            <h3>FontStyle (стили):</h3>
+            <div class="code-block"><pre><code class="language-csharp">// Отдельные стили
+FontStyle.Regular;                                    // Обычный текст
+FontStyle.Bold;                                       // Толстый (жирный)
+FontStyle.Italic;                                     // Наклонный
+FontStyle.Underline;                                 // Подчеркнутый
+FontStyle.Strikeout;                                 // Зачеркнутый
+
+// Комбинирование (используйте |)
+var boldItalic = FontStyle.Bold | FontStyle.Italic;
+var boldUnderline = FontStyle.Bold | FontStyle.Underline;
+var allThree = FontStyle.Bold | FontStyle.Italic | FontStyle.Underline;</code></pre></div>
+
+            <h3>Размер шрифта (в пунктах):</h3>
+            <p>Размер указывается в типографических пунктах, где 1 дюйм = 72 пункта:</p>
+            <div class="image-container">
+                <img src="../images/2.7/font-sizes.svg" alt="Размеры шрифтов" class="lesson-image">
+                <p class="image-caption">Размеры шрифтов в пунктах</p>
+            </div>
+            
+            <h2>DrawString — рисование текста</h2>
+
+            <h3>Простое рисование:</h3>
+            <div class="code-block"><pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+    Font font = new Font("Arial", 12);
+    
+    // Рисование текста в поинте (10, 10)
+    g.DrawString("Привет, мир!", font, Brushes.Black, 10, 10);
+    
+    // С использованием Point
+    g.DrawString("Еще текст", font, Brushes.Blue, new PointF(50, 50));
+}</code></pre></div>
+
+            <h3>Рисование в прямоугольнике (ограничение):</h3>
+            <p>Текст может быть ограничен прямоугольником и автоматически переноситься на новую строку:</p>
+            <div class="code-block"><pre><code class="language-csharp">Rectangle textBox = new Rectangle(10, 10, 200, 100);
+
+// Текст будет переноситься внутри этого прямоугольника
+string longText = "Это длинный текст, который будет автоматически перенесен на новую строку внутри прямоугольника.";
+
+g.DrawString(longText, font, Brushes.Black, textBox);
+
+// Рисуем границу прямоугольника для наглядности
+g.DrawRectangle(Pens.Gray, textBox);</code></pre></div>
+
+            <h2>StringFormat — форматирование текста</h2>
+
+            <h3>Выравнивание по горизонтали:</h3>
+            <div class="code-block"><pre><code class="language-csharp">StringFormat format = new StringFormat();
+
+// Слева (по умолчанию)
+format.Alignment = StringAlignment.Near;    // ←──────────────
+g.DrawString("Слева", font, Brushes.Black, rect, format);
+
+// По центру
+format.Alignment = StringAlignment.Center;  // ────←────────
+g.DrawString("По центру", font, Brushes.Black, rect, format);
+
+// Справа
+format.Alignment = StringAlignment.Far;     // ──────────────→
+g.DrawString("Слева", font, Brushes.Black, rect, format);</code></pre></div>
+
+            <h3>Выравнивание по вертикали:</h3>
+            <div class="code-block"><pre><code class="language-csharp">StringFormat format = new StringFormat();
+
+// Сверху (по умолчанию)
+format.LineAlignment = StringAlignment.Near;    // ↓───────────
+g.DrawString("Сверху", font, Brushes.Black, rect, format);
+
+// По центру
+format.LineAlignment = StringAlignment.Center;  // ────↓──────
+g.DrawString("Центр", font, Brushes.Black, rect, format);
+
+// Внизу
+format.LineAlignment = StringAlignment.Far;     // ───────↓───
+g.DrawString("Иззу", font, Brushes.Black, rect, format);</code></pre></div>
+
+            <h3>Перенос строк и другие опции:</h3>
+            <div class="code-block"><pre><code class="language-csharp">StringFormat format = new StringFormat();
+
+// Без переноса (текст обрезается если не помещается)
+format.FormatFlags = StringFormatFlags.NoWrap;
+
+// С переносом (по умолчанию)
+// (just don't set NoWrap)
+
+// Другие флаги
+StringFormatFlags.DirectionRightToLeft;     // Для арабского/иврита
+StringFormatFlags.NoClip;                   // Рисовать за пределами прямоугольника
+StringFormatFlags.MeasureTrailingSpaces;    // При MeasureString считать пробелы</code></pre></div>
+
+            <h3>Практический пример — центрирование текста в прямоугольнике:</h3>
+            <div class="code-block"><pre><code class="language-csharp">Rectangle rect = new Rectangle(10, 10, 300, 200);
+StringFormat format = new StringFormat();
+format.Alignment = StringAlignment.Center;
+format.LineAlignment = StringAlignment.Center;
+
+g.DrawString("Цетрированный текст", font, Brushes.Black, rect, format);
+g.DrawRectangle(Pens.Gray, rect);  // Граница для наглядности</code></pre></div>
+
+            <h2>MeasureString — измерение размера текста</h2>
+            <p>Нужно знать размер текста ДО рисования, чтобы его правильно разместить:</p>
+            
+            <h3>Базовое использование:</h3>
+            <div class="code-block"><pre><code class="language-csharp">string text = "Мой текст";
+Font font = new Font("Arial", 12);
+
+// Измеряем размер
+SizeF textSize = g.MeasureString(text, font);
+
+float width = textSize.Width;    // Ширина в пикселях
+float height = textSize.Height;  // Высота в пикселях</code></pre></div>
+
+            <h3>Центрирование текста в форме:</h3>
+            <div class="code-block"><pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+    string text = "Центрированный текст";
+    Font font = new Font("Arial", 14);
+    
+    // Измеряем текст
+    SizeF textSize = g.MeasureString(text, font);
+
+    // Считаем координаты для центра
+    float x = (this.Width - textSize.Width) / 2;
+    float y = (this.Height - textSize.Height) / 2;
+    
+    // Рисуем в центре
+    g.DrawString(text, font, Brushes.Black, x, y);
+}</code></pre></div>
+
+            <h3>С ограничениями ширины:</h3>
+            <div class="code-block"><pre><code class="language-csharp">string longText = "Это длинный текст, который может быть вычислен с ограничением ширины.";
+Font font = new Font("Arial", 12);
+
+// Измеряем, если текст помещается в 200 пикселей ширины
+SizeF size = g.MeasureString(longText, font, 200);  // Учитывает перенос
+
+float requiredHeight = size.Height;  // Реальная высота с переносом</code></pre></div>
+
+            <h2>Работа со шрифтами</h2>
+
+            <h3>FontDialog — выбор шрифта пользователем:</h3>
+            <div class="code-block"><pre><code class="language-csharp">FontDialog fontDialog = new FontDialog();
+fontDialog.Font = currentFont;  // Начальный шрифт
+
+if (fontDialog.ShowDialog() == DialogResult.OK)
+{
+    currentFont = fontDialog.Font;
+    this.Invalidate();  // Перерисовать форму с новым шрифтом
+}</code></pre></div>
+
+            <h3>Получение списка доступных шрифтов:</h3>
+            <div class="code-block"><pre><code class="language-csharp">// Все установленные шрифты
+foreach (FontFamily fontFamily in FontFamily.Families)
+{
+    string fontName = fontFamily.Name;
+    // Использование fontName для создания Font
+}</code></pre></div>
+
+            <h2>Best Practices работы с текстом</h2>
+            <ul>
+                <li>✅ Всегда вызывайте Dispose() на созданных Font'ах</li>
+                <li>✅ Используйте MeasureString перед рисованием текста</li>
+                <li>✅ Для многострочного текста указывайте максимальную ширину</li>
+                <li>✅ Выбирайте размер шрифта в зависимости от расстояния чтения</li>
+                <li>✅ Обеспечьте контраст между текстом и фоном</li>
+                <li>✅ Проверяйте читаемость на разных DPI мониторов</li>
+                <li>🚫 Не используйте слишком много разных шрифтов в одном приложении</li>
+                <li>🚫 Избегайте очень мелких шрифтов (сложно читать, не печатается хорошо)</li>
+            </ul>
+            
+            </div>
+
+            <div class="tab-content" data-tab="practice">
+                <h2>Практическое задание</h2>
+            <div class="practice-section">
+                <h3>Задание 1: Рисование текста</h3>
+                <ol class="practice-steps">
+                    <li>Создайте обработчик события Paint</li>
+                    <li>Нарисуйте текст с разными шрифтами:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+
+    // Разные размеры шрифта
+    Font font12 = new Font("Arial", 12);
+    Font font16 = new Font("Arial", 16);
+    Font font24 = new Font("Arial", 24);
+
+    g.DrawString("Шрифт 12", font12, Brushes.Black, 10, 10);
+    g.DrawString("Шрифт 16", font16, Brushes.Blue, 10, 40);
+    g.DrawString("Шрифт 24", font24, Brushes.Red, 10, 80);
+
+    font12.Dispose();
+    font16.Dispose();
+    font24.Dispose();
+}</code></pre>
+                        </div>
+                    </li>
+                    <li>Используйте IntelliSense для изучения свойств Font (напишите "new Font(")</li>
+                    <li>Запустите приложение</li>
+                </ol>
+            </div>
+
+            <div class="practice-section">
+                <h3>Задание 2: Стили шрифтов</h3>
+                <ol class="practice-steps">
+                    <li>Нарисуйте текст с разными стилями:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+
+    // Разные стили
+    Font boldFont = new Font("Arial", 16, FontStyle.Bold);
+    Font italicFont = new Font("Arial", 16, FontStyle.Italic);
+    Font underlineFont = new Font("Arial", 16, FontStyle.Underline);
+    Font strikeoutFont = new Font("Arial", 16, FontStyle.Strikeout);
+
+    g.DrawString("Bold", boldFont, Brushes.Black, 10, 120);
+    g.DrawString("Italic", italicFont, Brushes.Blue, 10, 150);
+    g.DrawString("Underline", underlineFont, Brushes.Red, 10, 180);
+    g.DrawString("Strikeout", strikeoutFont, Brushes.Green, 10, 210);
+
+    boldFont.Dispose();
+    italicFont.Dispose();
+    underlineFont.Dispose();
+    strikeoutFont.Dispose();
+}</code></pre>
+                        </div>
+                    </li>
+                    <li>Запустите приложение</li>
+                </ol>
+            </div>
+            
+            <div class="practice-section">
+                <h3>Задание 3: StringFormat — выравнивание</h3>
+                <ol class="practice-steps">
+                    <li>Нарисуйте текст с разным выравниванием:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+    Font font = new Font("Arial", 12);
+    Rectangle rect = new Rectangle(10, 250, 200, 80);
+            
+    // По левому краю
+    StringFormat leftFormat = new StringFormat();
+    leftFormat.Alignment = StringAlignment.Near;
+    g.DrawString("Слева", font, Brushes.Black, rect, leftFormat);
+
+    // По центру
+    StringFormat centerFormat = new StringFormat();
+    centerFormat.Alignment = StringAlignment.Center;
+    g.DrawString("По центру", font, Brushes.Blue, rect, centerFormat);
+
+    // По правому краю
+    StringFormat rightFormat = new StringFormat();
+    rightFormat.Alignment = StringAlignment.Far;
+    g.DrawString("Справа", font, Brushes.Red, rect, rightFormat);
+
+    font.Dispose();
+}</code></pre>
+                        </div>
+                    </li>
+                    <li>Запустите приложение</li>
+                </ol>
+            </div>
+
+            <div class="practice-section">
+                <h3>Задание 4: MeasureString — центрирование</h3>
+                <ol class="practice-steps">
+                    <li>Центрируйте текст на форме:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+    string text = "Центрированный текст";
+    Font font = new Font("Arial", 20);
+
+    // Измеряем текст
+    SizeF textSize = g.MeasureString(text, font);
+
+    // Вычисляем координаты для центра
+    float x = (this.ClientSize.Width - textSize.Width) / 2;
+    float y = (this.ClientSize.Height - textSize.Height) / 2;
+
+    // Рисуем в центре
+    g.DrawString(text, font, Brushes.Black, x, y);
+
+    font.Dispose();
+}</code></pre>
+                        </div>
+                    </li>
+                    <li>Запустите приложение — текст должен быть по центру</li>
+                </ol>
+            </div>
+
+            <div class="practice-section">
+                <h3>Задание 5: FontDialog</h3>
+                <ol class="practice-steps">
+                    <li>Добавьте на форму кнопку</li>
+                    <li>В конструкторе создайте поле для хранения шрифта:
+                        <div class="code-block">
+<pre><code class="language-csharp">private Font currentFont = new Font("Arial", 12);</code></pre>
+                        </div>
+                    </li>
+                    <li>В обработчике Click кнопки добавьте:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void button1_Click(object sender, EventArgs e)
+{
+    FontDialog fontDialog = new FontDialog();
+    fontDialog.Font = currentFont;
+
+    if (fontDialog.ShowDialog() == DialogResult.OK)
+    {
+        currentFont = fontDialog.Font;
+        this.Invalidate();
+    }
+}</code></pre>
+                        </div>
+                    </li>
+                    <li>В обработчике Paint используйте currentFont для рисования текста</li>
+                    <li>Запустите приложение и попробуйте выбрать другой шрифт</li>
+                </ol>
+            </div>
+
+            <div class="practice-tip">
+                <strong>💡 Совет:</strong> Используйте IntelliSense для изучения всех свойств StringFormat. Начните вводить "StringAlignment." — вы увидите все варианты выравнивания.
+            </div>
+
+            </div>
+            
+            
+            <div class="tab-content" data-tab="tests">
+                <div class="test-section">
+                <h2>Проверка знаний</h2>
+                <p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+                
+                <div class="question" data-correct="2">
+                    <div class="question-text">1. Какой метод используется для рисования текста?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">DrawText</li>
+                        <li class="answer-option">WriteText</li>
+                        <li class="answer-option">DrawString</li>
+                        <li class="answer-option">PrintText</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="1">
+                    <div class="question-text">2. Какой метод используется для измерения размера текста?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">MeasureText</li>
+                        <li class="answer-option">MeasureString</li>
+                        <li class="answer-option">GetTextSize</li>
+                        <li class="answer-option">CalculateText</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">3. Как создать шрифт с жирным начертанием?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">new Font("Arial", 12, FontStyle.Bold)</li>
+                        <li class="answer-option">new Font("Arial", 12, FontStyle.Italic)</li>
+                        <li class="answer-option">new Font("Arial", 12, FontStyle.Underline)</li>
+                        <li class="answer-option">new Font("Arial", 12, FontStyle.Regular)</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="3">
+                    <div class="question-text">4. Какой класс используется для форматирования текста?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">TextFormat</li>
+                        <li class="answer-option">FormatString</li>
+                        <li class="answer-option">TextAlignment</li>
+                        <li class="answer-option">StringFormat</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="1">
+                    <div class="question-text">5. Какое свойство StringAlignment выравнивает текст по центру?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">StringAlignment.Near</li>
+                        <li class="answer-option">StringAlignment.Center</li>
+                        <li class="answer-option">StringAlignment.Far</li>
+                        <li class="answer-option">StringAlignment.Middle</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">6. Какой диалог используется для выбора шрифта?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">FontDialog</li>
+                        <li class="answer-option">ColorDialog</li>
+                        <li class="answer-option">TextDialog</li>
+                        <li class="answer-option">StyleDialog</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="2">
+                    <div class="question-text">7. Какое свойство Font задает размер шрифта?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Font.Size</li>
+                        <li class="answer-option">Font.Height</li>
+                        <li class="answer-option">Font.SizeInPoints</li>
+                        <li class="answer-option">Font.Scale</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="3">
+                    <div class="question-text">8. Какой тип возвращает MeasureString?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Size</li>
+                        <li class="answer-option">Dimension</li>
+                        <li class="answer-option">Point</li>
+                        <li class="answer-option">SizeF</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+                </div>
+        </div>
+
+        <div class="navigation">
+            <a href="lesson2-6.html" class="nav-btn secondary">← Предыдущий урок</a>
+            <a href="lesson2-8.html" class="nav-btn">Следующий урок →</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Курс "Графическое программирование на C#"</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+

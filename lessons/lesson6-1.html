@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Урок 6.1: Обработка изображений</title>
+<link href="../styles.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="../lesson-quiz.js"></script>
+</head>
+<body>
+<header>
+<div class="container">
+<a class="course-title-link" href="../index.html">
+<h1>🎨 Графическое программирование на C#</h1>
+</a>
+</div>
+</header>
+<main class="lesson-container">
+<a class="back-link" href="../modules/module6.html">← Вернуться к модулю 6</a>
+<div class="lesson-header">
+<h1>Урок 6.1: Обработка изображений</h1>
+<div class="lesson-meta">
+<span>Модуль 6</span>
+<span>⏱️ ~2 часа</span>
+</div>
+</div>
+<div class="lesson-content">
+<div class="tabs-container">
+<div class="tabs-nav">
+<button class="tab-button active" data-tab="theory">📚 Теория</button>
+<button class="tab-button" data-tab="practice">💻 Практика</button>
+<button class="tab-button" data-tab="tests">✅ Тесты</button>
+</div>
+<div class="tab-content active" data-tab="theory">
+<div class="learning-objectives">
+<h3>📌 Ключевые моменты этого урока:</h3>
+<ul style="margin: 10px 0;">
+<li>ColorMatrix позволяет менять цвета целому изображению за один раз</li>
+<li>Фильтры - это свёртка пикселей с матрицей ядра (каждый пиксель = взвешенная сумма соседей)</li>
+<li>Размытие (Box Blur) - каждый пиксель = среднее значение соседей в радиусе</li>
+<li>Контраст усиливает разницу между светлым и тёмным</li>
+<li>GetPixel/SetPixel медленны - используйте LockBits для больших изображений!</li>
+</ul>
+</div>
+<h2>Фильтры (яркость, контраст)</h2>
+<div class="code-block"><pre><code class="language-csharp">private Bitmap AdjustBrightness(Bitmap image, float brightness)
+{
+    Bitmap result = new Bitmap(image.Width, image.Height);
+    for (int y = 0; y &lt; image.Height; y++)
+    {
+        for (int x = 0; x &lt; image.Width; x++)
+        {
+            Color pixel = image.GetPixel(x, y);
+            int r = (int)(pixel.R * brightness);
+            int g = (int)(pixel.G * brightness);
+            int b = (int)(pixel.B * brightness);
+            result.SetPixel(x, y, Color.FromArgb(
+                Math.Min(255, r), Math.Min(255, g), Math.Min(255, b)));
+        }
+    }
+    return result;
+}</code></pre></div>
+<h2>Размытие и резкость</h2>
+<div class="code-block"><pre><code class="language-csharp">// Простое размытие (Box blur)
+private Bitmap Blur(Bitmap image, int radius)
+{
+    Bitmap result = new Bitmap(image);
+    for (int y = radius; y &lt; image.Height - radius; y++)
+    {
+        for (int x = radius; x &lt; image.Width - radius; x++)
+        {
+            int r = 0, g = 0, b = 0, count = 0;
+            for (int dy = -radius; dy &lt;= radius; dy++)
+            {
+                for (int dx = -radius; dx &lt;= radius; dx++)
+                {
+                    Color pixel = image.GetPixel(x + dx, y + dy);
+                    r += pixel.R; g += pixel.G; b += pixel.B;
+                    count++;
+                }
+            }
+            result.SetPixel(x, y, Color.FromArgb(
+                r / count, g / count, b / count));
+        }
+    }
+    return result;
+}</code></pre></div>
+<h2>ColorMatrix</h2>
+<div class="code-block"><pre><code class="language-csharp">using System.Drawing.Imaging;
+
+private Bitmap ApplyColorMatrix(Bitmap image, ColorMatrix matrix)
+{
+    Bitmap result = new Bitmap(image.Width, image.Height);
+    using (Graphics g = Graphics.FromImage(result))
+    {
+        ImageAttributes attributes = new ImageAttributes();
+        attributes.SetColorMatrix(matrix);
+        g.DrawImage(image, new Rectangle(0, 0, image.Width, image.Height),
+            0, 0, image.Width, image.Height, GraphicsUnit.Pixel, attributes);
+    }
+    return result;
+}
+
+// Пример: сепия фильтр
+ColorMatrix sepiaMatrix = new ColorMatrix(new float[][]
+{
+    new float[] {0.393f, 0.349f, 0.272f, 0, 0},
+    new float[] {0.769f, 0.686f, 0.534f, 0, 0},
+    new float[] {0.189f, 0.168f, 0.131f, 0, 0},
+    new float[] {0, 0, 0, 1, 0},
+    new float[] {0, 0, 0, 0, 1}
+});</code></pre></div>
+<h2>Практика: фоторедактор</h2>
+<p>Создайте простой фоторедактор с возможностями:</p>
+<ul>
+<li>Загрузка изображения</li>
+<li>Изменение яркости и контраста</li>
+<li>Применение фильтров (сепия, черно-белый)</li>
+<li>Сохранение результата</li>
+</ul>
+<h2>📝 Пример задания — размытие изображения</h2>
+<p>Загружает изображение (или генерирует тестовую сетку), применяет Box Blur через вспомогательный класс и отображает оригинал и размытый результат рядом:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class Task06_Blur : Form
+    {
+        private Bitmap original;
+        private Bitmap blurred;
+        private readonly Label lblInfo;
+
+        public Task06_Blur()
+        {
+            Text = "Задание 6 — Размытие (Blur)";
+            Size = new Size(900, 500);
+            BackColor = Color.White;
+            DoubleBuffered = true;
+            Paint += Form1_Paint;
+
+            lblInfo = new Label
+            {
+                Dock = DockStyle.Top, Height = 30,
+                TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
+                BackColor = Color.LightYellow
+            };
+            Controls.Add(lblInfo);
+
+            Load += (s, e) =&gt;
+            {
+                try
+                {
+                    using (var temp = Image.FromFile("image.jpg"))
+                        original = new Bitmap(temp);
+                }
+                catch
+                {
+                    original = GenerateTestImage(300, 200);
+                    lblInfo.Text = "image.jpg не найден — тестовое изображение";
+                }
+
+                if (original != null)
+                {
+                    blurred = Helpers.ImageFilters.ApplyBlur(original);
+                    lblInfo.Text = "Оригинал слева, размытие справа. Размер: "
+                        + original.Width + "x" + original.Height;
+                }
+            };
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            if (original == null || blurred == null) return;
+            Graphics g = e.Graphics;
+            g.DrawImage(original, 10, 40);
+            g.DrawString("Оригинал", SystemFonts.DefaultFont, Brushes.Black, 10, 20);
+            g.DrawImage(blurred, 330, 40);
+            g.DrawString("Blur (3x3)", SystemFonts.DefaultFont, Brushes.Black, 330, 20);
+        }
+
+        private static Bitmap GenerateTestImage(int w, int h)
+        {
+            Bitmap bmp = new Bitmap(w, h);
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.Clear(Color.White);
+                using (Pen pen = new Pen(Color.Black, 2))
+                {
+                    for (int i = 0; i &lt; w; i += 20)
+                        g.DrawLine(pen, i, 0, i, h);
+                    for (int i = 0; i &lt; h; i += 20)
+                        g.DrawLine(pen, 0, i, w, i);
+                }
+                g.DrawString("GRID",
+                    new Font("Arial", 40, FontStyle.Bold), Brushes.Red, 60, 60);
+            }
+            return bmp;
+        }
+    }
+}</code></pre>
+</div>
+<h2>📝 Пример задания — яркость через ColorMatrix</h2>
+<p>Применяет матрицу <code>ColorMatrix</code> с коэффициентом 1.2 ко всем RGB-каналам, не затрагивая альфа-канал:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class Task08_Brightness : Form
+    {
+        private Image original;
+
+        public Task08_Brightness()
+        {
+            Text = "Задание 8 — Яркость (ColorMatrix)";
+            Size = new Size(900, 500);
+            BackColor = Color.White;
+            DoubleBuffered = true;
+            Paint += Form1_Paint;
+
+            var lblInfo = new Label
+            {
+                Dock = DockStyle.Top, Height = 30,
+                TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
+                BackColor = Color.LightYellow
+            };
+            Controls.Add(lblInfo);
+
+            Load += (s, e) =&gt;
+            {
+                try
+                {
+                    original = Image.FromFile("image.jpg");
+                    lblInfo.Text = "Оригинал слева, +20% яркость справа (через ColorMatrix)";
+                }
+                catch
+                {
+                    original = GenerateTestImage(300, 200);
+                    lblInfo.Text = "image.jpg не найден — тестовое изображение";
+                }
+            };
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            if (original == null) return;
+            Graphics g = e.Graphics;
+
+            g.DrawImage(original, 10, 40);
+            g.DrawString("Оригинал", SystemFonts.DefaultFont, Brushes.Black, 10, 20);
+
+            float v = 1.2f;
+            ColorMatrix cm = new ColorMatrix(new float[][]
+            {
+                new float[] {v, 0, 0, 0, 0},
+                new float[] {0, v, 0, 0, 0},
+                new float[] {0, 0, v, 0, 0},
+                new float[] {0, 0, 0, 1, 0},
+                new float[] {0, 0, 0, 0, 1}
+            });
+
+            using (ImageAttributes ia = new ImageAttributes())
+            {
+                ia.SetColorMatrix(cm);
+                Rectangle dest = new Rectangle(330, 40,
+                    original.Width, original.Height);
+                g.DrawImage(original, dest,
+                    0, 0, original.Width, original.Height,
+                    GraphicsUnit.Pixel, ia);
+            }
+            g.DrawString("Яркость +20%",
+                SystemFonts.DefaultFont, Brushes.Black, 330, 20);
+        }
+
+        private static Bitmap GenerateTestImage(int w, int h)
+        {
+            Bitmap bmp = new Bitmap(w, h);
+            using (Graphics g = Graphics.FromImage(bmp))
+            using (var lgb = new System.Drawing.Drawing2D.LinearGradientBrush(
+                new Rectangle(0, 0, w, h), Color.Black, Color.White, 0f))
+            {
+                g.FillRectangle(lgb, 0, 0, w, h);
+            }
+            return bmp;
+        }
+    }
+}</code></pre>
+</div>
+<h2>📝 Пример задания — детекция границ Собелем</h2>
+<p>Применяет оператор Собеля через вспомогательный метод <code>ImageFilters.ApplySobel</code>. При отсутствии файла генерирует тестовое изображение с геометрическими фигурами:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class Task10_EdgeDetection : Form
+    {
+        private Bitmap original;
+        private Bitmap edges;
+        private readonly Label lblInfo;
+
+        public Task10_EdgeDetection()
+        {
+            Text = "Задание 10 — Детекция границ (Собель)";
+            Size = new Size(900, 500);
+            BackColor = Color.White;
+            DoubleBuffered = true;
+            Paint += Form1_Paint;
+
+            lblInfo = new Label
+            {
+                Dock = DockStyle.Top, Height = 30,
+                TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
+                BackColor = Color.LightYellow
+            };
+            Controls.Add(lblInfo);
+
+            Load += (s, e) =&gt;
+            {
+                try
+                {
+                    using (var tmp = Image.FromFile("image.jpg"))
+                        original = new Bitmap(tmp);
+                }
+                catch
+                {
+                    original = GenerateTestImage(300, 200);
+                    lblInfo.Text = "image.jpg не найден — тестовое изображение";
+                }
+
+                if (original != null)
+                {
+                    edges = Helpers.ImageFilters.ApplySobel(original);
+                    lblInfo.Text = "Оригинал слева, фильтр Собеля справа. Размер: "
+                        + original.Width + "x" + original.Height;
+                }
+            };
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            if (original == null || edges == null) return;
+            Graphics g = e.Graphics;
+            g.DrawImage(original, 10, 40);
+            g.DrawString("Оригинал", SystemFonts.DefaultFont, Brushes.Black, 10, 20);
+            g.DrawImage(edges, 330, 40);
+            g.DrawString("Собель", SystemFonts.DefaultFont, Brushes.Black, 330, 20);
+        }
+
+        private static Bitmap GenerateTestImage(int w, int h)
+        {
+            Bitmap bmp = new Bitmap(w, h);
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.Clear(Color.White);
+                g.FillEllipse(Brushes.Black, 30, 30, 100, 80);
+                g.FillRectangle(Brushes.DarkGray, 150, 50, 100, 100);
+                g.DrawLine(new Pen(Color.Black, 4), 0, 0, w, h);
+            }
+            return bmp;
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-content" data-tab="practice">
+<h2>Практическое задание</h2>
+<div class="practice-section">
+<h3>Задание: Обработка изображений</h3>
+<ol class="practice-steps">
+<li>Создайте фоторедактор с ползунками для яркости, контраста</li>
+<li>Используйте ColorMatrix для применения изменений</li>
+<li>Реализуйте фильтры (сепия, черно-белый)</li>
+</ol>
+</div>
+<div class="practice-section">
+<h3>Задание по аналогии: Размытие изображения</h3>
+<p>По аналогии с <code>Task06_Blur</code> реализуйте Box Blur — алгоритм усреднения соседних пикселей.</p>
+<ol class="practice-steps">
+<li>Создайте форму с <code>Label</code> вверху (Dock = Top) и полями <code>Bitmap original</code>, <code>Bitmap blurred</code>.</li>
+<li>В обработчике <code>Load</code> загрузите изображение из файла или сгенерируйте тестовое (сетку из линий через <code>DrawLine</code>).</li>
+<li>Реализуйте метод Box Blur: для каждого пикселя (x, y) вычислите среднее значение R, G, B соседей в квадрате ±radius.</li>
+<li>Запишите результат в новый <code>Bitmap blurred</code> через <code>SetPixel</code> и вызовите <code>Invalidate()</code>.</li>
+<li>В <code>Form1_Paint</code> нарисуйте оба изображения рядом через <code>DrawImage</code> с подписями "Оригинал" и "Blur".</li>
+</ol>
+<div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task06" class="lesson-image task-screenshot" src="../images/tasks/task06_blur.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task06)</p></div><div class="practice-tip">
+<strong>💡 Совет:</strong> Обрабатывайте только пиксели от <code>radius</code> до <code>Width - radius - 1</code>, иначе выйдете за границы массива. Для больших изображений замените <code>GetPixel/SetPixel</code> на <code>LockBits</code>.
+                </div>
+</div>
+<div class="practice-section">
+<h3>Задание по аналогии: Яркость через ColorMatrix</h3>
+<p>По аналогии с <code>Task08_Brightness</code> создайте форму с регулировкой яркости через <code>ColorMatrix</code>.</p>
+<ol class="practice-steps">
+<li>Загрузите изображение в поле <code>Image original</code> или создайте тестовое с помощью <code>LinearGradientBrush</code>.</li>
+<li>Создайте <code>ColorMatrix</code> размером 5×5, где диагональные элементы [0,0], [1,1], [2,2] равны коэффициенту яркости <code>v</code> (например, 1.2 для +20%).</li>
+<li>Оберните матрицу в <code>ImageAttributes</code> через <code>ia.SetColorMatrix(cm)</code>.</li>
+<li>В <code>Form1_Paint</code> нарисуйте оригинал слева и яркий вариант справа через перегрузку <code>DrawImage(image, destRect, 0, 0, w, h, GraphicsUnit.Pixel, ia)</code>.</li>
+<li>Дополнительно: добавьте <code>TrackBar</code> для изменения коэффициента яркости в диапазоне 0.5–2.0.</li>
+</ol>
+<div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task08" class="lesson-image task-screenshot" src="../images/tasks/task08_brightness.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task08)</p></div><div class="practice-tip">
+<strong>💡 Совет:</strong> Для эффекта «сепия» используйте матрицу с коэффициентами {0.393, 0.769, 0.189} для R, {0.349, 0.686, 0.168} для G, {0.272, 0.534, 0.131} для B по строкам.
+                </div>
+</div>
+<div class="practice-section">
+<h3>Задание по аналогии: Детекция границ оператором Собеля</h3>
+<p>По аналогии с <code>Task10_EdgeDetection</code> реализуйте оператор Собеля вручную без вспомогательного класса.</p>
+<ol class="practice-steps">
+<li>Создайте тестовое изображение с несколькими геометрическими фигурами (эллипс, прямоугольник, диагональная линия).</li>
+<li>Для каждого пикселя (x, y) — кроме граничных — вычислите <code>Gx</code> с ядром [[-1,0,1],[-2,0,2],[-1,0,1]] и <code>Gy</code> с ядром [[-1,-2,-1],[0,0,0],[1,2,1]].</li>
+<li>Рассчитайте магнитуду: <code>int mag = Math.Min(255, (int)Math.Sqrt(Gx * Gx + Gy * Gy));</code></li>
+<li>Запишите результат в новый Bitmap: <code>Color.FromArgb(mag, mag, mag)</code>.</li>
+<li>Отобразите оригинал и результат рядом с подписями.</li>
+</ol>
+<div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task10" class="lesson-image task-screenshot" src="../images/tasks/task10_edge_detection.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task10)</p></div><div class="practice-tip">
+<strong>💡 Совет:</strong> Переводите пиксели в оттенки серого до применения Собеля: <code>int gray = (int)(0.299*R + 0.587*G + 0.114*B)</code>. Это упрощает вычисление градиентов.
+                </div>
+</div>
+</div>
+<div class="tab-content" data-tab="tests">
+<div class="test-section">
+<h2>Проверка знаний</h2>
+<p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+<div class="question" data-correct="1">
+<div class="question-text">1. Что такое ColorMatrix?</div>
+<ul class="answer-options">
+<li class="answer-option">Матрица для трансформации координат</li>
+<li class="answer-option">Матрица для преобразования цветов</li>
+<li class="answer-option">Матрица для фильтрации</li>
+<li class="answer-option">Матрица для масштабирования</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="0">
+<div class="question-text">2. Что такое ColorMatrix?</div>
+<ul class="answer-options">
+<li class="answer-option">Матрица для преобразования цветов</li>
+<li class="answer-option">Таблица цветов</li>
+<li class="answer-option">Массив пикселей</li>
+<li class="answer-option">Структура данных</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="0">
+<div class="question-text">3. Какой фильтр увеличивает яркость изображения?</div>
+<ul class="answer-options">
+<li class="answer-option">Фильтр яркости</li>
+<li class="answer-option">Фильтр контраста</li>
+<li class="answer-option">Фильтр размытия</li>
+<li class="answer-option">Фильтр резкости</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="navigation">
+<a class="nav-btn secondary" href="../modules/module6.html">← К модулю</a>
+<a class="nav-btn" href="lesson6-2.html">Следующий урок →</a>
+</div>
+</main>
+<footer>
+<div class="container">
+<p>© 2026 Курс "Графическое программирование на C#"</p>
+</div>
+</footer>
+</body>
+</html>

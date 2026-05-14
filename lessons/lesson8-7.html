@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Урок 8.7: Морфинг фигур</title>
+<link href="../styles.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="../lesson-quiz.js"></script>
+</head>
+<body>
+<header>
+<div class="container">
+<a class="course-title-link" href="../index.html">
+<h1>🎨 Графическое программирование на C#</h1>
+</a>
+</div>
+</header>
+<main class="lesson-container">
+<a class="back-link" href="../modules/module8.html">← Вернуться к модулю 8</a>
+<div class="lesson-header">
+<h1>Урок 8.7: Морфинг фигур</h1>
+<div class="lesson-meta">
+<span>Модуль 8</span>
+<span>⏱️ ~1 час</span>
+</div>
+</div>
+<div class="lesson-content">
+<div class="tabs-container">
+<div class="tabs-nav">
+<button class="tab-button active" data-tab="theory">📚 Теория</button>
+<button class="tab-button" data-tab="practice">💻 Практика</button>
+<button class="tab-button" data-tab="tests">✅ Тесты</button>
+</div>
+<div class="tab-content active" data-tab="theory">
+<h2>Морфинг форм</h2>
+<p>Плавный переход фигур достигается интерполяцией каждой пары вершин. Это требует, чтобы фигуры имели одно и то же число точек.</p>
+<div class="code-block"><pre><code class="language-csharp">private PointF[] Morph(PointF[] a, PointF[] b, float t)
+{
+    PointF[] result = new PointF[a.Length];
+    for (int i = 0; i &lt; a.Length; i++)
+    {
+        result[i] = new PointF(
+            a[i].X + (b[i].X - a[i].X) * t,
+            a[i].Y + (b[i].Y - a[i].Y) * t);
+    }
+    return result;
+}</code></pre></div>
+<h2>📝 Пример задания — морфинг фигур</h2>
+<p>Три фигуры (круг, квадрат, звезда) с 12 вершинами интерполируются циклически. Параметр <code>morphT</code> от 0 до 1 делит цикл на три фазы перехода:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class Task27_MorphingShapes : Form
+    {
+        private float morphT = 0;
+        private readonly Timer timer = new Timer();
+        private const int ShapePoints = 12;
+
+        public Task27_MorphingShapes()
+        {
+            Text = "Задание 27 — Морфинг фигур (Morphing Shapes)";
+            Size = new Size(800, 600);
+            BackColor = Color.White;
+            DoubleBuffered = true;
+            Paint += Form_Paint;
+
+            timer.Interval = 16;
+            timer.Tick += (s, e) =&gt; { morphT += 0.02f; if (morphT &gt; 1) morphT -= 1; Invalidate(); };
+            timer.Start();
+            FormClosed += (s, e) =&gt; timer.Stop();
+        }
+
+        private PointF[] GetCirclePoints(float cx, float cy, float r)
+        {
+            var pts = new PointF[ShapePoints];
+            for (int i = 0; i &lt; ShapePoints; i++)
+            {
+                float a = (float)(i * 2 * Math.PI / ShapePoints);
+                pts[i] = new PointF(cx + r * (float)Math.Cos(a), cy + r * (float)Math.Sin(a));
+            }
+            return pts;
+        }
+
+        private PointF[] GetSquarePoints(float cx, float cy, float size)
+        {
+            var pts = new PointF[ShapePoints];
+            for (int i = 0; i &lt; ShapePoints; i++)
+            {
+                float a = (float)(i * 2 * Math.PI / ShapePoints);
+                float x = size * (float)Math.Cos(a);
+                float y = size * (float)Math.Sin(a);
+                float maxVal = Math.Max(Math.Abs(x), Math.Abs(y));
+                pts[i] = new PointF(cx + (x / maxVal) * size, cy + (y / maxVal) * size);
+            }
+            return pts;
+        }
+
+        private PointF[] GetStarPoints(float cx, float cy, float r)
+        {
+            var pts = new PointF[ShapePoints];
+            for (int i = 0; i &lt; ShapePoints; i++)
+            {
+                float a = (float)(i * 2 * Math.PI / ShapePoints);
+                float rad = (i % 2 == 0) ? r : r * 0.4f;
+                pts[i] = new PointF(cx + rad * (float)Math.Cos(a), cy + rad * (float)Math.Sin(a));
+            }
+            return pts;
+        }
+
+        private PointF[] MorphShapes(PointF[] s1, PointF[] s2, float t)
+        {
+            var result = new PointF[s1.Length];
+            for (int i = 0; i &lt; s1.Length; i++)
+                result[i] = new PointF(
+                    s1[i].X + (s2[i].X - s1[i].X) * t,
+                    s1[i].Y + (s2[i].Y - s1[i].Y) * t);
+            return result;
+        }
+
+        private void Form_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            e.Graphics.Clear(Color.White);
+
+            float cx = ClientSize.Width / 2f;
+            float cy = ClientSize.Height / 2f;
+            float r = 100;
+
+            var circle = GetCirclePoints(cx, cy, r);
+            var square = GetSquarePoints(cx, cy, r);
+            var star   = GetStarPoints(cx, cy, r);
+
+            PointF[] current;
+            string name;
+            if (morphT &lt; 0.33f)
+            {
+                float t = morphT / 0.33f;
+                current = MorphShapes(circle, square, t);
+                name = $"Circle → Square ({(int)(t * 100)}%)";
+            }
+            else if (morphT &lt; 0.66f)
+            {
+                float t = (morphT - 0.33f) / 0.33f;
+                current = MorphShapes(square, star, t);
+                name = $"Square → Star ({(int)(t * 100)}%)";
+            }
+            else
+            {
+                float t = (morphT - 0.66f) / 0.34f;
+                current = MorphShapes(star, circle, t);
+                name = $"Star → Circle ({(int)(t * 100)}%)";
+            }
+
+            using (var brush = new SolidBrush(Color.FromArgb(150, Color.Blue)))
+            using (var pen = new Pen(Color.DarkBlue, 3))
+            {
+                e.Graphics.FillPolygon(brush, current);
+                e.Graphics.DrawPolygon(pen, current);
+            }
+            using (var brush = new SolidBrush(Color.Red))
+                foreach (var pt in current)
+                    e.Graphics.FillEllipse(brush, pt.X - 4, pt.Y - 4, 8, 8);
+
+            e.Graphics.DrawString("Морфинг фигур",
+                new Font("Segoe UI", 12, FontStyle.Bold), Brushes.Black, 10, 10);
+            e.Graphics.DrawString(name,
+                new Font("Segoe UI", 11), Brushes.DarkBlue, 10, 40);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="tab-content" data-tab="practice">
+<h2>Практическое задание</h2>
+<ul>
+<li>Создайте последовательность фигур с одинаковым числом точек.</li>
+<li>Реализуйте интерполяцию между ними.</li>
+<li>Анимируйте переключение форм во времени.</li>
+<li>Добавьте подпись текущего перехода.</li>
+</ul>
+<div class="practice-section">
+<h3>Задание по аналогии: Морфинг фигур</h3>
+<p>По аналогии с <code>Task27_MorphingShapes</code> создайте анимацию плавного перехода между тремя фигурами.</p>
+<ol class="practice-steps">
+<li>Объявите константу <code>const int ShapePoints = 12</code> и поле <code>float morphT = 0</code>. В <code>Timer_Tick</code> увеличивайте <code>morphT += 0.02f</code> и сбрасывайте: <code>if (morphT &gt; 1) morphT -= 1</code>.</li>
+<li>Реализуйте методы <code>GetCirclePoints</code>, <code>GetSquarePoints</code>, <code>GetStarPoints</code> — каждый возвращает массив из ShapePoints точек типа <code>PointF[]</code>. Все три фигуры должны иметь одинаковое число вершин.</li>
+<li>Реализуйте метод <code>MorphShapes(PointF[] s1, PointF[] s2, float t)</code>: для каждой пары вершин вычислите <code>result[i].X = s1[i].X + (s2[i].X - s1[i].X) * t</code>.</li>
+<li>В <code>Form_Paint</code> определите текущую фазу по <code>morphT</code> (0..0.33 = circle→square, 0.33..0.66 = square→star, 0.66..1.0 = star→circle). Нарисуйте текущую фигуру через <code>FillPolygon</code> и <code>DrawPolygon</code>.</li>
+<li>Дополнительно: отмечайте вершины красными точками через <code>FillEllipse</code> — это помогает увидеть, как каждый узел перемещается при морфинге.</li>
+</ol>
+<div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task27" class="lesson-image task-screenshot" src="../images/tasks/task27_morphing.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task27)</p></div><div class="practice-tip">
+<strong>💡 Совет:</strong> Для квадрата вычислите точки через cos/sin на окружности, а затем нормализуйте на <code>max(|x|, |y|)</code> — это даёт скруглённый квадрат. Увеличьте <code>ShapePoints</code> до 24 для более плавного морфинга.
+                        </div>
+</div>
+</div>
+<div class="tab-content" data-tab="tests">
+<h2>Тест</h2>
+<p>Почему фигуры должны иметь один и тот же набор вершин? Что происходит при разном количестве точек?</p>
+</div>
+</div>
+</div>
+<div class="navigation">
+<a class="nav-btn secondary" href="lesson8-6.html">← Предыдущий урок</a>
+<a class="nav-btn" href="lesson8-8.html">Следующий урок →</a>
+</div>
+</main>
+<footer>
+<div class="container">
+<p>© 2026 Курс "Графическое программирование на C#"</p>
+</div>
+</footer>
+</body>
+</html>

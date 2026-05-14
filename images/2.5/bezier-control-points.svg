@@ -1,0 +1,37 @@
+<svg width="500" height="250" viewBox="0 0 500 250" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="500" height="250" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="250" y="25" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">Как работают контрольные точки Безье</text>
+  
+  <!-- Main Curve Area -->
+  <rect x="25" y="40" width="450" height="180" rx="8" fill="#ffffff" stroke="#333" stroke-width="2"/>
+  
+  <!-- Bezier Curve -->
+  <path d="M 100 180 Q 150 60 200 60 T 300 180" fill="none" stroke="#007bff" stroke-width="3"/>
+  
+  <!-- P0 (Start) -->
+  <circle cx="100" cy="180" r="6" fill="#dc3545"/>
+  <text x="100" y="200" font-family="Arial, sans-serif" font-size="10" fill="#dc3545" font-weight="bold" text-anchor="middle">P0 (начало)</text>
+  
+  <!-- P1 (Control 1) -->
+  <circle cx="150" cy="60" r="6" fill="#ffc107"/>
+  <text x="150" y="50" font-family="Arial, sans-serif" font-size="10" fill="#856404" font-weight="bold" text-anchor="middle">P1 (контрольная 1)</text>
+  
+  <!-- P2 (Control 2) -->
+  <circle cx="200" cy="60" r="6" fill="#ffc107"/>
+  <text x="200" y="50" font-family="Arial, sans-serif" font-size="10" fill="#856404" font-weight="bold" text-anchor="middle">P2 (контрольная 2)</text>
+  
+  <!-- P3 (End) -->
+  <circle cx="300" cy="180" r="6" fill="#dc3545"/>
+  <text x="300" y="200" font-family="Arial, sans-serif" font-size="10" fill="#dc3545" font-weight="bold" text-anchor="middle">P3 (конец)</text>
+  
+  <!-- Control Lines -->
+  <line x1="100" y1="180" x2="150" y2="60" stroke="#6c757d" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="200" y1="60" x2="300" y2="180" stroke="#6c757d" stroke-width="1" stroke-dasharray="4,4"/>
+  
+  <!-- Note -->
+  <rect x="25" y="225" width="450" height="20" rx="4" fill="#cce5ff" stroke="#007bff" stroke-width="1"/>
+  <text x="250" y="238" font-family="Arial, sans-serif" font-size="9" fill="#004085" text-anchor="middle">💡 Кривая "притягивается" к контрольным точкам, но не обязательно проходит через них</text>
+</svg>

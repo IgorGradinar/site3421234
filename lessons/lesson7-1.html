@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 7.1: Введение в WPF</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="../lesson-quiz.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="../index.html" class="course-title-link">
+                <h1>🎨 Графическое программирование на C#</h1>
+            </a>
+        </div>
+    </header>
+
+    <main class="lesson-container">
+        <a href="../modules/module7.html" class="back-link">← Вернуться к модулю 7</a>
+        
+        <div class="lesson-header">
+            <h1>Урок 7.1: Введение в WPF</h1>
+            <div class="lesson-meta">
+                <span>Модуль 7</span>
+                <span>⏱️ ~2 часа</span>
+            </div>
+        </div>
+
+        <div class="lesson-content">
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" data-tab="theory">📚 Теория</button>
+                <button class="tab-button" data-tab="practice">💻 Практика</button>
+                <button class="tab-button" data-tab="tests">✅ Тесты</button>
+            </div>
+            
+            <div class="tab-content active" data-tab="theory">
+            <div class="learning-objectives">
+                <h3>📌 Ключевые моменты этого урока:</h3>
+                <ul style="margin: 10px 0;">
+                    <li>WPF = современный фреймворк с векторной графикой вместо GDI+ (растровой)</li>
+                    <li>XAML - это XML-подобный язык для описания UI (не код C#)</li>
+                    <li>Data Binding встроён в WPF - UI автоматически обновляется при изменении данных</li>
+                    <li>WPF обычно медленнее GDI+ для простой графики, но мощнее для сложных приложений</li>
+                    <li>MVVM паттерн разделяет логику (Model) от представления (View) через ViewModel</li>
+                </ul>
+            </div>
+
+            <h2>Отличия от Windows Forms</h2>
+            <ul>
+                <li><strong>Разметка:</strong> WPF использует XAML вместо дизайнера</li>
+                <li><strong>Графика:</strong> Векторная графика вместо растровой</li>
+                <li><strong>Стили:</strong> Гибкая система стилей и шаблонов</li>
+                <li><strong>Привязка данных:</strong> Встроенная поддержка Data Binding</li>
+                <li><strong>Анимация:</strong> Встроенная поддержка анимации</li>
+            </ul>
+
+            <h2>XAML разметка</h2>
+            <div class="code-block"><pre><code class="language-csharp">&lt;Window x:Class="MyApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="My App" Height="450" Width="800"&gt;
+    &lt;Grid&gt;
+        &lt;Button Content="Click Me" 
+                Width="100" Height="30"
+                Click="Button_Click"/&gt;
+    &lt;/Grid&gt;
+&lt;/Window&gt;</code></pre></div>
+
+            <h2>MVVM паттерн</h2>
+            <p>Model-View-ViewModel — архитектурный паттерн для WPF:</p>
+            <ul>
+                <li><strong>Model:</strong> Данные и бизнес-логика</li>
+                <li><strong>View:</strong> XAML разметка, UI</li>
+                <li><strong>ViewModel:</strong> Связь между Model и View</li>
+            </ul>
+
+            <h2>Первое WPF приложение</h2>
+            <div class="code-block"><pre><code class="language-csharp">// MainWindow.xaml.cs
+public partial class MainWindow : Window
+{
+    public MainWindow()
+    {
+        InitializeComponent();
+    }
+    
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+        MessageBox.Show("Hello WPF!");
+    }
+}</code></pre>
+            </div>
+            
+            </div>
+            
+            <div class="tab-content" data-tab="practice">
+                <h2>Практическое задание</h2>
+            <div class="practice-section">
+                <h3>Задание: Первое WPF приложение</h3>
+                <ol class="practice-steps">
+                    <li>Создайте простое WPF приложение с кнопкой и текстовым полем</li>
+                    <li>При нажатии кнопки выводите текст в текстовое поле</li>
+                    <li>Изучите структуру XAML разметки</li>
+                </ol>
+            </div>
+            
+            </div>
+            
+            
+            <div class="tab-content" data-tab="tests">
+                <div class="test-section">
+                <h2>Проверка знаний</h2>
+                <p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+                
+                <div class="question" data-correct="1">
+                    <div class="question-text">1. В чем основное отличие WPF от Windows Forms?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">WPF использует растровую графику</li>
+                        <li class="answer-option">WPF использует векторную графику и XAML</li>
+                        <li class="answer-option">WPF работает только на Windows</li>
+                        <li class="answer-option">WPF не поддерживает события</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">2. Что такое XAML?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Язык разметки для описания интерфейса в WPF</li>
+                        <li class="answer-option">Язык программирования</li>
+                        <li class="answer-option">Библиотека графики</li>
+                        <li class="answer-option">Формат данных</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+                <div class="question" data-correct="0">
+                    <div class="question-text">3. Что такое MVVM паттерн?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Паттерн разделения логики и представления</li>
+                        <li class="answer-option">Метод рисования</li>
+                        <li class="answer-option">Тип данных</li>
+                        <li class="answer-option">Алгоритм оптимизации</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+</div>
+                        </div>
+        </div>
+
+        <div class="navigation">
+            <a href="../modules/module7.html" class="nav-btn secondary">← К модулю</a>
+            <a href="lesson7-2.html" class="nav-btn">Следующий урок →</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Курс "Графическое программирование на C#"</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+

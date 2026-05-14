@@ -1,0 +1,580 @@
+﻿<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Урок 2.3: Перья (Pen) и линии</title>
+<link href="../styles.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="../lesson-quiz.js"></script>
+</head>
+<body>
+<header>
+<div class="container">
+<h1>🎨 Графическое программирование на C#</h1>
+</div>
+</header>
+<main class="lesson-container">
+<a class="back-link" href="../modules/module2.html">← Вернуться к модулю 2</a>
+<div class="lesson-header">
+<h1>Урок 2.3: Перья (Pen) и линии</h1>
+<div class="lesson-meta">
+<span>Модуль 2</span>
+<span>⏱️ ~1.5 часа</span>
+</div>
+</div>
+<div class="lesson-content">
+<div class="tabs-container">
+<div class="tabs-nav">
+<button class="tab-button active" data-tab="theory">📚 Теория</button>
+<button class="tab-button" data-tab="practice">💻 Практика</button>
+<button class="tab-button" data-tab="tests">✅ Тесты</button>
+</div>
+<div class="tab-content active" data-tab="theory">
+<div class="learning-objectives">
+<h3>📌 Ключевые моменты этого урока:</h3>
+<ul style="margin: 10px 0;">
+<li>Pen — это объект для рисования КОНТУРОВ фигур и линий</li>
+<li>Brush — для ЗАЛИВКИ областей (будет в следующем уроке)</li>
+<li>Pen имеет свойства: Color, Width, DashStyle, StartCap, EndCap</li>
+<li>DashStyle контролирует стиль линии: сплошная, пунктир, точки и т.д.</li>
+<li>DrawLine рисует одну линию, DrawLines — несколько подряд</li>
+<li>Есть готовые объекты Pens (Pens.Red, Pens.Black и т.д.)</li>
+</ul>
+</div>
+<h2>Работа с Pen в Visual Studio</h2>
+<p>Pen — это объект для рисования контуров. В Visual Studio вы можете использовать IntelliSense для изучения всех свойств Pen.</p>
+<h3>Создание Pen с помощью IntelliSense:</h3>
+<div class="code-block">
+<pre><code class="language-text">В обработчике Paint:
+private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+
+    // Напишите "new Pen(" и увидите подсказку
+    // Visual Studio покажет доступные конструкторы:
+    // 1. new Pen(Color)
+    // 2. new Pen(Brush)
+    // 3. new Pen(Color, float)
+
+    Pen pen = new Pen(Color.Red, 2);
+
+    // После "pen." увидите все свойства
+    pen.  ← Нажмите точку:
+    ┌──────────────────────────────────┐
+    │ Pen                             │
+    │ ▼                               │
+    │ • Alignment                     │
+    │ • Brush                         │
+    │ • Color                         │
+    │ • DashCap                       │
+    │ • DashOffset                    │
+    │ • DashPattern                   │
+    │ • DashStyle                     │
+    │ • EndCap                        │
+    │ • LineJoin                      │
+    │ • PenType                       │
+    │ • StartCap                      │
+    │ • Transform                     │
+    │ • Width                         │
+    └──────────────────────────────────┘
+}</code></pre>
+</div>
+<h3>Использование предопределенных Pens:</h3>
+<div class="code-block">
+<pre><code class="language-text">В Visual Studio IntelliSense покажет все готовые Pens:
+
+Напишите "Pens." и увидите список:
+Pens.  ← Нажмите точку:
+┌──────────────────────────────────┐
+│ Pens                            │
+│ ▼                               │
+│ • AliceBlue                     │
+│ • AntiqueWhite                  │
+│ • Aqua                          │
+│ • Aquamarine                    │
+│ • Azure                         │
+│ • Beige                         │
+│ • Bisque                        │
+│ • Black                         │
+│ • BlanchedAlmond                │
+│ • Blue                          │
+│ • BlueViolet                    │
+│ • Brown                         │
+│ • BurlyWood                     │
+│ • CadetBlue                     │
+│ • ...                           │
+└──────────────────────────────────┘
+
+Эти Pens уже созданы, имеют толщину 1px и не требуют Dispose()</code></pre>
+</div>
+<h2>Pen — инструмент для рисования контуров</h2>
+<p>Pen — это объект, который определяет, как будет выглядеть КОНТУР (outline) фигур и линий. Не путайте с Brush, который заполняет внутренность!</p>
+<h3>Визуально:</h3>
+<div class="image-container">
+<img alt="Pen vs Brush" class="lesson-image" src="../images/2.3/pen-vs-brush.svg"/>
+<p class="image-caption">Разница между Pen (контур) и Brush (заливка)</p>
+</div>
+<h2>Создание и использование Pen</h2>
+<h3>Создание нового Pen:</h3>
+<div class="code-block"><pre><code class="language-csharp">// Самый простой — с цветом
+Pen redPen = new Pen(Color.Red);
+redPen.Width = 2;  // Толщина 2 пикселя
+g.DrawLine(redPen, 10, 10, 100, 100);
+
+// Создание с цветом и толщиной сразу
+Pen bluePen = new Pen(Color.Blue, 3);  // 3 пикселя толщины
+g.DrawRectangle(bluePen, 50, 50, 100, 100);</code></pre></div>
+<h3>Использование готовых Pens (ЭКОНОМИЯ ПАМЯТИ):</h3>
+<p>В .NET есть предопределенные Pens толщиной 1 пиксель. Они уже готовы к использованию и экономят память:</p>
+<div class="code-block"><pre><code class="language-csharp">// Готовые пены (толщина всегда 1 пиксель)
+g.DrawLine(Pens.Black, 10, 10, 100, 100);
+g.DrawLine(Pens.Red, 20, 20, 150, 150);
+g.DrawLine(Pens.Blue, 30, 30, 200, 200);
+g.DrawRectangle(Pens.Green, 50, 50, 100, 100);
+
+// Это экономичнее, чем создавать новый Pen каждый раз
+// Готовые Pens.Color существуют для большей части стандартных цветов</code></pre></div>
+<h3>Важно помнить:</h3>
+<ul>
+<li>Если создали Pen самостоятельно — вызовите Dispose() когда не нужен</li>
+<li>Готовые Pens (Pens.Red) НЕ нужно Dispose() — это статические объекты</li>
+<li>Лучше переиспользовать Pens, чем создавать по пять для каждого DrawLine</li>
+</ul>
+<h2>Свойства Pen — как выглядит линия</h2>
+<h3>Color — цвет линии:</h3>
+<div class="code-block"><pre><code class="language-csharp">Pen pen = new Pen(Color.Red);
+pen.Color = Color.Blue;  // Меняем цвет
+g.DrawLine(pen, 10, 10, 100, 100);
+
+// Цвет с прозрачностью
+pen.Color = Color.FromArgb(128, 255, 0, 0);  // 50% красный с полупрозрачностью
+g.DrawLine(pen, 20, 20, 120, 120);</code></pre></div>
+<h3>Width — толщина линии (в пикселях):</h3>
+<div class="code-block"><pre><code class="language-csharp">// Разные толщины
+Pen pen1 = new Pen(Color.Black, 1);   // Тонкая линия
+Pen pen2 = new Pen(Color.Black, 3);   // Средняя
+Pen pen3 = new Pen(Color.Black, 10);  // Толстая
+
+g.DrawLine(pen1, 10, 10, 200, 10);    // Тонкая
+g.DrawLine(pen2, 10, 30, 200, 30);    // Средняя
+g.DrawLine(pen3, 10, 50, 200, 50);    // Толстая</code></pre></div>
+<h3>DashStyle — стиль линии (сплошная, пунктир и т.д.):</h3>
+<p>Это самое интересное свойство! Позволяет создавать разныестили линий:</p>
+<div class="code-block"><pre><code class="language-csharp">Pen pen = new Pen(Color.Black, 2);
+
+// Стили (все из System.Drawing.Drawing2D)
+pen.DashStyle = DashStyle.Solid;      // ━━━━━━━━━━ (сплошная)
+pen.DashStyle = DashStyle.Dash;       // ━ ━ ━ ━ ━ (пунктир)
+pen.DashStyle = DashStyle.Dot;        // ・・・・・ (точки)
+pen.DashStyle = DashStyle.DashDot;    // ━ ・ ━ ・ (штрих-точка)
+pen.DashStyle = DashStyle.DashDotDot; // ━ ・ ・ ━ (двойной штрих-точка)
+
+// Рисуем с каждым стилем
+int y = 20;
+foreach (var style in new[] { DashStyle.Solid, DashStyle.Dash, DashStyle.Dot, DashStyle.DashDot })
+{
+    pen.DashStyle = style;
+    g.DrawLine(pen, 10, y, 300, y);
+    y += 30;
+}</code></pre></div>
+<h3>Кастомный пунктир (Custom):</h3>
+<div class="code-block"><pre><code class="language-csharp">// Создаем свой стиль пунктира
+Pen pen = new Pen(Color.Black, 2);
+pen.DashStyle = DashStyle.Custom;
+pen.DashPattern = new float[] { 5, 3, 2, 3 };  // 5 пикселей линия, 3 пробел, 2 линия, 3 пробел
+
+g.DrawLine(pen, 10, 10, 300, 10);  // Ваш уникальный пунктир</code></pre></div>
+<h3>StartCap и EndCap — стиль начала и конца линии:</h3>
+<p>Управляют, как выглядит начало и конец линии:</p>
+<div class="code-block"><pre><code class="language-csharp">using System.Drawing.Drawing2D;
+
+Pen pen = new Pen(Color.Black, 5);
+
+// Стили концов
+pen.StartCap = LineCap.Flat;          // └ (плоский, по умолчанию)
+pen.EndCap = LineCap.Round;           // ╶ (круглый)
+pen.StartCap = LineCap.Square;        // ▁ (квадратный)
+pen.EndCap = LineCap.Triangle;        // ╲ (треугольник)
+pen.EndCap = LineCap.ArrowAnchor;     // ◄ (стрелка)
+pen.EndCap = LineCap.DiamondAnchor;   // ◆ (алмаз)
+
+g.DrawLine(pen, 50, 50, 250, 50);</code></pre></div>
+<h2>Методы для рисования линий</h2>
+<h3>DrawLine — одна линия:</h3>
+<div class="code-block"><pre><code class="language-csharp">// By координаты
+g.DrawLine(Pens.Black, 10, 10, 100, 100);
+
+// By Point структуры
+g.DrawLine(Pens.Blue, new Point(10, 10), new Point(100, 100));
+
+// С Pen с настройками
+Pen myPen = new Pen(Color.Red, 3);
+g.DrawLine(myPen, 20, 20, 150, 150);
+myPen.Dispose();</code></pre></div>
+<h3>DrawLines — несколько линий подряд:</h3>
+<p>Рисует ломаную линию через наборе точек (NOT замкнутую, как многоугольник!):</p>
+<div class="code-block"><pre><code class="language-csharp">Point[] points = {
+    new Point(50, 10),
+    new Point(100, 50),
+    new Point(150, 20),
+    new Point(200, 80),
+    new Point(250, 40),
+    new Point(300, 100)
+};
+
+g.DrawLines(Pens.Black, points);  // Линия не замкнута
+
+// Аналог с Brush:
+Point[] polygon = {
+    new Point(50, 100),
+    new Point(150, 50),
+    new Point(200, 150),
+    new Point(100, 180)
+};
+
+// Если нужна ЗАМКНУТАЯ линия — используйте DrawPolygon
+g.DrawPolygon(Pens.Red, polygon);</code></pre></div>
+<h2>Практические советы (Best Practices)</h2>
+<ul>
+<li>✅ Используйте готовые Pens.Color для стандартных цветов</li>
+<li>✅ Вызывайте Dispose() на своих Pen'ах после использования</li>
+<li>🚫 Не пересоздавайте Pen в циклах — создайте один раз, переиспользуйте</li>
+<li>✅ Для толстых линий (Width &gt; 3) рассмотрите сглаживание: g.SmoothingMode = SmoothingMode.AntiAlias</li>
+<li>✅ Проверьте, как выглядит линия с разными DashStyle — может очень улучшить внешний вид</li>
+</ul>
+<h2>📝 Пример задания</h2>
+<p>Программа последовательно рисует линии с каждым <code>DashStyle</code> и со стрелочным концом <code>LineCap.ArrowAnchor</code>, подписывая названия рядом:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class Task03_PenStyles : Form
+    {
+        public Task03_PenStyles()
+        {
+            Text = "Задание 3 — Стили линий";
+            Size = new Size(500, 350);
+            BackColor = Color.White;
+            DoubleBuffered = true;
+            Paint += Form1_Paint;
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            using (Font font = new Font("Segoe UI", 10))
+            {
+                int y = 20;
+                int dy = 45;
+
+                DrawLineWithLabel(g, font, "Solid",
+                    new Pen(Color.Black, 3) { DashStyle = DashStyle.Solid }, ref y, dy);
+                DrawLineWithLabel(g, font, "Dash",
+                    new Pen(Color.Red, 3) { DashStyle = DashStyle.Dash }, ref y, dy);
+                DrawLineWithLabel(g, font, "Dot",
+                    new Pen(Color.Blue, 3) { DashStyle = DashStyle.Dot }, ref y, dy);
+                DrawLineWithLabel(g, font, "DashDot",
+                    new Pen(Color.Green, 3) { DashStyle = DashStyle.DashDot }, ref y, dy);
+                DrawLineWithLabel(g, font, "DashDotDot",
+                    new Pen(Color.Purple, 3) { DashStyle = DashStyle.DashDotDot }, ref y, dy);
+
+                using (Pen arrowPen = new Pen(Color.DarkBlue, 3))
+                {
+                    arrowPen.EndCap = LineCap.ArrowAnchor;
+                    g.DrawLine(arrowPen, 20, y + 10, 220, y + 10);
+                    g.DrawString("ArrowAnchor", font, Brushes.Black, 230, y);
+                }
+            }
+        }
+
+        private void DrawLineWithLabel(Graphics g, Font font, string label,
+            Pen pen, ref int y, int dy)
+        {
+            using (pen)
+            {
+                g.DrawLine(pen, 20, y + 10, 220, y + 10);
+                g.DrawString(label, font, Brushes.Black, 230, y);
+            }
+            y += dy;
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="tab-content" data-tab="practice">
+<h2>Практическое задание</h2>
+<div class="practice-section">
+<h3>Задание 1: Использование готовых Pens</h3>
+<ol class="practice-steps">
+<li>Создайте обработчик события Paint</li>
+<li>Используя IntelliSense, изучите список готовых Pens (напишите "Pens.")</li>
+<li>Нарисуйте линии с разными готовыми Pens:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+
+    // Используем готовые Pens
+    g.DrawLine(Pens.Black, 10, 10, 300, 10);
+    g.DrawLine(Pens.Red, 10, 30, 300, 30);
+    g.DrawLine(Pens.Blue, 10, 50, 300, 50);
+    g.DrawLine(Pens.Green, 10, 70, 300, 70);
+}</code></pre>
+</div>
+</li>
+<li>Запустите приложение и проверьте результат</li>
+</ol>
+</div>
+<div class="practice-section">
+<h3>Задание 2: Создание собственного Pen</h3>
+<ol class="practice-steps">
+<li>В обработчике Paint создайте свой Pen:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+
+    // Создаем свой Pen
+    Pen myPen = new Pen(Color.Purple, 3);
+    g.DrawLine(myPen, 10, 100, 300, 100);
+
+    // Меняем свойства
+    myPen.Color = Color.Orange;
+    myPen.Width = 5;
+    g.DrawLine(myPen, 10, 120, 300, 120);
+
+    // Освобождаем ресурсы
+    myPen.Dispose();
+}</code></pre>
+</div>
+</li>
+<li>Используйте IntelliSense для изучения свойств Pen (напишите "myPen.")</li>
+<li>Запустите приложение</li>
+</ol>
+</div>
+<div class="practice-section">
+<h3>Задание 3: Стили линий (DashStyle)</h3>
+<ol class="practice-steps">
+<li>Добавьте using System.Drawing.Drawing2D;</li>
+<li>Нарисуйте линии с разными стилями:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+    Pen pen = new Pen(Color.Black, 2);
+
+    int y = 150;
+    foreach (DashStyle style in new[] {
+        DashStyle.Solid,
+        DashStyle.Dash,
+        DashStyle.Dot,
+        DashStyle.DashDot,
+        DashStyle.DashDotDot })
+    {
+        pen.DashStyle = style;
+        g.DrawLine(pen, 10, y, 300, y);
+        y += 30;
+    }
+
+    pen.Dispose();
+}</code></pre>
+</div>
+</li>
+<li>Запустите приложение и изучите разные стили</li>
+</ol>
+</div>
+<div class="practice-section">
+<h3>Задание 4: Концы линий (LineCap)</h3>
+<ol class="practice-steps">
+<li>Нарисуйте линии с разными концами:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+    Pen pen = new Pen(Color.Blue, 5);
+
+    int y = 300;
+    foreach (LineCap cap in new[] {
+        LineCap.Flat,
+        LineCap.Round,
+        LineCap.Square,
+        LineCap.ArrowAnchor })
+    {
+        pen.StartCap = cap;
+        pen.EndCap = cap;
+        g.DrawLine(pen, 50, y, 250, y);
+        y += 40;
+    }
+
+    pen.Dispose();
+}</code></pre>
+</div>
+</li>
+<li>Запустите приложение и проверьте результат</li>
+</ol>
+</div>
+<div class="practice-section">
+<h3>Задание 5: DrawLines — ломаная линия</h3>
+<ol class="practice-steps">
+<li>Создайте массив точек и нарисуйте ломаную:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+            
+    // Создаем массив точек
+    Point[] points = {
+        new Point(50, 400),
+        new Point(100, 350),
+        new Point(150, 380),
+        new Point(200, 320),
+        new Point(250, 360),
+        new Point(300, 300)
+    };
+
+    // Рисуем ломаную линию
+    g.DrawLines(Pens.Red, points);
+
+    // Рисуем точки для наглядности
+    foreach (Point p in points)
+    {
+        g.FillEllipse(Brushes.Blue, p.X - 3, p.Y - 3, 6, 6);
+    }
+}</code></pre>
+</div>
+</li>
+<li>Запустите приложение</li>
+</ol>
+</div>
+<div class="practice-tip">
+<strong>💡 Совет:</strong> Используйте IntelliSense для изучения всех свойств Pen. Начните вводить "Dash" — вы увидите все свойства, связанные со стилем линии.
+            </div>
+<div class="practice-section">
+<h3>Задание по аналогии с примером: Витрина стилей линий</h3>
+<p>По аналогии с <code>Task03_PenStyles</code> создайте форму, которая отображает все основные стили линий в виде каталога.</p>
+<ol class="practice-steps">
+<li>Создайте форму 500×350 с <code>DoubleBuffered = true</code>.</li>
+<li>Нарисуйте 5 горизонтальных линий — по одной для каждого <code>DashStyle</code>: <code>Solid</code>, <code>Dash</code>, <code>Dot</code>, <code>DashDot</code>, <code>DashDotDot</code>. Используйте разные цвета и толщину 3px.</li>
+<li>Рядом с каждой линией выведите её название через <code>g.DrawString</code>.</li>
+<li>Добавьте линию с <code>EndCap = LineCap.ArrowAnchor</code> в конце списка.</li>
+<li>Вынесите рисование одной строки в отдельный вспомогательный метод <code>DrawLineWithLabel()</code>, чтобы не дублировать код.</li>
+</ol>
+<div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task03" class="lesson-image task-screenshot" src="../images/tasks/task03_pen_styles.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task03)</p></div><div class="practice-tip">
+<strong>💡 Совет:</strong> Передавайте <code>Pen</code> в вспомогательный метод и оборачивайте его в <code>using</code> внутри метода, чтобы ресурсы освобождались сразу.
+                </div>
+</div>
+</div>
+<div class="tab-content" data-tab="tests">
+<div class="test-section">
+<h2>Проверка знаний</h2>
+<p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+<div class="question" data-correct="1">
+<div class="question-text">1. Для чего используется класс Pen?</div>
+<ul class="answer-options">
+<li class="answer-option">Для заливки фигур</li>
+<li class="answer-option">Для рисования контуров и линий</li>
+<li class="answer-option">Для работы с цветом</li>
+<li class="answer-option">Для работы с текстом</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="2">
+<div class="question-text">2. Какой стиль линии создаст пунктирную линию?</div>
+<ul class="answer-options">
+<li class="answer-option">DashStyle.Solid</li>
+<li class="answer-option">DashStyle.Dot</li>
+<li class="answer-option">DashStyle.Dash</li>
+<li class="answer-option">DashStyle.Custom</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="0">
+<div class="question-text">3. Какой метод используется для рисования одной линии?</div>
+<ul class="answer-options">
+<li class="answer-option">DrawLine</li>
+<li class="answer-option">DrawLines</li>
+<li class="answer-option">DrawCurve</li>
+<li class="answer-option">DrawPath</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="3">
+<div class="question-text">4. Какое свойство Pen задает толщину линии?</div>
+<ul class="answer-options">
+<li class="answer-option">Size</li>
+<li class="answer-option">Thickness</li>
+<li class="answer-option">Height</li>
+<li class="answer-option">Width</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="1">
+<div class="question-text">5. Нужно ли вызывать Dispose() для готовых Pens (Pens.Red)?</div>
+<ul class="answer-options">
+<li class="answer-option">Да, обязательно</li>
+<li class="answer-option">Нет, это статические объекты</li>
+<li class="answer-option">Только если используется много раз</li>
+<li class="answer-option">Только в конце программы</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="0">
+<div class="question-text">6. Какое свойство задает стиль конца линии?</div>
+<ul class="answer-options">
+<li class="answer-option">EndCap</li>
+<li class="answer-option">LineStyle</li>
+<li class="answer-option">CapStyle</li>
+<li class="answer-option">LineEnd</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="2">
+<div class="question-text">7. Какой метод рисует ломаную линию?</div>
+<ul class="answer-options">
+<li class="answer-option">DrawLine</li>
+<li class="answer-option">DrawPath</li>
+<li class="answer-option">DrawLines</li>
+<li class="answer-option">DrawPolygon</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="3">
+<div class="question-text">8. В каком пространстве имен находится DashStyle?</div>
+<ul class="answer-options">
+<li class="answer-option">System.Drawing</li>
+<li class="answer-option">System.Windows.Forms</li>
+<li class="answer-option">System.Drawing.Imaging</li>
+<li class="answer-option">System.Drawing.Drawing2D</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+</div>
+</div>
+<div class="navigation">
+<a class="nav-btn secondary" href="lesson2-2.html">← Предыдущий урок</a>
+<a class="nav-btn" href="lesson2-4.html">Следующий урок →</a>
+</div>
+</div></div></main>
+<footer>
+<div class="container">
+<p>© 2026 Курс "Графическое программирование на C#"</p>
+</div>
+</footer>
+</body>
+</html>

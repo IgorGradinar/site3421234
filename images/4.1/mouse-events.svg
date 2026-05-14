@@ -1,0 +1,64 @@
+<svg width="600" height="350" viewBox="0 0 600 350" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="600" height="350" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="300" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#333">События мыши</text>
+  
+  <!-- Main Box -->
+  <rect x="25" y="40" width="550" height="290" rx="8" fill="#ffffff" stroke="#333" stroke-width="2"/>
+  
+  <!-- Header -->
+  <rect x="25" y="40" width="550" height="35" rx="8" fill="#0078d4"/>
+  <text x="150" y="62" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white" text-anchor="middle">Событие</text>
+  <text x="320" y="62" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white" text-anchor="middle">Когда возникает</text>
+  <text x="470" y="62" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white" text-anchor="middle">Основной параметр</text>
+  
+  <!-- Row 1 -->
+  <rect x="25" y="75" width="550" height="30" fill="#ffffff" stroke="#ccc" stroke-width="0.5"/>
+  <text x="150" y="95" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">MouseDown</text>
+  <text x="320" y="95" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">Нажатие кнопки</text>
+  <text x="470" y="95" font-family="Arial, sans-serif" font-size="10" fill="#007bff" text-anchor="middle">e.Button</text>
+  
+  <!-- Row 2 -->
+  <rect x="25" y="105" width="550" height="30" fill="#f8f9fa" stroke="#ccc" stroke-width="0.5"/>
+  <text x="150" y="125" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">MouseUp</text>
+  <text x="320" y="125" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">Отпускание кнопки</text>
+  <text x="470" y="125" font-family="Arial, sans-serif" font-size="10" fill="#007bff" text-anchor="middle">e.Button</text>
+  
+  <!-- Row 3 -->
+  <rect x="25" y="135" width="550" height="30" fill="#ffffff" stroke="#ccc" stroke-width="0.5"/>
+  <text x="150" y="155" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">MouseClick</text>
+  <text x="320" y="155" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">Клик (Down+Up)</text>
+  <text x="470" y="155" font-family="Arial, sans-serif" font-size="10" fill="#007bff" text-anchor="middle">e.Clicks</text>
+  
+  <!-- Row 4 -->
+  <rect x="25" y="165" width="550" height="30" fill="#f8f9fa" stroke="#ccc" stroke-width="0.5"/>
+  <text x="150" y="185" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">MouseDoubleClick</text>
+  <text x="320" y="185" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">Двойной клик</text>
+  <text x="470" y="185" font-family="Arial, sans-serif" font-size="10" fill="#007bff" text-anchor="middle">e.X, e.Y</text>
+  
+  <!-- Row 5 -->
+  <rect x="25" y="195" width="550" height="30" fill="#ffffff" stroke="#ccc" stroke-width="0.5"/>
+  <text x="150" y="215" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">MouseMove</text>
+  <text x="320" y="215" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">Движение курсора</text>
+  <text x="470" y="215" font-family="Arial, sans-serif" font-size="10" fill="#007bff" text-anchor="middle">e.X, e.Y</text>
+  
+  <!-- Row 6 -->
+  <rect x="25" y="225" width="550" height="30" fill="#f8f9fa" stroke="#ccc" stroke-width="0.5"/>
+  <text x="150" y="245" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">MouseWheel</text>
+  <text x="320" y="245" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">Вращение колеса</text>
+  <text x="470" y="245" font-family="Arial, sans-serif" font-size="10" fill="#007bff" text-anchor="middle">e.Delta</text>
+  
+  <!-- Row 7 -->
+  <rect x="25" y="255" width="550" height="30" fill="#ffffff" stroke="#ccc" stroke-width="0.5"/>
+  <text x="150" y="275" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">MouseEnter</text>
+  <text x="320" y="275" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">Вход в контрол</text>
+  <text x="470" y="275" font-family="Arial, sans-serif" font-size="10" fill="#6c757d" text-anchor="middle">-</text>
+  
+  <!-- Row 8 -->
+  <rect x="25" y="285" width="550" height="30" fill="#f8f9fa" stroke="#ccc" stroke-width="0.5"/>
+  <text x="150" y="305" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">MouseLeave</text>
+  <text x="320" y="305" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">Выход из контрола</text>
+  <text x="470" y="305" font-family="Arial, sans-serif" font-size="10" fill="#6c757d" text-anchor="middle">-</text>
+</svg>

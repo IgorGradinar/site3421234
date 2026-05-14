@@ -1,0 +1,322 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 4.1: События мыши</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="../lesson-quiz.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="../index.html" class="course-title-link">
+                <h1>🎨 Графическое программирование на C#</h1>
+            </a>
+        </div>
+    </header>
+
+    <main class="lesson-container">
+        <a href="../modules/module4.html" class="back-link">← Вернуться к модулю 4</a>
+        
+        <div class="lesson-header">
+            <h1>Урок 4.1: События мыши</h1>
+            <div class="lesson-meta">
+                <span>Модуль 4</span>
+                <span>⏱️ ~1.5 часа</span>
+            </div>
+        </div>
+
+        <div class="lesson-content">
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" data-tab="theory">📚 Теория</button>
+                <button class="tab-button" data-tab="practice">💻 Практика</button>
+                <button class="tab-button" data-tab="tests">✅ Тесты</button>
+            </div>
+            
+            <div class="tab-content active" data-tab="theory">
+            <div class="learning-objectives">
+                <h3>📌 Ключевые моменты этого урока:</h3>
+                <ul style="margin: 10px 0;">
+                    <li>9 событий мыши: MouseDown, MouseUp, MouseClick, MouseDoubleClick, MouseMove, MouseWheel, MouseEnter, MouseLeave, MouseHover</li>
+                    <li>MouseEventArgs содержит: X, Y (координаты), Button (какая кнопка), Clicks (одиночный/двойной), Delta (колесико)</li>
+                    <li>Последовательность событий: MouseDown → MouseClick → MouseUp (при однократном клике)</li>
+                    <li>Каждая кнопка мыши (Left, Right, Middle) обрабатывается отдельно через e.Button</li>
+                    <li>Delta для колеса: положительный = вверх, отрицательный = вниз (Delta / 120 = количество кликов колеса)</li>
+                </ul>
+            </div>
+
+            <h2>Полный обзор событий мыши</h2>
+            <p>Windows Forms предоставляет 9 событий мыши для полного контроля взаимодействия:</p>
+            <div class="image-container">
+                <img src="../images/4.1/mouse-events.svg" alt="События мыши" class="lesson-image">
+                <p class="image-caption">Полный обзор событий мыши</p>
+            </div>
+            
+            <h2>MouseEventArgs: полная таблица параметров</h2>
+            <div class="code-block"><pre><code class="language-csharp">private void Form1_MouseDown(object sender, MouseEventArgs e)
+{
+    if (e.Button == MouseButtons.Left)
+    {
+        // Левая кнопка мыши нажата
+        MessageBox.Show($"Нажата левая кнопка в точке ({e.X}, {e.Y})");
+    }
+}
+
+private void Form1_MouseUp(object sender, MouseEventArgs e)
+{
+    // Кнопка мыши отпущена
+}
+
+private void Form1_MouseMove(object sender, MouseEventArgs e)
+{
+    // Курсор перемещается
+    this.Text = $"Мышь: ({e.X}, {e.Y})";
+}</code></pre></div>
+
+            <div class="image-container">
+                <img src="../images/4.1/mouseeventargs-parameters.svg" alt="Параметры MouseEventArgs" class="lesson-image">
+                <p class="image-caption">Таблица параметров MouseEventArgs</p>
+            </div>
+            
+            <h2>Обработка разных кнопок мыши</h2>
+            <div class="code-block"><pre><code class="language-csharp">private void Form1_MouseClick(object sender, MouseEventArgs e)
+{
+    switch (e.Button)
+    {
+        case MouseButtons.Left:
+            MessageBox.Show("Левая кнопка");
+            // Обычное действие
+            break;
+        case MouseButtons.Right:
+            MessageBox.Show("Правая кнопка");
+            // Контекстное меню или альтернативное действие
+            break;
+        case MouseButtons.Middle:
+            MessageBox.Show("Средняя кнопка");
+            // Редко используется
+            break;
+    }
+    
+    // Проверка двойного клика
+    if (e.Clicks == 2)
+    {
+        MessageBox.Show("ДВОЙНОЙ клик!");
+    }
+}</code></pre></div>
+
+            <h2>Колесо мыши (MouseWheel)</h2>
+            <div class="code-block"><pre><code class="language-csharp">private int zoomLevel = 100; // 100% масштаб
+
+private void Form1_MouseWheel(object sender, MouseEventArgs e)
+{
+    // e.Delta = +120 для одного клика вверх, -120 для вниз
+    int wheelClicks = e.Delta / 120;
+    
+    zoomLevel += wheelClicks * 10;  // Увеличиваем/уменьшаем на 10% за клик
+    zoomLevel = Math.Max(10, Math.Min(zoomLevel, 300));  // Границы 10%-300%
+    
+    this.Title = $"Zoom: {zoomLevel}%";
+    this.Invalidate(); // Перерисовка с новым масштабом
+}</code></pre></div>
+
+            <h2>MouseDown, MouseUp, MouseMove</h2>
+
+            <h2>Последовательность событий при клике</h2>
+            <div class="image-container">
+                <img src="../images/4.1/mouse-event-sequence.svg" alt="Последовательность событий при клике" class="lesson-image">
+                <p class="image-caption">Последовательность событий мыши</p>
+            </div>
+            
+            <h2>Отслеживание позиции курсора</h2>
+            <div class="code-block"><pre><code class="language-csharp">private Point mousePosition;
+
+private void Form1_MouseMove(object sender, MouseEventArgs e)
+{
+    mousePosition = new Point(e.X, e.Y);
+    this.Invalidate(); // Перерисовка для отображения курсора
+}
+
+private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+    // Рисуем что-то в позиции курсора
+    g.FillEllipse(Brushes.Red, mousePosition.X - 10, mousePosition.Y - 10, 20, 20);
+}</code></pre></div>
+
+            <h2>Практика: рисование мышью</h2>
+            <div class="code-block"><pre><code class="language-csharp">private bool isDrawing = false;
+private List&lt;Point&gt; points = new List&lt;Point&gt;();
+
+private void Form1_MouseDown(object sender, MouseEventArgs e)
+{
+    if (e.Button == MouseButtons.Left)
+    {
+        isDrawing = true;
+        points.Clear();
+        points.Add(new Point(e.X, e.Y));
+    }
+}
+
+private void Form1_MouseMove(object sender, MouseEventArgs e)
+{
+    if (isDrawing)
+    {
+        points.Add(new Point(e.X, e.Y));
+        this.Invalidate();
+    }
+}
+
+private void Form1_MouseUp(object sender, MouseEventArgs e)
+{
+    isDrawing = false;
+}
+
+private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    if (points.Count > 1)
+    {
+        e.Graphics.DrawLines(Pens.Black, points.ToArray());
+    }
+}</code></pre>
+            </div>
+
+            <h2>📝 Пример задания — слежение за курсором (Task16)</h2>
+            <p>Синий круг диаметром 50px следует за курсором мыши через обработчик <code>MouseMove</code>:</p>
+            <div class="code-block">
+<pre><code class="language-csharp">using System.Drawing;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class Task16_MouseInteraction : Form
+    {
+        private Point figurePos = new Point(100, 100);
+
+        public Task16_MouseInteraction()
+        {
+            Text = "Задание 16 — Обработка мыши";
+            Size = new Size(600, 400);
+            BackColor = Color.White;
+            DoubleBuffered = true;
+            Paint += Form1_Paint;
+            MouseMove += Form1_MouseMove;
+        }
+
+        private void Form1_MouseMove(object sender, MouseEventArgs e)
+        {
+            figurePos = e.Location;
+            Invalidate();
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode =
+                System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            e.Graphics.FillEllipse(Brushes.Blue,
+                figurePos.X - 25, figurePos.Y - 25, 50, 50);
+            e.Graphics.DrawString("Перемещайте мышь",
+                SystemFonts.DefaultFont, Brushes.Black, 10, 10);
+        }
+    }
+}</code></pre>
+            </div>
+
+            </div>
+
+            <div class="tab-content" data-tab="practice">
+                <h2>Практическое задание</h2>
+            <div class="practice-section">
+                <h3>Задание: Рисование мышью</h3>
+                <ol class="practice-steps">
+                    <li>Создайте простой графический редактор</li>
+                    <li>Реализуйте рисование линий мышью</li>
+                    <li>Добавьте возможность выбора цвета и толщины линии</li>
+                    <li>Реализуйте очистку холста</li>
+                </ol>
+            </div>
+
+            <div class="practice-section">
+                <h3>Задание по аналогии: Фигура следует за курсором (Task16)</h3>
+                <p>По аналогии с <code>Task16_MouseInteraction</code> создайте форму, в которой фигура следует за курсором мыши.</p>
+                <ol class="practice-steps">
+                    <li>Создайте форму с <code>DoubleBuffered = true</code> и полем <code>private Point figurePos</code>.</li>
+                    <li>Подпишитесь на событие <code>MouseMove</code>. В обработчике сохраняйте <code>e.Location</code> в поле и вызывайте <code>Invalidate()</code>.</li>
+                    <li>В обработчике <code>Paint</code> включите <code>SmoothingMode.AntiAlias</code> и нарисуйте фигуру (эллипс, прямоугольник или звезду) с центром в <code>figurePos</code>.</li>
+                    <li>Добавьте подсказку "Перемещайте мышь" в верхнем левом углу.</li>
+                    <li>Дополнительно: измените форму фигуры при нажатии левой кнопки мыши (обработайте <code>MouseDown</code> и <code>MouseUp</code>).</li>
+                </ol>
+                <div class="practice-tip">
+                    <strong>💡 Совет:</strong> Рисуйте фигуру со смещением <code>-radius</code>, чтобы центр фигуры совпадал с курсором, а не левый верхний угол.
+                </div>
+            </div>
+
+            </div>
+            
+            
+            <div class="tab-content" data-tab="tests">
+                <div class="test-section">
+                <h2>Проверка знаний</h2>
+                <p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+                
+                <div class="question" data-correct="1">
+                    <div class="question-text">1. Какое событие возникает при нажатии кнопки мыши?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">MouseMove</li>
+                        <li class="answer-option">MouseDown</li>
+                        <li class="answer-option">MouseClick</li>
+                        <li class="answer-option">MouseEnter</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">2. Как получить координаты курсора мыши в событии MouseMove?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">e.X и e.Y</li>
+                        <li class="answer-option">MousePosition.X и MousePosition.Y</li>
+                        <li class="answer-option">this.MouseX и this.MouseY</li>
+                        <li class="answer-option">Cursor.Position</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">3. Какое событие срабатывает при нажатии кнопки мыши?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">MouseDown</li>
+                        <li class="answer-option">MouseClick</li>
+                        <li class="answer-option">MousePress</li>
+                        <li class="answer-option">MouseButton</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+</div>
+                        </div>
+        </div>
+
+        <div class="navigation">
+            <a href="../modules/module4.html" class="nav-btn secondary">← К модулю</a>
+            <a href="lesson4-2.html" class="nav-btn">Следующий урок →</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Курс "Графическое программирование на C#"</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+

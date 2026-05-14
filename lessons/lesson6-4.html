@@ -1,0 +1,166 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 6.4: Обзор библиотек</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="../lesson-quiz.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🎨 Графическое программирование на C#</h1>
+        </div>
+    </header>
+
+    <main class="lesson-container">
+        <a href="../modules/module6.html" class="back-link">← Вернуться к модулю 6</a>
+        
+        <div class="lesson-header">
+            <h1>Урок 6.4: Обзор библиотек</h1>
+            <div class="lesson-meta">
+                <span>Модуль 6</span>
+                <span>⏱️ ~1.5 часа</span>
+            </div>
+        </div>
+
+        <div class="lesson-content">
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" data-tab="theory">📚 Теория</button>
+                <button class="tab-button" data-tab="practice">💻 Практика</button>
+                <button class="tab-button" data-tab="tests">✅ Тесты</button>
+            </div>
+            
+            <div class="tab-content active" data-tab="theory">
+            <h2>SkiaSharp</h2>
+            <p>SkiaSharp — кроссплатформенная библиотека для 2D графики, основанная на Google Skia.</p>
+            <ul>
+                <li><strong>Преимущества:</strong> Высокая производительность, кроссплатформенность, современный API</li>
+                <li><strong>Использование:</strong> Мобильные приложения, веб-приложения, высокопроизводительная графика</li>
+                <li><strong>Установка:</strong> NuGet пакет SkiaSharp</li>
+            </ul>
+
+            <h2>ImageSharp</h2>
+            <p>ImageSharp — современная библиотека для обработки изображений в .NET.</p>
+            <ul>
+                <li><strong>Преимущества:</strong> Чистый API, хорошая производительность, поддержка различных форматов</li>
+                <li><strong>Использование:</strong> Обработка изображений, создание миниатюр, фильтры</li>
+                <li><strong>Установка:</strong> NuGet пакет SixLabors.ImageSharp</li>
+            </ul>
+
+            <h2>OpenTK (OpenGL)</h2>
+            <p>OpenTK предоставляет обертку для OpenGL в .NET.</p>
+            <ul>
+                <li><strong>Преимущества:</strong> Доступ к OpenGL, 3D графика, высокая производительность</li>
+                <li><strong>Использование:</strong> 3D приложения, игры, научная визуализация</li>
+                <li><strong>Установка:</strong> NuGet пакет OpenTK</li>
+            </ul>
+
+            <h2>Когда использовать что</h2>
+            <table style="width:100%; border-collapse: collapse;">
+                <tr>
+                    <th style="border:1px solid #ddd; padding:8px;">Библиотека</th>
+                    <th style="border:1px solid #ddd; padding:8px;">Когда использовать</th>
+                </tr>
+                <tr>
+                    <td style="border:1px solid #ddd; padding:8px;">GDI+</td>
+                    <td style="border:1px solid #ddd; padding:8px;">Windows Forms приложения, простая графика</td>
+                </tr>
+                <tr>
+                    <td style="border:1px solid #ddd; padding:8px;">SkiaSharp</td>
+                    <td style="border:1px solid #ddd; padding:8px;">Кроссплатформенные приложения, высокая производительность</td>
+                </tr>
+                <tr>
+                    <td style="border:1px solid #ddd; padding:8px;">ImageSharp</td>
+                    <td style="border:1px solid #ddd; padding:8px;">Обработка изображений, серверные приложения</td>
+                </tr>
+                <tr>
+                    <td style="border:1px solid #ddd; padding:8px;">OpenTK</td>
+                    <td style="border:1px solid #ddd; padding:8px;">3D графика, игры, научная визуализация</td>
+                </tr>
+            </table>
+            </div>
+            
+            </div>
+            
+            <div class="tab-content" data-tab="practice">
+                <h2>Практическое задание</h2>
+            <div class="practice-section">
+                <h3>Задание: Изучение библиотек</h3>
+                <ol class="practice-steps">
+                    <li>Изучите документацию SkiaSharp или ImageSharp</li>
+                    <li>Создайте простое приложение, демонстрирующее возможности библиотеки</li>
+                    <li>Сравните с GDI+</li>
+                </ol>
+            </div>
+            
+            </div>
+            
+            
+            <div class="tab-content" data-tab="tests">
+                <div class="test-section">
+                <h2>Проверка знаний</h2>
+                <p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+                
+                <div class="question" data-correct="0">
+                    <div class="question-text">1. Усвоили ли вы основные концепции урока?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Да, материал понятен</li>
+                        <li class="answer-option">Частично понятен</li>
+                        <li class="answer-option">Нужно повторить</li>
+                        <li class="answer-option">Не понял</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="1">
+                    <div class="question-text">2. Готовы ли вы применить изученное на практике?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Нет, нужно еще изучить</li>
+                        <li class="answer-option">Да, готов попробовать</li>
+                        <li class="answer-option">Возможно</li>
+                        <li class="answer-option">Не уверен</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">3. Что такое SkiaSharp?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Кроссплатформенная библиотека для 2D графики</li>
+                        <li class="answer-option">Язык программирования</li>
+                        <li class="answer-option">Инструмент разработки</li>
+                        <li class="answer-option">Формат файла</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+</div>
+                        </div>
+        </div>
+
+        <div class="navigation">
+            <a href="lesson6-3.html" class="nav-btn secondary">← Предыдущий урок</a>
+            <a href="lesson6-5.html" class="nav-btn">Следующий урок →</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Курс "Графическое программирование на C#"</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+

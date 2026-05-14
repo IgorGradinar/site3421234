@@ -1,0 +1,38 @@
+<svg width="600" height="250" viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="600" height="250" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="300" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#333">Производительность: GetPixel vs LockBits</text>
+  
+  <!-- Main Box -->
+  <rect x="25" y="40" width="550" height="190" rx="8" fill="#ffffff" stroke="#333" stroke-width="2"/>
+  
+  <!-- Header -->
+  <rect x="25" y="40" width="550" height="35" rx="8" fill="#0078d4"/>
+  <text x="150" y="62" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white" text-anchor="middle">Метод</text>
+  <text x="320" y="62" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white" text-anchor="middle">Скорость (800×600 px)</text>
+  <text x="460" y="62" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white" text-anchor="middle">Вывод</text>
+  
+  <!-- Row 1 -->
+  <rect x="25" y="75" width="550" height="35" fill="#ffffff" stroke="#ccc" stroke-width="0.5"/>
+  <text x="150" y="97" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">GetPixel/SetPixel</text>
+  <text x="320" y="97" font-family="Arial, sans-serif" font-size="10" fill="#dc3545" text-anchor="middle">~2000ms для 480K пкс</text>
+  <text x="460" y="97" font-family="Arial, sans-serif" font-size="10" fill="#dc3545" text-anchor="middle">НЕ ИСПОЛЬЗУЙ!</text>
+  
+  <!-- Row 2 -->
+  <rect x="25" y="110" width="550" height="35" fill="#f8f9fa" stroke="#ccc" stroke-width="0.5"/>
+  <text x="150" y="132" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">LockBits</text>
+  <text x="320" y="132" font-family="Arial, sans-serif" font-size="10" fill="#28a745" text-anchor="middle">~20ms для 480K пкс</text>
+  <text x="460" y="132" font-family="Arial, sans-serif" font-size="10" fill="#28a745" text-anchor="middle">Используй!</text>
+  
+  <!-- Row 3 -->
+  <rect x="25" y="145" width="550" height="35" fill="#ffffff" stroke="#ccc" stroke-width="0.5"/>
+  <text x="150" y="167" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">Unsafe+Stride</text>
+  <text x="320" y="167" font-family="Arial, sans-serif" font-size="10" fill="#007bff" text-anchor="middle">~10ms для 480K пкс</text>
+  <text x="460" y="167" font-family="Arial, sans-serif" font-size="10" fill="#007bff" text-anchor="middle">Максимум!</text>
+  
+  <!-- Result -->
+  <rect x="40" y="185" width="520" height="35" rx="4" fill="#fff3cd" stroke="#ffc107" stroke-width="1"/>
+  <text x="300" y="205" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#856404" text-anchor="middle">💡 LockBits в 100 раз быстрее GetPixel/SetPixel!</text>
+</svg>

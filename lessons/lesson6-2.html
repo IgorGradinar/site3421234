@@ -1,0 +1,206 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 6.2: Фракталы</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="../lesson-quiz.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🎨 Графическое программирование на C#</h1>
+        </div>
+    </header>
+
+    <main class="lesson-container">
+        <a href="../modules/module6.html" class="back-link">← Вернуться к модулю 6</a>
+        
+        <div class="lesson-header">
+            <h1>Урок 6.2: Фракталы</h1>
+            <div class="lesson-meta">
+                <span>Модуль 6</span>
+                <span>⏱️ ~2.5 часа</span>
+            </div>
+        </div>
+
+        <div class="lesson-content">
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" data-tab="theory">📚 Теория</button>
+                <button class="tab-button" data-tab="practice">💻 Практика</button>
+                <button class="tab-button" data-tab="tests">✅ Тесты</button>
+            </div>
+            
+            <div class="tab-content active" data-tab="theory">
+            <h2>Что такое фракталы</h2>
+            <p>Фракталы — это геометрические фигуры, которые имеют самоподобие на разных масштабах. Они создаются с помощью рекурсивных алгоритмов.</p>
+
+            <h2>Множество Мандельброта</h2>
+            <div class="code-block"><pre><code class="language-csharp">private void DrawMandelbrot(Graphics g, int width, int height)
+{
+    Bitmap bmp = new Bitmap(width, height);
+    int maxIterations = 100;
+    
+    for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            double real = (x - width / 2.0) / (width / 4.0);
+            double imag = (y - height / 2.0) / (height / 4.0);
+            
+            int iterations = MandelbrotIterations(real, imag, maxIterations);
+            Color color = GetColor(iterations, maxIterations);
+            bmp.SetPixel(x, y, color);
+        }
+    }
+    
+    g.DrawImage(bmp, 0, 0);
+}
+
+private int MandelbrotIterations(double real, double imag, int max)
+{
+    double zReal = 0, zImag = 0;
+    for (int i = 0; i < max; i++)
+    {
+        double zRealNew = zReal * zReal - zImag * zImag + real;
+        double zImagNew = 2 * zReal * zImag + imag;
+        zReal = zRealNew;
+        zImag = zImagNew;
+        if (zReal * zReal + zImag * zImag > 4) return i;
+    }
+    return max;
+}</code></pre></div>
+
+            <h2>Дерево Пифагора</h2>
+            <div class="code-block"><pre><code class="language-csharp">private void DrawPythagorasTree(Graphics g, float x, float y, 
+    float length, float angle, int depth)
+{
+    if (depth == 0) return;
+    
+    float x2 = x + length * (float)Math.Cos(angle);
+    float y2 = y - length * (float)Math.Sin(angle);
+    
+    g.DrawLine(Pens.Black, x, y, x2, y2);
+    
+    float newLength = length * 0.7f;
+    DrawPythagorasTree(g, x2, y2, newLength, angle - 0.5f, depth - 1);
+    DrawPythagorasTree(g, x2, y2, newLength, angle + 0.5f, depth - 1);
+}
+
+// Вызов
+DrawPythagorasTree(e.Graphics, 400, 500, 100, Math.PI / 2, 10);</code></pre></div>
+
+            <h2>Рекурсивное рисование</h2>
+            <div class="code-block"><pre><code class="language-csharp">// Снежинка Коха
+private void DrawKochSnowflake(Graphics g, PointF p1, PointF p2, int depth)
+{
+    if (depth == 0)
+    {
+        g.DrawLine(Pens.Blue, p1, p2);
+        return;
+    }
+    
+    PointF p3 = new PointF(
+        (2 * p1.X + p2.X) / 3,
+        (2 * p1.Y + p2.Y) / 3);
+    PointF p4 = new PointF(
+        (p1.X + 2 * p2.X) / 3,
+        (p1.Y + 2 * p2.Y) / 3);
+    
+    float dx = p4.X - p3.X;
+    float dy = p4.Y - p3.Y;
+    float angle = (float)Math.Atan2(dy, dx) - (float)Math.PI / 3;
+    float length = (float)Math.Sqrt(dx * dx + dy * dy);
+    PointF p5 = new PointF(
+        p3.X + length * (float)Math.Cos(angle),
+        p3.Y + length * (float)Math.Sin(angle));
+    
+    DrawKochSnowflake(g, p1, p3, depth - 1);
+    DrawKochSnowflake(g, p3, p5, depth - 1);
+    DrawKochSnowflake(g, p5, p4, depth - 1);
+    DrawKochSnowflake(g, p4, p2, depth - 1);
+}</code></pre>
+            </div>
+            
+            </div>
+            
+            <div class="tab-content" data-tab="practice">
+                <h2>Практическое задание</h2>
+            <div class="practice-section">
+                <h3>Задание: Фракталы</h3>
+                <ol class="practice-steps">
+                    <li>Создайте приложение для отображения множества Мандельброта</li>
+                    <li>Добавьте возможность масштабирования и перемещения</li>
+                    <li>Реализуйте выбор цветовой схемы</li>
+                </ol>
+            </div>
+            
+            </div>
+            
+            
+            <div class="tab-content" data-tab="tests">
+                <div class="test-section">
+                <h2>Проверка знаний</h2>
+                <p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+                
+                <div class="question" data-correct="0">
+                    <div class="question-text">1. Что такое фрактал?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Геометрическая фигура с самоподобием</li>
+                        <li class="answer-option">Тип изображения</li>
+                        <li class="answer-option">Алгоритм сжатия</li>
+                        <li class="answer-option">Формат файла</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">2. Что такое множество Мандельброта?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Фрактальное множество, определяемое итерациями комплексных чисел</li>
+                        <li class="answer-option">Геометрическая фигура</li>
+                        <li class="answer-option">Алгоритм сжатия</li>
+                        <li class="answer-option">Тип данных</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+                <div class="question" data-correct="0">
+                    <div class="question-text">3. Что такое рекурсивное рисование?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Рисование, при котором функция вызывает сама себя</li>
+                        <li class="answer-option">Рисование в цикле</li>
+                        <li class="answer-option">Рисование с задержкой</li>
+                        <li class="answer-option">Рисование по шаблону</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+</div>
+                        </div>
+        </div>
+
+        <div class="navigation">
+            <a href="lesson6-1.html" class="nav-btn secondary">← Предыдущий урок</a>
+            <a href="lesson6-3.html" class="nav-btn">Следующий урок →</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Курс "Графическое программирование на C#"</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+

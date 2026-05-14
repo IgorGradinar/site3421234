@@ -1,0 +1,242 @@
+﻿<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Урок 4.3: Таймер и анимация</title>
+<link href="../styles.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="../lesson-quiz.js"></script>
+</head>
+<body>
+<header>
+<div class="container">
+<h1>🎨 Графическое программирование на C#</h1>
+</div>
+</header>
+<main class="lesson-container">
+<a class="back-link" href="../modules/module4.html">← Вернуться к модулю 4</a>
+<div class="lesson-header">
+<h1>Урок 4.3: Таймер и анимация</h1>
+<div class="lesson-meta">
+<span>Модуль 4</span>
+<span>⏱️ ~2 часа</span>
+</div>
+</div>
+<div class="lesson-content">
+<div class="tabs-container">
+<div class="tabs-nav">
+<button class="tab-button active" data-tab="theory">📚 Теория</button>
+<button class="tab-button" data-tab="practice">💻 Практика</button>
+<button class="tab-button" data-tab="tests">✅ Тесты</button>
+</div>
+<div class="tab-content active" data-tab="theory">
+<div class="learning-objectives">
+<h3>📌 Ключевые моменты этого урока:</h3>
+<ul style="margin: 10px 0;">
+<li>Timer.Interval - паузa между Tick событиями (16ms = ~60 FPS, 50ms = 20 FPS)</li>
+<li>На каждом Tick событии обновляйте позиции: x += speed, затем Invalidate()</li>
+<li>Плавная анимация требует: малые шаги по времени + частый Invalidate</li>
+<li>Интерполяция - приближение к точке (x += (target - x) * 0.1 вместо x = target)</li>
+<li>Для 60 FPS используйте Interval = 16-17 ms; всегда DoubleBuffered = true</li>
+</ul>
+</div>
+<h2>System.Windows.Forms.Timer</h2>
+<div class="code-block"><pre><code class="language-csharp">private Timer timer;
+private int x = 0;
+
+public Form1()
+{
+    InitializeComponent();
+    
+    timer = new Timer();
+    timer.Interval = 16; // ~60 FPS (1000/60)
+    timer.Tick += Timer_Tick;
+    timer.Start();
+}
+
+private void Timer_Tick(object sender, EventArgs e)
+{
+    x += 5;
+    if (x &gt; this.Width) x = 0;
+    this.Invalidate();
+}</code></pre></div>
+<h2>Создание плавной анимации</h2>
+<div class="code-block"><pre><code class="language-csharp">private float x = 0;
+private float speed = 2.5f;
+
+private void Timer_Tick(object sender, EventArgs e)
+{
+    x += speed;
+    if (x &gt; this.Width) x = -50; // Сброс за пределы экрана
+    this.Invalidate();
+}
+
+private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    e.Graphics.FillEllipse(Brushes.Red, (int)x, 100, 50, 50);
+}</code></pre></div>
+<h2>Расчет движения</h2>
+<div class="code-block"><pre><code class="language-csharp">// Движение с ускорением
+private float x = 0, vx = 0;
+private float acceleration = 0.1f;
+
+private void Timer_Tick(object sender, EventArgs e)
+{
+    vx += acceleration; // Увеличение скорости
+    x += vx;
+    if (x &gt; this.Width) { x = 0; vx = 0; }
+    this.Invalidate();
+}
+
+// Движение по кругу
+private float angle = 0;
+private float radius = 100;
+private Point center = new Point(400, 300);
+
+private void Timer_Tick(object sender, EventArgs e)
+{
+    angle += 0.05f;
+    float x = center.X + radius * (float)Math.Cos(angle);
+    float y = center.Y + radius * (float)Math.Sin(angle);
+    // Используйте x, y для позиции объекта
+    this.Invalidate();
+}</code></pre></div>
+<h2>Практика: движущийся объект</h2>
+<p>Создайте анимацию мяча, который:</p>
+<ul>
+<li>Движется по экрану</li>
+<li>Отскакивает от краев</li>
+<li>Имеет гравитацию</li>
+</ul>
+</div>
+<h2>📝 Пример задания — анимация по таймеру (Task15)</h2>
+<p>Красный круг движется по горизонтали и сбрасывается при выходе за правый край. Таймер с интервалом 30 мс обеспечивает ~33 FPS:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class Task15_TimerAnimation : Form
+    {
+        private int posX = 0;
+        private readonly Timer timer = new Timer();
+
+        public Task15_TimerAnimation()
+        {
+            Text = "Задание 15 — Анимация по таймеру";
+            Size = new Size(600, 300);
+            BackColor = Color.White;
+            DoubleBuffered = true;
+            Paint += Form1_Paint;
+
+            timer.Interval = 30;
+            timer.Tick += Timer_Tick;
+            timer.Start();
+
+            FormClosed += (s, e) =&gt; timer.Stop();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            posX += 5;
+            if (posX &gt; ClientSize.Width)
+                posX = -50;
+            Invalidate();
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode =
+                System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            e.Graphics.FillEllipse(Brushes.Red, posX, 100, 50, 50);
+            e.Graphics.DrawString("Движущийся круг (Timer)",
+                SystemFonts.DefaultFont, Brushes.Black, 10, 10);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="tab-content" data-tab="practice">
+<h2>Практическое задание</h2>
+<div class="practice-section">
+<h3>Задание: Анимация</h3>
+<ol class="practice-steps">
+<li>Создайте анимацию падающего мяча с отскоком</li>
+<li>Добавьте гравитацию и физику отскока</li>
+<li>Реализуйте возможность изменения скорости анимации</li>
+</ol>
+</div>
+<div class="practice-section">
+<h3>Задание по аналогии: Движущийся объект (Task15)</h3>
+<p>По аналогии с <code>Task15_TimerAnimation</code> создайте форму с анимацией, управляемой таймером.</p>
+<ol class="practice-steps">
+<li>Создайте форму с <code>DoubleBuffered = true</code> и полем <code>private int posX = 0</code>.</li>
+<li>В конструкторе создайте <code>Timer</code> с интервалом 30 мс, запустите его. В <code>FormClosed</code> остановите.</li>
+<li>В <code>Timer_Tick</code> увеличивайте <code>posX</code> на 5. Когда <code>posX</code> выходит за правый край, сбрасывайте в <code>-50</code>. Вызовите <code>Invalidate()</code>.</li>
+<li>В обработчике <code>Paint</code> нарисуйте круг в позиции <code>(posX, 100)</code>.</li>
+<li>Дополнительно: добавьте второй объект, движущийся снизу вверх с другой скоростью.</li>
+</ol>
+<div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task15" class="lesson-image task-screenshot" src="../images/tasks/task15_timer_animation.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task15)</p></div><div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task15" class="lesson-image task-screenshot" src="../images/tasks/task15_timer_animation.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task15)</p></div><div class="practice-tip">
+<strong>💡 Совет:</strong> Интервал 16 мс (~60 FPS) плавнее, чем 30 мс (~33 FPS), но потребляет больше CPU. Выбирайте исходя из сложности сцены.
+                </div>
+</div>
+</div>
+<div class="tab-content" data-tab="tests">
+<div class="test-section">
+<h2>Проверка знаний</h2>
+<p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+<div class="question" data-correct="0">
+<div class="question-text">1. Какой класс используется для создания таймера в Windows Forms?</div>
+<ul class="answer-options">
+<li class="answer-option">System.Windows.Forms.Timer</li>
+<li class="answer-option">System.Timers.Timer</li>
+<li class="answer-option">System.Threading.Timer</li>
+<li class="answer-option">Timer</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="1">
+<div class="question-text">2. Какое свойство таймера задает интервал в миллисекундах?</div>
+<ul class="answer-options">
+<li class="answer-option">Delay</li>
+<li class="answer-option">Interval</li>
+<li class="answer-option">Timeout</li>
+<li class="answer-option">Period</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="0">
+<div class="question-text">3. Какой класс используется для создания анимации с таймером?</div>
+<ul class="answer-options">
+<li class="answer-option">System.Windows.Forms.Timer</li>
+<li class="answer-option">System.Timers.Timer</li>
+<li class="answer-option">System.Threading.Timer</li>
+<li class="answer-option">Timer</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="navigation">
+<a class="nav-btn secondary" href="lesson4-2.html">← Предыдущий урок</a>
+<a class="nav-btn" href="lesson4-4.html">Следующий урок →</a>
+</div>
+</main>
+<footer>
+<div class="container">
+<p>© 2026 Курс "Графическое программирование на C#"</p>
+</div>
+</footer>
+</body>
+</html>

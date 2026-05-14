@@ -1,0 +1,227 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 3.4: Практика: Оптимизация приложения</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="../lesson-quiz.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🎨 Графическое программирование на C#</h1>
+        </div>
+    </header>
+
+    <main class="lesson-container">
+        <a href="../modules/module3.html" class="back-link">← Вернуться к модулю 3</a>
+        
+        <div class="lesson-header">
+            <h1>Урок 3.4: Практика: Оптимизация приложения</h1>
+            <div class="lesson-meta">
+                <span>Модуль 3</span>
+                <span>⏱️ ~2 часа</span>
+            </div>
+        </div>
+
+        <div class="lesson-content">
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" data-tab="theory">📚 Теория</button>
+                <button class="tab-button" data-tab="practice">💻 Практика</button>
+                <button class="tab-button" data-tab="tests">✅ Тесты</button>
+            </div>
+            
+            <div class="tab-content active" data-tab="theory">
+            <div class="learning-objectives">
+                <h3>📌 Ключевые моменты этого урока:</h3>
+                <ul style="margin: 10px 0;">
+                    <li>Профилирование показывает где именно теряется производительность</li>
+                    <li>Caching объектов (Pen, Brush) экономит память и время на переиспользование</li>
+                    <li>FPS счётчик помогает оценить результаты оптимизации (цель: 60+ FPS)</li>
+                    <li>Комбинация всех техник: DoubleBuffered + partial Invalidate + LockBits для максимума</li>
+                    <li>Оптимизация - это измерение, поиск узких мест, применение техник, повторное измерение</li>
+                </ul>
+            </div>
+
+            <h2>Анализ узких мест</h2>
+            <p>Перед оптимизацией необходимо найти узкие места в коде:</p>
+            <ul>
+                <li>Используйте профилировщик Visual Studio (Debug → Performance Profiler)</li>
+                <li>Измеряйте время выполнения критических участков Stopwatch</li>
+                <li>Ищите частые вызовы Invalidate (выводятся в Debug)</li>
+                <li>Проверяйте создание объектов в циклах (ГЛАВНЫЙ враг производительности!)</li>
+            </ul>
+
+            <h2>Применение техник оптимизации</h2>
+            <h3>1. Включите двойную буферизацию</h3>
+            <div class="code-block"><pre><code class="language-csharp">this.DoubleBuffered = true;</code></pre></div>
+
+            <h3>2. Используйте частичную перерисовку</h3>
+            <div class="code-block"><pre><code class="language-csharp">this.Invalidate(updateRegion);</code></pre></div>
+
+            <h3>3. Кэшируйте объекты (КЛЮЧЕВОЙ СОВЕТ!)</h3>
+            <div class="code-block"><pre><code class="language-csharp">// Плохо: создание в цикле
+for (int i = 0; i < 1000; i++)
+{
+    Pen pen = new Pen(Color.Black);
+    g.DrawLine(pen, ...);
+}
+
+// Хорошо: переиспользование
+Pen pen = new Pen(Color.Black);
+for (int i = 0; i < 1000; i++)
+{
+    g.DrawLine(pen, ...);
+}</code></pre></div>
+
+            <h2>Измерение FPS (правильный способ с Stopwatch)</h2>
+            <div class="code-block"><pre><code class="language-csharp">// В конструкторе формы
+private System.Diagnostics.Stopwatch fpsStopwatch = new System.Diagnostics.Stopwatch();
+private int frameCount = 0;
+private double currentFps = 0;
+
+// Инициализация
+public Form1()
+{
+    InitializeComponent();
+    fpsStopwatch.Start();
+}
+
+// В Paint событии (вызывается для каждого кадра)
+private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    // Ваш код рисования здесь
+    e.Graphics.DrawString($"FPS: {currentFps:F1}", Font, Brushes.Black, 10, 10);
+    
+    // Счёт кадров
+    frameCount++;
+    
+    // Каждую секунду обновляем FPS
+    if (fpsStopwatch.ElapsedMilliseconds >= 1000)
+    {
+        currentFps = frameCount * 1000.0 / fpsStopwatch.ElapsedMilliseconds;
+        frameCount = 0;
+        fpsStopwatch.Restart();
+    }
+}
+
+// Более простой способ с Timer:
+private System.Windows.Forms.Timer gameTimer = new System.Windows.Forms.Timer();
+private int frameCount = 0;
+private DateTime lastSecond = DateTime.Now;
+
+// В конструкторе
+gameTimer.Interval = 16; // ~60 FPS (1000ms / 60 ≈ 16ms)
+gameTimer.Tick += (s, e) => 
+{
+    frameCount++;
+    if ((DateTime.Now - lastSecond).TotalSeconds >= 1)
+    {
+        this.Text = $"FPS: {frameCount}";
+        frameCount = 0;
+        lastSecond = DateTime.Now;
+    }
+    this.Invalidate();
+};
+gameTimer.Start();</code></pre></div>
+
+            <h2>Таблица сравнения техник оптимизации</h2>
+            <div class="image-container">
+                <img src="../images/3.4/optimization-techniques.svg" alt="Техники оптимизации производительности" class="lesson-image">
+                <p class="image-caption">Сравнение эффективности техник оптимизации</p>
+            </div>
+            
+            <h2>Сравнение до и после оптимизации</h2>
+            <p>Создайте версию приложения без оптимизаций и с оптимизациями. Сравните:</p>
+            <ul>
+                <li>FPS (кадров в секунду)</li>
+                <li>Использование CPU</li>
+                <li>Плавность анимации</li>
+                <li>Отсутствие мерцания</li>
+            </ul>
+            </div>
+            
+            </div>
+            
+            <div class="tab-content" data-tab="practice">
+                <h2>Практическое задание</h2>
+            <div class="practice-section">
+                <h3>Задание: Оптимизация приложения</h3>
+                <ol class="practice-steps">
+                    <li>Создайте приложение с множеством объектов (100+)</li>
+                    <li>Примените все изученные техники оптимизации</li>
+                    <li>Добавьте измерение FPS</li>
+                    <li>Достигните стабильных 60 FPS</li>
+                </ol>
+            </div>
+            
+            </div>
+            
+            
+            <div class="tab-content" data-tab="tests">
+                <div class="test-section">
+                <h2>Проверка знаний</h2>
+                <p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+                
+                <div class="question" data-correct="0">
+                    <div class="question-text">1. Усвоили ли вы основные концепции урока?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Да, материал понятен</li>
+                        <li class="answer-option">Частично понятен</li>
+                        <li class="answer-option">Нужно повторить</li>
+                        <li class="answer-option">Не понял</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="1">
+                    <div class="question-text">2. Готовы ли вы применить изученное на практике?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Нет, нужно еще изучить</li>
+                        <li class="answer-option">Да, готов попробовать</li>
+                        <li class="answer-option">Возможно</li>
+                        <li class="answer-option">Не уверен</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">3. Что такое FPS?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Количество кадров в секунду</li>
+                        <li class="answer-option">Скорость процессора</li>
+                        <li class="answer-option">Размер файла</li>
+                        <li class="answer-option">Количество пикселей</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+</div>
+                        </div>
+        </div>
+
+        <div class="navigation">
+            <a href="lesson3-3.html" class="nav-btn secondary">← Предыдущий урок</a>
+            <a href="../modules/module4.html" class="nav-btn">Следующий модуль →</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Курс "Графическое программирование на C#"</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+

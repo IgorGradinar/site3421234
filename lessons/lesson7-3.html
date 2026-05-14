@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 7.3: Сравнение с GDI+</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="../lesson-quiz.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🎨 Графическое программирование на C#</h1>
+        </div>
+    </header>
+
+    <main class="lesson-container">
+        <a href="../modules/module7.html" class="back-link">← Вернуться к модулю 7</a>
+        
+        <div class="lesson-header">
+            <h1>Урок 7.3: Сравнение с GDI+</h1>
+            <div class="lesson-meta">
+                <span>Модуль 7</span>
+                <span>⏱️ ~1.5 часа</span>
+            </div>
+        </div>
+
+        <div class="lesson-content">
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" data-tab="theory">📚 Теория</button>
+                <button class="tab-button" data-tab="practice">💻 Практика</button>
+                <button class="tab-button" data-tab="tests">✅ Тесты</button>
+            </div>
+            
+            <div class="tab-content active" data-tab="theory">
+            <h2>Производительность</h2>
+            <table style="width:100%; border-collapse: collapse;">
+                <tr>
+                    <th style="border:1px solid #ddd; padding:8px;">Аспект</th>
+                    <th style="border:1px solid #ddd; padding:8px;">GDI+</th>
+                    <th style="border:1px solid #ddd; padding:8px;">WPF</th>
+                </tr>
+                <tr>
+                    <td style="border:1px solid #ddd; padding:8px;">Простое рисование</td>
+                    <td style="border:1px solid #ddd; padding:8px;">Быстрее</td>
+                    <td style="border:1px solid #ddd; padding:8px;">Медленнее</td>
+                </tr>
+                <tr>
+                    <td style="border:1px solid #ddd; padding:8px;">Векторная графика</td>
+                    <td style="border:1px solid #ddd; padding:8px;">Медленнее</td>
+                    <td style="border:1px solid #ddd; padding:8px;">Быстрее</td>
+                </tr>
+                <tr>
+                    <td style="border:1px solid #ddd; padding:8px;">Анимация</td>
+                    <td style="border:1px solid #ddd; padding:8px;">Ручная реализация</td>
+                    <td style="border:1px solid #ddd; padding:8px;">Встроенная поддержка</td>
+                </tr>
+                <tr>
+                    <td style="border:1px solid #ddd; padding:8px;">Масштабирование</td>
+                    <td style="border:1px solid #ddd; padding:8px;">Потеря качества</td>
+                    <td style="border:1px solid #ddd; padding:8px;">Без потери качества</td>
+                </tr>
+            </table>
+
+            <h2>Возможности</h2>
+            <h3>GDI+:</h3>
+            <ul>
+                <li>Простое API</li>
+                <li>Прямой контроль над пикселями</li>
+                <li>Хорошо для растровой графики</li>
+                <li>Низкие требования к ресурсам</li>
+            </ul>
+
+            <h3>WPF:</h3>
+            <ul>
+                <li>Векторная графика</li>
+                <li>Встроенная анимация</li>
+                <li>Гибкие стили и шаблоны</li>
+                <li>Data Binding</li>
+                <li>3D графика</li>
+            </ul>
+
+            <h2>Когда использовать WPF</h2>
+            <ul>
+                <li>Современные приложения с богатым UI</li>
+                <li>Приложения с векторной графикой</li>
+                <li>Приложения с анимацией</li>
+                <li>Приложения, требующие гибкой стилизации</li>
+                <li>Приложения с Data Binding</li>
+            </ul>
+
+            <h2>Когда использовать GDI+</h2>
+            <ul>
+                <li>Простые графические приложения</li>
+                <li>Приложения с растровой графикой</li>
+                <li>Обработка изображений</li>
+                <li>Приложения с низкими требованиями к ресурсам</li>
+                <li>Легаси приложения Windows Forms</li>
+            </ul>
+            </div>
+            
+            </div>
+            
+            <div class="tab-content" data-tab="practice">
+                <h2>Практическое задание</h2>
+            <div class="practice-section">
+                <h3>Задание: Сравнение GDI+ и WPF</h3>
+                <ol class="practice-steps">
+                    <li>Реализуйте одно и то же простое приложение в Windows Forms и WPF</li>
+                    <li>Сравните код, производительность и возможности</li>
+                    <li>Сделайте выводы о том, когда использовать каждую технологию</li>
+                </ol>
+            </div>
+            
+            </div>
+            
+            
+            <div class="tab-content" data-tab="tests">
+                <div class="test-section">
+                <h2>Проверка знаний</h2>
+                <p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+                
+                <div class="question" data-correct="0">
+                    <div class="question-text">1. Усвоили ли вы основные концепции урока?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Да, материал понятен</li>
+                        <li class="answer-option">Частично понятен</li>
+                        <li class="answer-option">Нужно повторить</li>
+                        <li class="answer-option">Не понял</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="1">
+                    <div class="question-text">2. Готовы ли вы применить изученное на практике?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Нет, нужно еще изучить</li>
+                        <li class="answer-option">Да, готов попробовать</li>
+                        <li class="answer-option">Возможно</li>
+                        <li class="answer-option">Не уверен</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">3. Когда лучше использовать WPF вместо GDI+?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Для современных приложений с богатым интерфейсом</li>
+                        <li class="answer-option">Для простых форм</li>
+                        <li class="answer-option">Для консольных приложений</li>
+                        <li class="answer-option">Для веб-приложений</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+</div>
+                        </div>
+        </div>
+
+        <div class="navigation">
+            <a href="lesson7-2.html" class="nav-btn secondary">← Предыдущий урок</a>
+            <a href="../index.html" class="nav-btn">К главной странице →</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Курс "Графическое программирование на C#"</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+

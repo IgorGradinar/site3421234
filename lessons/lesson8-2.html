@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Урок 8.2: Ротация 3D-куба</title>
+<link href="../styles.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="../lesson-quiz.js"></script>
+</head>
+<body>
+<header>
+<div class="container">
+<a class="course-title-link" href="../index.html">
+<h1>🎨 Графическое программирование на C#</h1>
+</a>
+</div>
+</header>
+<main class="lesson-container">
+<a class="back-link" href="../modules/module8.html">← Вернуться к модулю 8</a>
+<div class="lesson-header">
+<h1>Урок 8.2: Ротация 3D-куба</h1>
+<div class="lesson-meta">
+<span>Модуль 8</span>
+<span>⏱️ ~1.5 часа</span>
+</div>
+</div>
+<div class="lesson-content">
+<div class="tabs-container">
+<div class="tabs-nav">
+<button class="tab-button active" data-tab="theory">📚 Теория</button>
+<button class="tab-button" data-tab="practice">💻 Практика</button>
+<button class="tab-button" data-tab="tests">✅ Тесты</button>
+</div>
+<div class="tab-content active" data-tab="theory">
+<h2>3D в 2D</h2>
+<p>Для создания эффекта трёхмерного объекта используется набор вершин в пространстве и матрицы поворота. Затем 3D-точки проецируются на экран.</p>
+<div class="code-block"><pre><code class="language-csharp">private PointF Project(Vector3D v)
+{
+    float scale = 400 / (v.Z + 300);
+    return new PointF(
+        ClientSize.Width / 2 + v.X * scale,
+        ClientSize.Height / 2 + v.Y * scale
+    );
+}</code></pre></div>
+<h2>Повороты</h2>
+<p>Вращение вокруг осей X, Y и Z меняет координаты вершин по косинусам и синусам.</p>
+<h2>📝 Пример задания — вращающийся 3D-куб</h2>
+<p>8 вершин куба трансформируются тремя матрицами вращения, затем проецируются на экран с перспективой. Таймер 16 мс анимирует вращение по всем трём осям:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class Task22_RotatingCube : Form
+    {
+        private float rotX = 0, rotY = 0, rotZ = 0;
+        private readonly Timer timer = new Timer();
+        private Vector3D[] cubeVerts = new Vector3D[8];
+        private Vector3D[] projected = new Vector3D[8];
+
+        public class Vector3D
+        {
+            public float X, Y, Z;
+            public Vector3D(float x, float y, float z) { X = x; Y = y; Z = z; }
+        }
+
+        public Task22_RotatingCube()
+        {
+            Text = "Задание 22 — Вращающийся 3D-куб (Rotating Cube)";
+            Size = new Size(700, 600);
+            BackColor = Color.Black;
+            DoubleBuffered = true;
+            Paint += Form_Paint;
+
+            float s = 100;
+            cubeVerts[0] = new Vector3D(-s, -s, -s); cubeVerts[1] = new Vector3D(s, -s, -s);
+            cubeVerts[2] = new Vector3D(s,  s, -s); cubeVerts[3] = new Vector3D(-s,  s, -s);
+            cubeVerts[4] = new Vector3D(-s, -s,  s); cubeVerts[5] = new Vector3D(s, -s,  s);
+            cubeVerts[6] = new Vector3D(s,  s,  s); cubeVerts[7] = new Vector3D(-s,  s,  s);
+
+            timer.Interval = 16;
+            timer.Tick += (s2, e) =&gt; { rotX += 0.01f; rotY += 0.015f; rotZ += 0.005f; Invalidate(); };
+            timer.Start();
+            FormClosed += (s2, e) =&gt; timer.Stop();
+        }
+
+        private Vector3D RotateX(Vector3D v, float a)
+        {
+            float c = (float)Math.Cos(a), s = (float)Math.Sin(a);
+            return new Vector3D(v.X, v.Y * c - v.Z * s, v.Y * s + v.Z * c);
+        }
+        private Vector3D RotateY(Vector3D v, float a)
+        {
+            float c = (float)Math.Cos(a), s = (float)Math.Sin(a);
+            return new Vector3D(v.X * c + v.Z * s, v.Y, -v.X * s + v.Z * c);
+        }
+        private Vector3D RotateZ(Vector3D v, float a)
+        {
+            float c = (float)Math.Cos(a), s = (float)Math.Sin(a);
+            return new Vector3D(v.X * c - v.Y * s, v.X * s + v.Y * c, v.Z);
+        }
+
+        private PointF Project(Vector3D v)
+        {
+            float scale = 400 / (v.Z + 300);
+            return new PointF(
+                ClientSize.Width / 2 + v.X * scale,
+                ClientSize.Height / 2 + v.Y * scale);
+        }
+
+        private void Form_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            e.Graphics.Clear(Color.Black);
+
+            for (int i = 0; i &lt; cubeVerts.Length; i++)
+            {
+                var v = RotateX(cubeVerts[i], rotX);
+                v = RotateY(v, rotY);
+                v = RotateZ(v, rotZ);
+                projected[i] = v;
+            }
+
+            using (var pen = new Pen(Color.Cyan, 2))
+            {
+                // передняя грань
+                DrawEdge(e.Graphics, pen, 0, 1); DrawEdge(e.Graphics, pen, 1, 2);
+                DrawEdge(e.Graphics, pen, 2, 3); DrawEdge(e.Graphics, pen, 3, 0);
+                // задняя грань
+                DrawEdge(e.Graphics, pen, 4, 5); DrawEdge(e.Graphics, pen, 5, 6);
+                DrawEdge(e.Graphics, pen, 6, 7); DrawEdge(e.Graphics, pen, 7, 4);
+                // боковые рёбра
+                DrawEdge(e.Graphics, pen, 0, 4); DrawEdge(e.Graphics, pen, 1, 5);
+                DrawEdge(e.Graphics, pen, 2, 6); DrawEdge(e.Graphics, pen, 3, 7);
+            }
+
+            using (var brush = new SolidBrush(Color.Yellow))
+            {
+                foreach (var v in projected)
+                {
+                    var p = Project(v);
+                    e.Graphics.FillEllipse(brush, p.X - 4, p.Y - 4, 8, 8);
+                }
+            }
+            e.Graphics.DrawString("Вращающийся 3D-куб",
+                new Font("Segoe UI", 10, FontStyle.Bold), Brushes.Lime, 10, 10);
+        }
+
+        private void DrawEdge(Graphics g, Pen pen, int i1, int i2)
+        {
+            g.DrawLine(pen, Project(projected[i1]), Project(projected[i2]));
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="tab-content" data-tab="practice">
+<h2>Практическое задание</h2>
+<ul>
+<li>Создайте массив вершин куба.</li>
+<li>Реализуйте функции RotateX, RotateY, RotateZ.</li>
+<li>Проецируйте вершины на экран.</li>
+<li>Рисуйте ребра куба.</li>
+</ul>
+<div class="practice-section">
+<h3>Задание по аналогии: Вращающийся 3D-куб</h3>
+<p>По аналогии с <code>Task22_RotatingCube</code> создайте полное приложение с 3D-проекцией.</p>
+<ol class="practice-steps">
+<li>Создайте вспомогательный класс <code>Vector3D</code> с полями <code>X, Y, Z</code> и конструктором. Объявите 8 вершин куба с координатами ±s (например, s = 100).</li>
+<li>Реализуйте методы <code>RotateX</code>, <code>RotateY</code>, <code>RotateZ</code> — каждый принимает вектор и угол (радианы) и возвращает повёрнутый вектор по формуле с cos/sin.</li>
+<li>Реализуйте метод <code>Project(Vector3D v)</code> с перспективной проекцией: <code>scale = 400 / (v.Z + 300)</code>, <code>screenX = Width/2 + v.X * scale</code>.</li>
+<li>В <code>Timer_Tick</code> увеличивайте три угла вращения, в <code>Form_Paint</code> преобразуйте все вершины и нарисуйте 12 рёбер куба (<code>DrawLine</code> между парами проекций).</li>
+<li>Дополнительно: закрашивайте грани с разным цветом в зависимости от нормали (простейшее освещение по Z-компоненте).</li>
+</ol>
+<div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task22" class="lesson-image task-screenshot" src="../images/tasks/task22_rotating_cube.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task22)</p></div><div class="practice-tip">
+<strong>💡 Совет:</strong> При рисовании рёбер вызывайте <code>Project</code> для текущего (уже повёрнутого) массива <code>projected</code>, а не для исходных <code>cubeVerts</code> — иначе куб будет выглядеть не вращающимся.
+                        </div>
+</div>
+</div>
+<div class="tab-content" data-tab="tests">
+<h2>Проверка</h2>
+<p>Почему проекция зависит от Z-координаты? Как влияет вращение по разным осям?</p>
+</div>
+</div>
+</div>
+<div class="navigation">
+<a class="nav-btn secondary" href="lesson8-1.html">← Предыдущий урок</a>
+<a class="nav-btn" href="lesson8-3.html">Следующий урок →</a>
+</div>
+</main>
+<footer>
+<div class="container">
+<p>© 2026 Курс "Графическое программирование на C#"</p>
+</div>
+</footer>
+</body>
+</html>

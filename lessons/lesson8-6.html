@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Урок 8.6: Физика столкновений</title>
+<link href="../styles.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="../lesson-quiz.js"></script>
+</head>
+<body>
+<header>
+<div class="container">
+<a class="course-title-link" href="../index.html">
+<h1>🎨 Графическое программирование на C#</h1>
+</a>
+</div>
+</header>
+<main class="lesson-container">
+<a class="back-link" href="../modules/module8.html">← Вернуться к модулю 8</a>
+<div class="lesson-header">
+<h1>Урок 8.6: Физика столкновений</h1>
+<div class="lesson-meta">
+<span>Модуль 8</span>
+<span>⏱️ ~1.5 часа</span>
+</div>
+</div>
+<div class="lesson-content">
+<div class="tabs-container">
+<div class="tabs-nav">
+<button class="tab-button active" data-tab="theory">📚 Теория</button>
+<button class="tab-button" data-tab="practice">💻 Практика</button>
+<button class="tab-button" data-tab="tests">✅ Тесты</button>
+</div>
+<div class="tab-content active" data-tab="theory">
+<h2>Упругие столкновения</h2>
+<p>При столкновении двух шаров сохраняются импульс и энергия. На практике важно вычислить нормаль удара и скорректировать скорости.</p>
+<h2>📝 Пример задания — шары с физикой</h2>
+<p>8 шаров с гравитацией, трением и упругостью. Обработка столкновений через нормальный импульс с разделением перекрывающихся шаров:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class Task26_BouncingBallsPhysics : Form
+    {
+        private class Ball
+        {
+            public PointF Position { get; set; }
+            public PointF Velocity { get; set; }
+            public float Radius { get; set; }
+            public Color Color { get; set; }
+            public float Mass { get; set; }
+            public const float Gravity = 0.3f;
+            public const float Friction = 0.98f;
+            public const float Elasticity = 0.85f;
+
+            public void Update(int width, int height)
+            {
+                var vel = Velocity;
+                var pos = Position;
+                vel.Y += Gravity;
+                vel.X *= Friction;
+                vel.Y *= Friction;
+                pos.X += vel.X;
+                pos.Y += vel.Y;
+
+                if (pos.X - Radius &lt; 0 || pos.X + Radius &gt; width)
+                {
+                    vel.X = -vel.X * Elasticity;
+                    pos.X = pos.X - Radius &lt; 0 ? Radius : width - Radius;
+                }
+                if (pos.Y - Radius &lt; 0 || pos.Y + Radius &gt; height)
+                {
+                    vel.Y = -vel.Y * Elasticity;
+                    pos.Y = pos.Y - Radius &lt; 0 ? Radius : height - Radius;
+                }
+                Position = pos; Velocity = vel;
+            }
+
+            public void Draw(Graphics g)
+            {
+                using (var brush = new SolidBrush(Color))
+                using (var pen = new Pen(Color.Black, 2))
+                {
+                    g.FillEllipse(brush,
+                        Position.X - Radius, Position.Y - Radius,
+                        Radius * 2, Radius * 2);
+                    g.DrawEllipse(pen,
+                        Position.X - Radius, Position.Y - Radius,
+                        Radius * 2, Radius * 2);
+                }
+            }
+
+            public bool CollidesWith(Ball other)
+            {
+                float dx = Position.X - other.Position.X;
+                float dy = Position.Y - other.Position.Y;
+                return (float)Math.Sqrt(dx * dx + dy * dy) &lt; Radius + other.Radius;
+            }
+        }
+
+        private Ball[] balls;
+        private Random rnd = new Random();
+        private readonly Timer timer = new Timer();
+
+        public Task26_BouncingBallsPhysics()
+        {
+            Text = "Задание 26 — Шары с физикой (Bouncing Balls Physics)";
+            Size = new Size(900, 600);
+            BackColor = Color.White;
+            DoubleBuffered = true;
+            Paint += Form_Paint;
+
+            Color[] colors = { Color.Red, Color.Blue, Color.Green, Color.Yellow,
+                               Color.Purple, Color.Orange, Color.Cyan, Color.Magenta };
+            balls = new Ball[8];
+            for (int i = 0; i &lt; balls.Length; i++)
+                balls[i] = new Ball
+                {
+                    Position = new PointF(rnd.Next(50, 850), rnd.Next(50, 200)),
+                    Velocity = new PointF((float)(rnd.NextDouble() - 0.5) * 8,
+                                          (float)(rnd.NextDouble() - 0.5) * 8),
+                    Radius = rnd.Next(15, 35),
+                    Color = colors[i], Mass = 1.0f
+                };
+
+            timer.Interval = 16;
+            timer.Tick += Timer_Tick;
+            timer.Start();
+            FormClosed += (s, e) =&gt; timer.Stop();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            foreach (var b in balls)
+                b.Update(ClientSize.Width, ClientSize.Height);
+
+            for (int i = 0; i &lt; balls.Length; i++)
+                for (int j = i + 1; j &lt; balls.Length; j++)
+                    if (balls[i].CollidesWith(balls[j]))
+                        HandleCollision(balls[i], balls[j]);
+
+            Invalidate();
+        }
+
+        private void HandleCollision(Ball a, Ball b)
+        {
+            float dx = b.Position.X - a.Position.X;
+            float dy = b.Position.Y - a.Position.Y;
+            float dist = (float)Math.Sqrt(dx * dx + dy * dy);
+            if (dist == 0) dist = 0.01f;
+
+            float nx = dx / dist, ny = dy / dist;
+            float dvn = (b.Velocity.X - a.Velocity.X) * nx
+                      + (b.Velocity.Y - a.Velocity.Y) * ny;
+
+            if (dvn &gt;= 0) return;
+
+            float impulse = dvn / (a.Mass + b.Mass);
+
+            var av = a.Velocity; av.X += impulse * a.Mass * nx; av.Y += impulse * a.Mass * ny; a.Velocity = av;
+            var bv = b.Velocity; bv.X -= impulse * b.Mass * nx; bv.Y -= impulse * b.Mass * ny; b.Velocity = bv;
+
+            float overlap = (a.Radius + b.Radius - dist) / 2;
+            var ap = a.Position; ap.X -= overlap * nx; ap.Y -= overlap * ny; a.Position = ap;
+            var bp = b.Position; bp.X += overlap * nx; bp.Y += overlap * ny; b.Position = bp;
+        }
+
+        private void Form_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            foreach (var b in balls) b.Draw(e.Graphics);
+            e.Graphics.DrawString($"Шаров: {balls.Length} | Физика: гравитация + столкновения",
+                new Font("Segoe UI", 10, FontStyle.Bold), Brushes.Black, 10, 10);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="tab-content" data-tab="practice">
+<h2>Практика</h2>
+<ul>
+<li>Реализуйте тела как шары с массой и скоростью.</li>
+<li>Обрабатывайте столкновения друг с другом и стенками.</li>
+<li>Добавьте гравитацию и трение.</li>
+<li>Следите за отображением и позицией объектов.</li>
+</ul>
+<div class="practice-section">
+<h3>Задание по аналогии: Шары с физикой</h3>
+<p>По аналогии с <code>Task26_BouncingBallsPhysics</code> реализуйте физическую симуляцию шаров с упругими столкновениями.</p>
+<ol class="practice-steps">
+<li>Создайте внутренний класс <code>Ball</code> с полями <code>Position</code>, <code>Velocity</code>, <code>Radius</code>, <code>Color</code>, <code>Mass</code> и константами <code>Gravity = 0.3f</code>, <code>Friction = 0.98f</code>, <code>Elasticity = 0.85f</code>.</li>
+<li>В методе <code>Ball.Update(width, height)</code>: добавляйте гравитацию к <code>vel.Y</code>, умножайте скорости на Friction, обновляйте позицию. При выходе за стену инвертируйте скорость * Elasticity и фиксируйте позицию.</li>
+<li>В методе <code>CollidesWith(Ball other)</code> вычислите расстояние между центрами через <code>sqrt(dx²+dy²)</code> и сравните с суммой радиусов.</li>
+<li>В методе <code>HandleCollision(Ball a, Ball b)</code> вычислите нормаль удара <code>nx = dx/dist</code>, проекцию относительной скорости <code>dvn</code>, импульс и скорректируйте скорости обоих шаров. Разделите шары, убрав перекрытие.</li>
+<li>Дополнительно: добавьте обработчик <code>MouseClick</code>, который при клике создаёт новый шар в точке курсора с случайными цветом и радиусом.</li>
+</ol>
+<div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task26" class="lesson-image task-screenshot" src="../images/tasks/task26_physics.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task26)</p></div><div class="practice-tip">
+<strong>💡 Совет:</strong> Проверка <code>if (dvn &gt;= 0) return;</code> в HandleCollision критична — она предотвращает двойное применение импульса, когда шары уже разлетаются в стороны.
+                        </div>
+</div>
+</div>
+<div class="tab-content" data-tab="tests">
+<h2>Проверка</h2>
+<p>Почему важно разделять скорость на нормальную и касательную составляющие? Что происходит, если не корректировать наложение шаров?</p>
+</div>
+</div>
+</div>
+<div class="navigation">
+<a class="nav-btn secondary" href="lesson8-5.html">← Предыдущий урок</a>
+<a class="nav-btn" href="lesson8-7.html">Следующий урок →</a>
+</div>
+</main>
+<footer>
+<div class="container">
+<p>© 2026 Курс "Графическое программирование на C#"</p>
+</div>
+</footer>
+</body>
+</html>

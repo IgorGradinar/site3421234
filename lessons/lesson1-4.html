@@ -1,0 +1,414 @@
+﻿<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Урок 1.4: Жизненный цикл рисования</title>
+<link href="../styles.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="../lesson-quiz.js"></script>
+</head>
+<body>
+<header>
+<div class="container">
+<a class="course-title-link" href="../index.html">
+<h1>🎨 Графическое программирование на C#</h1>
+</a>
+</div>
+</header>
+<main class="lesson-container">
+<a class="back-link" href="../modules/module1.html">← Вернуться к модулю 1</a>
+<div class="lesson-header">
+<h1>Урок 1.4: Жизненный цикл рисования</h1>
+<div class="lesson-meta">
+<span>Модуль 1</span>
+<span>⏱️ ~1.5 часа</span>
+</div>
+</div>
+<div class="lesson-content">
+<div class="tabs-container">
+<div class="tabs-nav">
+<button class="tab-button active" data-tab="theory">📚 Теория</button>
+<button class="tab-button" data-tab="practice">💻 Практика</button>
+<button class="tab-button" data-tab="tests">✅ Тесты</button>
+</div>
+<div class="tab-content active" data-tab="theory">
+<div class="learning-objectives">
+<h3>📌 Ключевые моменты этого урока:</h3>
+<ul style="margin: 10px 0;">
+<li>Вспомните из урока 1.2: события — это реакция программы на действия пользователя</li>
+<li>Paint событие вызывается когда Windows нужно перерисовать форму</li>
+<li>Graphics объект из PaintEventArgs — это инструмент для рисования</li>
+<li>Invalidate() обозначает область как требующая перерисовки, Refresh() делает это сразу</li>
+<li>Контролируя Paint событие, вы можете рисовать собственную графику в окне</li>
+</ul>
+</div>
+<h2>События Paint — как Windows запрашивает перерисовку</h2>
+<p>Paint событие — это главное событие для графического программирования. Каждый раз, когда Windows нужно показать (или перепоказать) содержимое вашей формы, она вызывает обработчик события Paint. Это основное место, где вы будете рисовать всю графику.</p>
+<h3>Почему Paint событие, а не постоянное рисование?</h3>
+<p>Некоторые новички просят: "Почему я не могу просто рисовать всё время?" Ответ в том, что это неэффективно. Windows сама решает когда нужно перерисовать:</p>
+<ul>
+<li><strong>Когда окна перекрываются</strong> — часть вашего окна скрывается, затем открывается</li>
+<li><strong>Когда меняется размер</strong> — окно становится больше или меньше</li>
+<li><strong>Когда нужного запрос</strong> — вы вызвали Invalidate()</li>
+<li><strong>При загрузке</strong> — окно впервые показывается</li>
+</ul>
+<h3>Жизненный цикл Paint события:</h3>
+<div class="code-block">
+<pre><code class="language-text">1. Пользователь выполняет действие или Windows обнаруживает нужность перерисовки
+                    ↓
+2. Windows добавляет сообщение WM_PAINT в очередь сообщений
+                    ↓
+3. CLR обрабатывает это сообщение
+                    ↓
+4. CLR вызывает ваш обработчик события Paint (PaintEventArgs с Graphics)
+                    ↓
+5. Ваш код использует Graphics для рисования
+                    ↓
+6. После возврата из обработчика, Windows показывает обновленное окно</code></pre>
+</div>
+<h3>Обработчик события Paint через Events:</h3>
+<div class="code-block">
+<pre><code class="language-csharp">public Form1()
+{
+    InitializeComponent();
+    
+    // Подписываемся на событие Paint
+    this.Paint += new PaintEventHandler(Form1_Paint);
+    // или по-современному:
+    // this.Paint += Form1_Paint;
+}
+
+// Обработчик события
+private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    // sender = сама форма (Form1)
+    // e = параметры события, включая Graphics
+    
+    // Получаем объект для рисования
+    Graphics g = e.Graphics;
+    
+    // Используем Graphics для рисования
+    g.DrawString("Привет, мир!", 
+        new Font("Arial", 16), 
+        Brushes.Black, 
+        10,  // X координата
+        10); // Y координата
+}</code></pre>
+</div>
+<h3>Пример: рисование нескольких объектов</h3>
+<div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+    
+    // Очистить фон (опционально, если он не белый)
+    g.Clear(this.BackColor);
+    
+    // Рисуем текст
+    g.DrawString("Привет, графика!", 
+        new Font("Arial", 20, FontStyle.Bold),
+        Brushes.Blue, 20, 20);
+    
+    // Рисуем прямоугольник
+    g.DrawRectangle(Pens.Red, 50, 60, 200, 150);
+    
+    // Рисуем заполненный эллипс
+    g.FillEllipse(Brushes.Green, 300, 100, 100, 100);
+    
+    // Рисуем несколько линий (сетка)
+    for (int i = 0; i &lt; 10; i++)
+    {
+        g.DrawLine(Pens.Gray, 0, i * 30, this.Width, i * 30);  // Горизонтальные
+        g.DrawLine(Pens.Gray, i * 30, 0, i * 30, this.Height); // Вертикальные
+    }
+}</code></pre>
+</div>
+<h2>Метод OnPaint — альтернативный способ</h2>
+<p>Вместо подписи на событие Paint, вы можете переопределить метод OnPaint. Это более элегантный, но чуть сложнее способ.</p>
+<h3>Переопределение OnPaint:</h3>
+<div class="code-block">
+<pre><code class="language-csharp">// Переопределяем виртуальный метод OnPaint
+protected override void OnPaint(PaintEventArgs e)
+{
+    // ВАЖНО: всегда вызывайте базовый метод сначала
+    // Это позволяет рисовать элементы управления внутри формы правильно
+    base.OnPaint(e);
+    
+    Graphics g = e.Graphics;
+    
+    // Ваше рисование
+    g.FillEllipse(Brushes.Red, 50, 50, 100, 100);
+}</code></pre>
+</div>
+<h3>События Paint vs OnPaint — когда что использовать:</h3>
+<div class="code-block">
+<pre><code class="language-text">┌─────────────────────┬──────────────────┬──────────────────┐
+│ Параметр            │ Событие Paint     │ OnPaint метод    │
+├─────────────────────┼──────────────────┼──────────────────┤
+│ Простота            │ ✅ Простое       │ 🟡 Чуть сложнее  │
+│ Множественные       │ ✅ Может быть     │ ❌ Только 1      │
+│ слушатели           │                  │                  │
+│ Контроль базы       │ ❌ Нет           │ ✅ Полный        │
+│ Использование       │ Быстро добавить  │ Наследование     │
+│                     │ код рисования    │ пользовательского │
+│                     │ к существующей  │ элемента         │
+│                     │ форме            │                  │
+└─────────────────────┴──────────────────┴──────────────────┘</code></pre>
+</div>
+<h2>Invalidate vs Refresh — когда запрашивать перерисовку</h2>
+<p>После того как вы изменяете данные, которые влияют на рисование, нужно попросить Windows перерисовать форму. Есть два способа, и они очень отличаются!</p>
+<h3>Invalidate() — асинхронная перерисовка (рекомендуется):</h3>
+<p>Invalidate() помечает область как "грязную" (требующей перерисовки), но не рисует сразу. Windows решит сама, когда это сделать, часто объединияя несколько Invalidate() вызовов в один Paint.</p>
+<div class="code-block">
+<pre><code class="language-csharp">// Пример: перемещение объекта по клику кнопки
+private int circleX = 100;  // X позиция круга
+
+private void button1_Click(object sender, EventArgs e)
+{
+    // Меняем позицию данных
+    circleX += 20;
+    
+    // Обозначаем область как требующую перерисовки
+    this.Invalidate(); // Асинхронно - быстро возвращается
+    
+    // Код продолжает выполнение сразу, рисование произойдет потом
+    MessageBox.Show("Круг сдвинулся!");
+}
+
+private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    // Это вызовется позже Windows
+    Graphics g = e.Graphics;
+    g.FillEllipse(Brushes.Blue, circleX, 100, 50, 50);
+}</code></pre>
+</div>
+<h3>Invalidate с частичным обновлением (оптимизация):</h3>
+<div class="code-block">
+<pre><code class="language-csharp">// Если менять только часть окна, можно улучшить производительность
+private void button1_Click(object sender, EventArgs e)
+{
+    // Обновляем только прямоугольник где был круг
+    Rectangle oldArea = new Rectangle(circleX, 100, 50, 50);
+    
+    circleX += 20;
+    
+    // Вместо обновления всего окна, обновляем только изменившиеся области
+    this.Invalidate(oldArea);              // Старая позиция
+    this.Invalidate(circleX, 100, 50, 50); // Новая позиция
+}</code></pre>
+</div>
+<h3>Refresh() — синхронная перерисовка (когда нужна немедленно):</h3>
+<p>Refresh() вызывает Paint немедленно и ждет его завершения. Используйте редко, когда нужна моментальная перерисовка.</p>
+<div class="code-block">
+<pre><code class="language-csharp">// Пример: прогресс-бар который должен обновиться ДО сообщения
+private void ProcessData()
+{
+    for (int i = 0; i &lt; 100; i++)
+    {
+        progress = i;
+        
+        // Сразу перерисуем окно (СИНХРОННО)
+        this.Refresh(); // Ждет пока Paint завершится
+        
+        // Процесс заняает 1 секунду
+        Thread.Sleep(100);
+    }
+    
+    MessageBox.Show("Процесс завершен!");
+}</code></pre>
+</div>
+<h3>Когда происходит Paint автоматически (без Invalidate/Refresh):</h3>
+<ul>
+<li><strong>При первом отображении формы</strong> — форма впервые показывается пользователю</li>
+<li><strong>При изменении размера окна</strong> — пользователь тащит край формы</li>
+<li><strong>При перекрытии другим окном</strong> — другое окно перекрыло часть вашей формы, потом убрано</li>
+<li><strong>При минимизации и восстановлении</strong> — свернул и открыл</li>
+<li><strong>При изменении видимости</strong> — Form.Show() или Form.Hide()</li>
+<li><strong>При резизе, перемещении формы</strong></li>
+</ul>
+<h3>Архитектура Paint события и очередь сообщений:</h3>
+<div class="code-block">
+<pre><code class="language-text">Приложение                     Windows
+    │                             │
+    ├─→ Invalidate() (быстро!)    │
+    │                             │
+    ├─→ Продолжить код            │
+    │                             │
+    │                  ←─ Добавить WM_PAINT в очередь
+    │                  ←─ Когда очередь свободна...
+    │                  ←─ Вызвать Paint event
+    │
+    └─→ Обработчик Paint (рисование)
+        │
+        └─→ Возврат в главный цикл</code></pre>
+</div>
+<h3>Частые ошибки и как их избежать:</h3>
+<div class="code-block">
+<pre><code class="language-csharp">// ❌ НЕПРАВИЛЬНО: Invalidate() внутри Paint — бесконечный цикл!
+private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+    g.DrawString("Текст", new Font("Arial", 12), Brushes.Black, 10, 10);
+    
+    this.Invalidate(); // ❌ НИКОГДА! Это вызовет Paint сновово!
+}
+
+// ✅ ПРАВИЛЬНО: меняйте данные в других местах, затем Invalidate()
+private int counter = 0;
+
+public Form1()
+{
+    InitializeComponent();
+    this.Paint += Form1_Paint;
+    
+    // Таймер для обновления
+    Timer timer = new Timer();
+    timer.Interval = 100;
+    timer.Tick += (s, e) =&gt; {
+        counter++;
+        this.Invalidate(); // ✅ Правильно - вне Paint!
+    };
+    timer.Start();
+}
+
+private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+    g.DrawString("Counter: " + counter, new Font("Arial", 20), Brushes.Black, 10, 10);
+}</code></pre>
+</div>
+<h3>Best Practices:</h3>
+<ul>
+<li><strong>Использует Invalidate() чаще чем Refresh()</strong> — более эффективно</li>
+<li><strong>Никогда не вызывайте Invalidate() из Paint</strong> — приведет к поколебаниям</li>
+<li><strong>Храните данные отдельно от рисования</strong> — цифры храните в переменных, рисуйте их в Paint</li>
+<li><strong>Не создавайте новые Font, Brush в Paint каждый раз</strong> — используйте кэширование</li>
+<li><strong>Очищайте Graphics quando необходимо</strong> — используйте g.Clear() если нужно</li>
+</ul>
+<h2>📝 Пример задания</h2>
+<p>Готовый пример — форма с обработчиком Paint, которая рисует линию, эллипс, прямоугольник и градиентный прямоугольник:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class Task01_FirstGraphics : Form
+    {
+        public Task01_FirstGraphics()
+        {
+            Text = "Задание 1 — Первое графическое приложение";
+            Size = new Size(400, 300);
+            StartPosition = FormStartPosition.CenterParent;
+            BackColor = Color.White;
+            DoubleBuffered = true;
+            Paint += Form1_Paint;
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            using (Pen pen = new Pen(Color.Black, 2))
+            using (Brush brush = new SolidBrush(Color.LightBlue))
+            {
+                g.DrawLine(pen, 10, 10, 200, 10);
+                g.FillEllipse(brush, 10, 20, 100, 60);
+                g.DrawRectangle(pen, 10, 90, 100, 50);
+            }
+
+            using (var lgb = new LinearGradientBrush(
+                new Rectangle(10, 150, 200, 40), Color.Red, Color.Yellow, 0f))
+            {
+                g.FillRectangle(lgb, 10, 150, 200, 40);
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="tab-content" data-tab="practice">
+<h2>Практическое задание</h2>
+<div class="practice-section">
+<h3>Задание: Работа с событием Paint</h3>
+<ol class="practice-steps">
+<li>Создайте форму и добавьте обработчик события Paint</li>
+<li>Нарисуйте простой круг, который будет перерисовываться</li>
+<li>Добавьте кнопку, которая будет перемещать круг вправо используя Invalidate()</li>
+<li>Попробуйте использовать Refresh() вместо Invalidate() и сравните</li>
+</ol>
+</div>
+<div class="practice-section">
+<h3>Задание по аналогии с примером: Своя графическая сцена</h3>
+<p>По аналогии с <code>Task01_FirstGraphics</code> создайте форму, которая в обработчике Paint рисует собственную сцену.</p>
+<ol class="practice-steps">
+<li>Создайте новый класс формы, включите <code>DoubleBuffered = true</code> и подпишитесь на <code>Paint</code>.</li>
+<li>В обработчике включите сглаживание: <code>g.SmoothingMode = SmoothingMode.AntiAlias;</code></li>
+<li>Нарисуйте не менее трёх разных фигур: линию, эллипс и прямоугольник, используя <code>Pen</code> и <code>SolidBrush</code>.</li>
+<li>Добавьте градиентную заливку с помощью <code>LinearGradientBrush</code> — выберите свои цвета и угол.</li>
+<li>Запустите программу и убедитесь, что всё рисуется корректно при изменении размера окна.</li>
+</ol>
+<div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task01" class="lesson-image task-screenshot" src="../images/tasks/task01_first_graphics.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task01)</p></div><div class="practice-tip">
+<strong>💡 Совет:</strong> Оборачивайте <code>Pen</code> и <code>Brush</code> в <code>using</code>, чтобы GDI-ресурсы освобождались сразу после использования.
+                </div>
+</div>
+</div>
+<div class="tab-content" data-tab="tests">
+<div class="test-section">
+<h2>Проверка знаний</h2>
+<p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+<div class="question" data-correct="2">
+<div class="question-text">1. Когда вызывается событие Paint?</div>
+<ul class="answer-options">
+<li class="answer-option">При каждом клике мыши</li>
+<li class="answer-option">При загрузке формы</li>
+<li class="answer-option">Когда Windows нужно перерисовать форму</li>
+<li class="answer-option">При изменении размера кнопки</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="1">
+<div class="question-text">2. В чем разница между Invalidate() и Refresh()?</div>
+<ul class="answer-options">
+<li class="answer-option">Нет разницы</li>
+<li class="answer-option">Invalidate() запрашивает перерисовку, Refresh() делает это немедленно</li>
+<li class="answer-option">Refresh() работает быстрее</li>
+<li class="answer-option">Invalidate() работает только для кнопок</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="0">
+<div class="question-text">3. Можно ли вызывать Invalidate() внутри обработчика Paint?</div>
+<ul class="answer-options">
+<li class="answer-option">Нет, это приведет к бесконечному циклу</li>
+<li class="answer-option">Да, это нормальная практика</li>
+<li class="answer-option">Только если использовать условие</li>
+<li class="answer-option">Только для анимации</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+</div>
+<div class="navigation">
+<a class="nav-btn secondary" href="lesson1-3.html">← Предыдущий урок</a>
+<a class="nav-btn" href="lesson1-5.html">Следующий урок →</a>
+</div>
+</div></main>
+<footer>
+<div class="container">
+<p>© 2026 Курс "Графическое программирование на C#"</p>
+</div>
+</footer>
+</body>
+</html>

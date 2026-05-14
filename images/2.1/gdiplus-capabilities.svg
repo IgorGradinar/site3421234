@@ -1,0 +1,40 @@
+<svg width="500" height="450" viewBox="0 0 500 450" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="500" height="450" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="250" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#333">Возможности GDI+</text>
+  
+  <!-- Main Box -->
+  <rect x="25" y="40" width="450" height="380" rx="8" fill="#ffffff" stroke="#0078d4" stroke-width="2"/>
+  
+  <!-- Section 1: Простые фигуры -->
+  <rect x="40" y="60" width="420" height="50" rx="4" fill="#e7f3ff" stroke="#0078d4" stroke-width="1"/>
+  <text x="50" y="80" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#0078d4">📐 Простые фигуры</text>
+  <text x="50" y="98" font-family="Arial, sans-serif" font-size="10" fill="#666">Линии, прямоугольники, эллипсы, многоугольники, пути</text>
+  
+  <!-- Section 2: Кривые и эффекты -->
+  <rect x="40" y="120" width="420" height="50" rx="4" fill="#fff3cd" stroke="#ffc107" stroke-width="1"/>
+  <text x="50" y="140" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#856404">🎨 Кривые и эффекты</text>
+  <text x="50" y="158" font-family="Arial, sans-serif" font-size="10" fill="#666">Кривые Безье, дуги, градиенты, текстуры</text>
+  
+  <!-- Section 3: Текст и шрифты -->
+  <rect x="40" y="180" width="420" height="50" rx="4" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+  <text x="50" y="200" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#155724">📝 Текст и шрифты</text>
+  <text x="50" y="218" font-family="Arial, sans-serif" font-size="10" fill="#666">Любые шрифты, размеры, стили, антиалиасинг</text>
+  
+  <!-- Section 4: Изображения -->
+  <rect x="40" y="240" width="420" height="50" rx="4" fill="#f8d7da" stroke="#dc3545" stroke-width="1"/>
+  <text x="50" y="260" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#721c24">🖼️ Изображения</text>
+  <text x="50" y="278" font-family="Arial, sans-serif" font-size="10" fill="#666">Загрузка (BMP, PNG, JPG, GIF), трансформации, фильтры</text>
+  
+  <!-- Section 5: Трансформации -->
+  <rect x="40" y="300" width="420" height="50" rx="4" fill="#e2e3e5" stroke="#6c757d" stroke-width="1"/>
+  <text x="50" y="320" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#383d41">🔄 Трансформации</text>
+  <text x="50" y="338" font-family="Arial, sans-serif" font-size="10" fill="#666">Поворот, масштабирование, сдвиг, матрицы трансформаций</text>
+  
+  <!-- Note -->
+  <rect x="40" y="360" width="420" height="40" rx="4" fill="#cce5ff" stroke="#007bff" stroke-width="1"/>
+  <text x="250" y="380" font-family="Arial, sans-serif" font-size="10" fill="#004085" text-anchor="middle">💡 GDI+ поддерживает все основные графические операции</text>
+  <text x="250" y="393" font-family="Arial, sans-serif" font-size="9" fill="#004085" text-anchor="middle">для создания современных приложений</text>
+</svg>

@@ -1,0 +1,36 @@
+<svg width="500" height="300" viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="500" height="300" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="250" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#333">Размеры шрифтов (в пунктах)</text>
+  
+  <!-- Main Box -->
+  <rect x="25" y="40" width="450" height="230" rx="8" fill="#ffffff" stroke="#333" stroke-width="2"/>
+  
+  <!-- Font Size Examples -->
+  <text x="50" y="70" font-family="Arial, sans-serif" font-size="8" fill="#333">8 пунктов — Очень мелкий (подписи)</text>
+  <text x="50" y="95" font-family="Arial, sans-serif" font-size="10" fill="#333">10 пунктов — Мелкий (основной текст)</text>
+  <text x="50" y="125" font-family="Arial, sans-serif" font-size="12" fill="#333">12 пунктов — Стандартный (основной текст в документах)</text>
+  <text x="50" y="160" font-family="Arial, sans-serif" font-size="14" fill="#333">14 пунктов — Больше (заголовки)</text>
+  <text x="50" y="200" font-family="Arial, sans-serif" font-size="16" fill="#333">16 пунктов — Еще больше</text>
+  <text x="50" y="245" font-family="Arial, sans-serif" font-size="20" fill="#333">20+ пунктов — Заголовки, заметные тексты</text>
+  
+  <!-- Note -->
+  <rect x="300" y="50" width="160" height="210" rx="4" fill="#cce5ff" stroke="#007bff" stroke-width="1"/>
+  <text x="380" y="70" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#004085" text-anchor="middle">Информация:</text>
+  
+  <text x="310" y="90" font-family="Arial, sans-serif" font-size="9" fill="#004085">• 1 дюйм = 72 пункта</text>
+  <text x="310" y="105" font-family="Arial, sans-serif" font-size="9" fill="#004085">• Размер зависит от DPI</text>
+  <text x="310" y="120" font-family="Arial, sans-serif" font-size="9" fill="#004085">  монитора</text>
+  
+  <text x="310" y="140" font-family="Arial, sans-serif" font-size="9" fill="#004085">Рекомендации:</text>
+  <text x="310" y="155" font-family="Arial, sans-serif" font-size="9" fill="#004085">• Основной текст: 10-12</text>
+  <text x="310" y="170" font-family="Arial, sans-serif" font-size="9" fill="#004085">• Заголовки: 14-20</text>
+  <text x="310" y="185" font-family="Arial, sans-serif" font-size="9" fill="#004085">• Подписи: 8-10</text>
+  
+  <text x="310" y="205" font-family="Arial, sans-serif" font-size="9" fill="#004085">Код C#:</text>
+  <text x="310" y="220" font-family="Courier New, monospace" font-size="8" fill="#004085">new Font("Arial", 12)</text>
+  <text x="310" y="235" font-family="Courier New, monospace" font-size="8" fill="#004085">new Font("Arial", 16,</text>
+  <text x="310" y="248" font-family="Courier New, monospace" font-size="8" fill="#004085">FontStyle.Bold)</text>
+</svg>

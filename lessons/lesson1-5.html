@@ -1,0 +1,476 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 1.5: Расположение элементов управления</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="../lesson-quiz.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="../index.html" class="course-title-link">
+                <h1>🎨 Графическое программирование на C#</h1>
+            </a>
+        </div>
+    </header>
+
+    <main class="lesson-container">
+        <a href="../modules/module1.html" class="back-link">← Вернуться к модулю 1</a>
+        
+        <div class="lesson-header">
+            <h1>Урок 1.5: Расположение элементов управления</h1>
+            <div class="lesson-meta">
+                <span>Модуль 1</span>
+                <span>⏱️ ~1.5 часа</span>
+            </div>
+        </div>
+
+        <div class="lesson-content">
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" data-tab="theory">📚 Теория</button>
+                <button class="tab-button" data-tab="practice">💻 Практика</button>
+                <button class="tab-button" data-tab="tests">✅ Тесты</button>
+            </div>
+            
+            <div class="tab-content active" data-tab="theory">
+            <div class="learning-objectives">
+                <h3>📌 Ключевые моменты этого урока:</h3>
+                <ul style="margin: 10px 0;">
+                    <li>Вспомните из урока 1.3: свойства формы определяют её внешний вид</li>
+                    <li>Размещение элементов — ключ к красивому и удобному интерфейсу</li>
+                    <li>Anchor привязывает элемент к сторонам формы (расстояние сохраняется)</li>
+                    <li>Dock прилепляет элемент к краю и заполняет доступное пространство</li>
+                    <li>Panel и GroupBox — контейнеры для группировки других элементов</li>
+                </ul>
+            </div>
+
+            <h2>Layout менеджеры — почему они нужны</h2>
+            <p>Когда вы создаете интерфейс, элементы управления нужно размещать на форме. Но что произойдет, если пользователь изменит размер окна? Элементы остаются на месте? Растягиваются вместе с окном? Layout менеджеры решают эту проблему.</p>
+
+            <h3>Проблема без Layout менеджеров:</h3>
+            <div class="code-block">
+<pre><code class="language-text">Начальный размер формы     Пользователь растягивает окно
+┌─────────────────┐        ┌──────────────────────────┐
+│  [Button1]      │        │  [Button1]               │
+│  [Button2]      │        │  [Button2]               │
+│                 │        │                          │
+│  [TextBox1]     │        │  [TextBox1]              │
+└─────────────────┘        └──────────────────────────┘
+
+Элементы остаются на месте, но окно пусто справа →</code></pre>
+            </div>
+
+            <h3>Решение — правильное размещение элементов</h3>
+            <p>Есть несколько подходов в Windows Forms:</p>
+            <ul>
+                <li><strong>Anchor</strong> — привязать расстояния элементов к краям формы</li>
+                <li><strong>Dock</strong> — прилепить элемент к краю и заполнить доступное пространство</li>
+                <li><strong>TableLayoutPanel</strong> — разместить как в таблице (строки и столбцы)</li>
+                <li><strong>FlowLayoutPanel</strong> — разместить как текст (поток слева направо, сверху вниз)</li>
+            </ul>
+
+            <h2>Anchor (якорь) — сохранение расстояний</h2>
+            <p>Anchor привязывает элемент к одной или нескольким сторонам формы. При изменении размера формы элемент сохраняет расстояние до привязанных сторон.</p>
+
+            <h3>Как работает Anchor визуально:</h3>
+            <div class="code-block">
+<pre><code class="language-text">Anchor = Top | Left (по умолчанию)
+┌─────────────────┐   Растягиваем окно →   ┌──────────────────────┐
+│[Button]         │                        │[Button]              │
+│                 │                        │                      │
+│                 │                        │                      │
+└─────────────────┘                        └──────────────────────┘
+Кнопка остается в левом верхнем углу
+
+Anchor = Bottom | Right
+┌─────────────────┐   Растягиваем →        ┌──────────────────────┐
+│                 │                        │                      │
+│                 │                        │              [Button]│
+│         [Button]│                        │              [Button]│
+└─────────────────┘                        └──────────────────────┘
+Кнопка остается в правом нижнем углу
+
+Anchor = All (Top|Bottom|Left|Right)
+┌─────────────────┐   Растягиваем →        ┌──────────────────────┐
+│[Button    ]     │                        │[Button          ]    │
+│                 │                        │                      │
+│                 │                        │                      │
+└─────────────────┘                        └──────────────────────┘
+Кнопка растягивается вместе с окном!</code></pre>
+            </div>
+
+            <h3>Примеры использования Anchor:</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">public Form1()
+{
+    InitializeComponent();
+    
+    // Кнопка OK в правом нижнем углу (классика диалогов)
+    Button okBtn = new Button();
+    okBtn.Text = "OK";
+    okBtn.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+    okBtn.Location = new Point(200, 150);
+    this.Controls.Add(okBtn);
+    
+    // Текстовое поле заполняет всё пространство
+    TextBox textBox = new TextBox();
+    textBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | 
+                     AnchorStyles.Left | AnchorStyles.Right;
+    textBox.Multiline = true;
+    textBox.Location = new Point(10, 10);
+    textBox.Size = new Size(280, 130);
+    this.Controls.Add(textBox);
+    
+    // Кнопка сверху слева (остается на месте)
+    Button newBtn = new Button();
+    newBtn.Text = "Новый";
+    newBtn.Anchor = AnchorStyles.Top | AnchorStyles.Left; // Default
+    newBtn.Location = new Point(10, 10);
+    this.Controls.Add(newBtn);
+}</code></pre>
+            </div>
+
+            <h3>Все возможные значения Anchor:</h3>
+            <div class="code-block">
+<pre><code class="language-text">┌─────────────┬─────────────┐
+│   Top       │             │
+│   Left  │   │   Right     │
+│             │             │
+├─────────────┼─────────────┤ ← None,All пересекают оси
+│   Bottom    │             │
+└─────────────┴─────────────┘
+
+Комбинации:
+• AnchorStyles.Top | AnchorStyles.Left (углы и стороны)
+• AnchorStyles.All (= Top|Bottom|Left|Right) — по всем сторонам
+• AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right (сверху, растягивается слева-справа)</code></pre>
+            </div>
+
+            <h2>Dock (закрепление) — прилепление к краям</h2>
+            <p>Dock более агрессивен чем Anchor. Элемент прилепляется к краю и заполняет всё доступное пространство в этом направлении. Dock часто используется для главных компонентов интерфейса (меню, статус-бар, области рисования).</p>
+
+            <h3>Визуальный пример Dock:</h3>
+            <div class="code-block">
+<pre><code class="language-text">Начально                   После Dock.Top
+┌─────────────────────┐    ┌─────────────────────┐
+│ Control (Dock.Top)  │    │ Control (заполнил всю ширину)│
+│ ...остальное...     │    │────────────────────────────│
+└─────────────────────┘    │ ...остальное... │
+                           └─────────────────────┘
+
+После Dock.Left                После Dock.Fill
+┌────────────────┐            ┌─────────────────┐
+│C │ ...остальное │            │ Control заполнит│
+│o │   ...        │            │ всё всю форму! │
+│n │              │            │                 │
+│t │              │            │                 │
+│r │              │            │                 │
+│o │              │            │                 │
+│l │              │            │                 │
+└────────────────┘            └─────────────────┘</code></pre>
+            </div>
+
+            <h3>Примеры использования Dock:</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">public Form1()
+{
+    InitializeComponent();
+    this.Size = new Size(800, 600);
+    
+    // Панель инструментов сверху
+    ToolStrip toolStrip = new ToolStrip();
+    toolStrip.Items.Add("Файл");
+    toolStrip.Items.Add("Правка");
+    toolStrip.Items.Add("Вид");
+    toolStrip.Dock = DockStyle.Top;  // ← Заполняет ВСЮ ширину сверху
+    this.Controls.Add(toolStrip);
+    
+    // Статус-бар снизу
+    StatusStrip statusBar = new StatusStrip();
+    statusBar.Items.Add("Готово");
+    statusBar.Dock = DockStyle.Bottom; // ← Заполняет ВСЮ ширину снизу
+    this.Controls.Add(statusBar);
+    
+    // Панель навигации слева
+    Panel navPanel = new Panel();
+    navPanel.BackColor = Color.LightGray;
+    navPanel.Dock = DockStyle.Left;    // ← Заполняет ВСЮ высоту слева
+    navPanel.Width = 200;              // Установить ширину
+    this.Controls.Add(navPanel);
+    
+    // Область рисования в центре (заполняет оставшееся место)
+    Panel drawingArea = new Panel();
+    drawingArea.BackColor = Color.White;
+    drawingArea.Dock = DockStyle.Fill; // ← Заполняет ВСЮ оставшуюся область
+    drawingArea.Paint += (s, e) => DrawGraphics(e.Graphics);
+    this.Controls.Add(drawingArea);
+}</code></pre>
+            </div>
+
+            <h3>Порядок Dock имеет значение!</h3>
+            <p>Когда несколько элементов имеют Dock, порядок их добавления к Controls influрует на результат:</p>
+            <div class="code-block">
+<pre><code class="language-csharp">// Правильный порядок (важно для кода выше):
+// 1. toolStrip (Top) — займет верхнюю часть
+// 2. statusBar (Bottom) — займет нижнюю часть  
+// 3. navPanel (Left) — займет левую часть оставшегося пространства
+// 4. drawingArea (Fill) — заполнит оставшееся место в центре
+
+// НЕПРАВИЛЬНЫЙ порядок:
+this.Controls.Add(drawingArea);    // ❌ Если добавить Fill первым
+this.Controls.Add(navPanel);       // navPanel не будет видна!
+this.Controls.Add(statusBar);
+this.Controls.Add(toolStrip);
+
+// Элементы обрабатываются в ОБРАТНОМ порядке для позиционирования</code></pre>
+            </div>
+
+            <h2>Panel — универсальный контейнер</h2>
+            <p>Panel — это простой контейнер для группировки элементов управления. Он как пустая коробка, в которую вы можете поместить другие элементы.</p>
+
+            <h3>Характеристики Panel:</h3>
+            <ul>
+                <li><strong>Нет видимой границы</strong> — по умолчанию только фон видно</li>
+                <li><strong>Можно добавлять элементы</strong> — новые элементы размещаются внутри Panel</li>
+                <li><strong>Часто используется с Dock</strong> — для создания областей интерфейса</li>
+                <li><strong>Можно скрывать/показывать целые группы</strong> — скрыть Panel = скрыть все элементы внутри</li>
+            </ul>
+
+            <h3>Пример создания рабочего интерфейса с Panel:</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">public Form1()
+{
+    InitializeComponent();
+    
+    // Основная панель для работы
+    Panel mainPanel = new Panel();
+    mainPanel.Dock = DockStyle.Fill;
+    mainPanel.BackColor = Color.White;
+    
+    // Панель кнопок внутри (горизонтальные кнопки сверху)
+    Panel buttonPanel = new Panel();
+    buttonPanel.Dock = DockStyle.Top;
+    buttonPanel.Height = 40;
+    buttonPanel.BackColor = Color.LightGray;
+    
+    Button btnSave = new Button();
+    btnSave.Text = "Сохранить";
+    btnSave.Location = new Point(5, 5);
+    buttonPanel.Controls.Add(btnSave);
+    
+    Button btnNew = new Button();
+    btnNew.Text = "Новый";
+    btnNew.Location = new Point(85, 5);
+    buttonPanel.Controls.Add(btnNew);
+    
+    mainPanel.Controls.Add(buttonPanel);
+    this.Controls.Add(mainPanel);
+}</code></pre>
+            </div>
+
+            <h2>GroupBox — видимая группировка элементов</h2>
+            <p>GroupBox похож на Panel, но имеет видимую рамку (border) и заголовок (Text). Идеален для логической группировки связанных элементов (например, "Параметры цвета", "Размер", "Трансформация").</p>
+
+            <h3>Характеристики GroupBox:</h3>
+            <ul>
+                <li><strong>Видимая рамка</strong> — пользователю понятно что элементы в группе</li>
+                <li><strong>Заголовок (Text)</strong> — описывает что за группа</li>
+                <li><strong>Визуальное разделение</strong> — для комплексных форм с несколькими параметрами</li>
+            </ul>
+
+            <h3>Создание GroupBox с элементами:</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">// Группа для параметров цвета
+GroupBox colorGroup = new GroupBox();
+colorGroup.Text = "Параметры цвета";      // Заголовок
+colorGroup.Location = new Point(10, 10);
+colorGroup.Size = new Size(250, 150);
+
+// Внутри элементы для выбора цвета
+Label rLabel = new Label();
+rLabel.Text = "Красный:";
+rLabel.Location = new Point(10, 25);
+colorGroup.Controls.Add(rLabel);
+
+TrackBar rTrack = new TrackBar();
+rTrack.Location = new Point(70, 25);
+rTrack.Size = new Size(170, 25);
+rTrack.Minimum = 0;
+rTrack.Maximum = 255;
+colorGroup.Controls.Add(rTrack);
+
+// Аналогично для Green и Blue...
+
+this.Controls.Add(colorGroup);
+
+// Вторая группа для размера
+GroupBox sizeGroup = new GroupBox();
+sizeGroup.Text = "Размер";
+sizeGroup.Location = new Point(10, 170);
+sizeGroup.Size = new Size(250, 100);
+// Размещаем элементы для ширины/высоты...
+this.Controls.Add(sizeGroup);</code></pre>
+            </div>
+
+            <h3>Практический пример: полный интерфейс для графического редактора</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">public Form1()
+{
+    InitializeComponent();
+    this.Text = "Графический редактор";
+    this.Size = new Size(1000, 700);
+    
+    // ГЛАВНАЯ СТРУКТУРА ИНТЕРФЕЙСА
+    // ┌─────────────────────────────────┐
+    // │[ Меню и инструменты (Dock.Top)]│
+    // ├──────────┬──────────────────────┤
+    // │Settings  │                      │
+    // │(Dock.    │  Область рисования   │
+    // │ Left)    │  (Dock.Fill)         │
+    // ├──────────┤                      │
+    // │          │                      │
+    // ├─────────────────────────────────┤
+    // │[ Статус-бар (Dock.Bottom)]     │
+    // └─────────────────────────────────┘
+    
+    // 1. Инструменты сверху
+    ToolStrip tools = new ToolStrip();
+    tools.Items.Add("Линия");
+    tools.Items.Add("Прямоугольник");
+    tools.Items.Add("Эллипс");
+    tools.Dock = DockStyle.Top;
+    this.Controls.Add(tools);
+    
+    // 2. Статус-бар снизу
+    StatusStrip status = new StatusStrip();
+    status.Items.Add("Готово");
+    status.Dock = DockStyle.Bottom;
+    this.Controls.Add(status);
+    
+    // 3. Панель настроек слева
+    Panel settingsPanel = new Panel();
+    settingsPanel.Width = 200;
+    settingsPanel.Dock = DockStyle.Left;
+    settingsPanel.BackColor = SystemColors.ControlLight;
+    
+    // Группы настроек внутри падели
+    GroupBox colorGroup = new GroupBox();
+    colorGroup.Text = "Цвет";
+    colorGroup.Dock = DockStyle.Top;
+    colorGroup.Height = 100;
+    // ... элементы для цвета ...
+    settingsPanel.Controls.Add(colorGroup);
+    
+    this.Controls.Add(settingsPanel);
+    
+    // 4. Область рисования в центре (заполняет оставшееся)
+    Panel drawingArea = new Panel();
+    drawingArea.Dock = DockStyle.Fill;
+    drawingArea.BackColor = Color.White;
+    drawingArea.Paint += DrawingArea_Paint;
+    this.Controls.Add(drawingArea);
+}
+
+private void DrawingArea_Paint(object sender, PaintEventArgs e)
+{
+    // Здесь рисуем
+}</code></pre>
+            </div>
+
+            <h3>Best Practices для Layout:</h3>
+            <ul>
+                <li><strong>Используйте Dock для фиксированных компонентов</strong> — меню, статус-бар, навигация</li>
+                <li><strong>Используйте Anchor для относительного позиционирования</strong> — кнопки, которые должны остаться рядом с краем</li>
+                <li><strong>Комбинируйте Panel для создания областей</strong> — большие блоки интерфейса</li>
+                <li><strong>Используйте GroupBox для визуальной группировки</strong> — когда есть логичные группы параметров</li>
+                <li><strong>Тестируйте при различных размерах окна</strong> — убедитесь что интерфейс масштабируется правильно</li>
+            </ul>
+            
+            </div>
+            </div>
+            
+            </div>
+            
+            <div class="tab-content" data-tab="practice">
+                <h2>Практическое задание</h2>
+            <div class="practice-section">
+                <h3>Задание: Создание интерфейса с использованием Layout</h3>
+                <ol class="practice-steps">
+                    <li>Создайте форму с панелью инструментов сверху (Dock = Top)</li>
+                    <li>Добавьте GroupBox слева с настройками (Dock = Left)</li>
+                    <li>Создайте область рисования в центре (Dock = Fill)</li>
+                    <li>Добавьте статус-бар снизу (Dock = Bottom)</li>
+                    <li>Проверьте, как интерфейс ведет себя при изменении размера окна</li>
+                </ol>
+            </div>
+            
+            </div>
+            
+            
+            <div class="tab-content" data-tab="tests">
+                <div class="test-section">
+                <h2>Проверка знаний</h2>
+                <p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+                
+                <div class="question" data-correct="1">
+                    <div class="question-text">1. Что делает свойство Dock?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Привязывает элемент к сторонам формы</li>
+                        <li class="answer-option">Закрепляет элемент на одной из сторон формы</li>
+                        <li class="answer-option">Скрывает элемент</li>
+                        <li class="answer-option">Изменяет размер элемента</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">2. Что делает свойство Anchor?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Привязывает элемент к сторонам формы, сохраняя расстояние</li>
+                        <li class="answer-option">Закрепляет элемент на стороне</li>
+                        <li class="answer-option">Изменяет позицию элемента</li>
+                        <li class="answer-option">Скрывает элемент</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="2">
+                    <div class="question-text">3. В чем разница между Panel и GroupBox?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Нет разницы</li>
+                        <li class="answer-option">Panel имеет заголовок</li>
+                        <li class="answer-option">GroupBox имеет видимую рамку и заголовок</li>
+                        <li class="answer-option">Panel нельзя использовать для группировки</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+                </div>
+        </div>
+
+        <div class="navigation">
+            <a href="lesson1-4.html" class="nav-btn secondary">← Предыдущий урок</a>
+            <a href="../modules/module2.html" class="nav-btn">Следующий модуль →</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Курс "Графическое программирование на C#"</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+

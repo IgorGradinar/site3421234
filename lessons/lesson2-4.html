@@ -1,0 +1,694 @@
+﻿<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Урок 2.4: Кисти (Brush) и заливка</title>
+<link href="../styles.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="../lesson-quiz.js"></script>
+</head>
+<body>
+<header>
+<div class="container">
+<h1>🎨 Графическое программирование на C#</h1>
+</div>
+</header>
+<main class="lesson-container">
+<a class="back-link" href="../modules/module2.html">← Вернуться к модулю 2</a>
+<div class="lesson-header">
+<h1>Урок 2.4: Кисти (Brush) и заливка</h1>
+<div class="lesson-meta">
+<span>Модуль 2</span>
+<span>⏱️ ~2 часа</span>
+</div>
+</div>
+<div class="lesson-content">
+<div class="tabs-container">
+<div class="tabs-nav">
+<button class="tab-button active" data-tab="theory">📚 Теория</button>
+<button class="tab-button" data-tab="practice">💻 Практика</button>
+<button class="tab-button" data-tab="tests">✅ Тесты</button>
+</div>
+<div class="tab-content active" data-tab="theory">
+<div class="learning-objectives">
+<h3>📌 Ключевые моменты этого урока:</h3>
+<ul style="margin: 10px 0;">
+<li>Brush заполняет ВНУТРЕННОСТЬ (interior) фигур, Pen рисует контур</li>
+<li>SolidBrush — простая заливка одним цветом</li>
+<li>HatchBrush создает штриховку (линии, точки, кресты и т.д.)</li>
+<li>LinearGradientBrush создает плавный переход между двумя цветами</li>
+<li>RadialGradientBrush — градиент от центра к краям</li>
+<li>TextureBrush заполняет изображением как текстурой</li>
+<li>Есть готовые Brushes (Brushes.Red, Brushes.Blue и т.д.)</li>
+</ul>
+</div>
+<h2>Работа с Brush в Visual Studio</h2>
+<p>Brush — это объект для заливки фигур. В Visual Studio вы можете использовать IntelliSense для изучения всех типов кистей.</p>
+<h3>Создание Brush с помощью IntelliSense:</h3>
+<div class="code-block">
+<pre><code class="language-text">В обработчике Paint:
+private void Form1_Paint(object sender, PaintEventArgs e)
+{ 
+    Graphics g = e.Graphics;
+
+    // Напишите "new SolidBrush(" и увидите подсказку
+    SolidBrush brush = new SolidBrush(Color.Red);
+
+    // После "brush." увидите все свойства
+    brush.  ← Нажмите точку:
+    ┌──────────────────────────────────┐
+    │ SolidBrush                      │
+    │ ▼                               │
+    │ • Clone()                       │
+    │ • Color                         │
+    │ • Dispose()                     │
+    │ ...                             │
+    └──────────────────────────────────┘
+}</code></pre>
+</div>
+<h3>Использование предопределенных Brushes:</h3>
+<div class="code-block">
+<pre><code class="language-text">В Visual Studio IntelliSense покажет все готовые Brushes:
+
+Напишите "Brushes." и увидите список:
+Brushes.  ← Нажмите точку:
+┌──────────────────────────────────┐
+│ Brushes                         │
+│ ▼                               │
+│ • AliceBlue                     │
+│ • AntiqueWhite                  │
+│ • Aqua                          │
+│ • ...                           │
+│ • Black                         │
+│ • Blue                          │
+│ • ...                           │
+│ • White                         │
+│ • Yellow                        │
+└──────────────────────────────────┘
+
+Эти Brushes уже созданы, имеют сплошной цвет и не требуют Dispose()</code></pre>
+</div>
+<h2>Brush — инструмент для заливки</h2>
+<p>Brush определяет, как будет ЗАПОЛНЕНЫ (fill) внутренность фигур. Это противоположность Pen, которая рисует контуры.</p>
+<h3>Линия сравнения:</h3>
+<div class="image-container">
+<img alt="Pen vs Brush — Сравнение" class="lesson-image" src="../images/2.4/pen-brush-comparison.svg"/>
+<p class="image-caption">Разница между Pen (контур) и Brush (заливка)</p>
+</div>
+<h2>SolidBrush — простая заливка</h2>
+<p>Самый простой тип brush — заливка одним сплошным цветом.</p>
+<h3>Создание и использование:</h3>
+<div class="code-block"><pre><code class="language-csharp">// Создание brush'а
+SolidBrush redBrush = new SolidBrush(Color.Red);
+g.FillRectangle(redBrush, 10, 10, 100, 50);
+
+// С настройками цвета
+SolidBrush transparentBrush = new SolidBrush(Color.FromArgb(128, 0, 255, 0));
+g.FillEllipse(transparentBrush, 50, 50, 100, 100);
+
+// Готовые brush'и (одноцветные)
+g.FillRectangle(Brushes.Blue, 150, 150, 100, 50);
+g.FillEllipse(Brushes.Green, 200, 200, 80, 80);</code></pre></div>
+<p>Важно: создавайте SolidBrush один раз и переиспользуйте, не создавайте в цикле!</p>
+<h2>HatchBrush — штриховка</h2>
+<p>Создает узор из линий, точек, квадратов и т.д. вместо сплошной заливки. Очень хорошо для печати и диаграмм.</p>
+<h3>Доступные стили штриховки:</h3>
+<div class="code-block"><pre><code class="language-csharp">using System.Drawing.Drawing2D;
+
+// Основные стили
+HatchBrush hatchBrush = new HatchBrush(
+    HatchStyle.Horizontal,  // Горизонтальные линии  ═════
+    Color.Black,            // Цвет предпочтительнее (forecolor)
+    Color.White             // Цвет фона (backcolor)
+);
+
+// Другие стили:
+HatchStyle.Vertical;        // Вертикальные линии   ║║║║
+HatchStyle.Cross;           // Крест               ╬╬╬╬
+HatchStyle.Diagonal;        // Диагональные       ╱╱╱╱
+HatchStyle.BackDiagonal;    // Обратные диагонали ╲╲╲╲
+HatchStyle.DottedGrid;      // Точечная сетка     ⋮⋮⋮⋮
+HatchStyle.DottedDiamond;   // Точечные диаманты
+HatchStyle.Brick;           // Кирпичи
+HatchStyle.Weave;           // Плетение</code></pre></div>
+<h3>Практический пример:</h3>
+<div class="code-block"><pre><code class="language-csharp">// Рисуем диаграмму с разными штриховками
+var styles = new[] 
+{
+    HatchStyle.Horizontal, 
+    HatchStyle.Vertical, 
+    HatchStyle.Cross, 
+    HatchStyle.Diagonal
+};
+
+for (int i = 0; i &lt; styles.Length; i++)
+{
+    var brush = new HatchBrush(styles[i], Color.Black, Color.LightGray);
+    g.FillRectangle(brush, 10 + i * 120, 10, 100, 100);
+    brush.Dispose();
+}</code></pre></div>
+<h2>LinearGradientBrush — линейный градиент</h2>
+<p>Создает плавный переход между двумя (или более) цветами вдоль прямой линии.</p>
+<h3>Создание градиента:</h3>
+<div class="code-block"><pre><code class="language-csharp">// Создание: от точки А к точке B, от цвета 1 к цвету 2
+LinearGradientBrush brush = new LinearGradientBrush(
+    new Point(0, 0),         // Начальная точка
+    new Point(200, 0),       // Конечная точка (горизонтальный градиент)
+    Color.Red,               // Начальный цвет
+    Color.Blue               // Конечный цвет
+);
+
+g.FillRectangle(brush, 10, 10, 200, 100);</code></pre></div>
+<h3>Разные направления градиента:</h3>
+<div class="code-block"><pre><code class="language-csharp">// Горизонтальный градиент (слева направо)
+var hGradient = new LinearGradientBrush(
+    new Point(0, 0), 
+    new Point(200, 0),
+    Color.Red, 
+    Color.Yellow
+);
+g.FillRectangle(hGradient, 10, 10, 200, 50);
+
+// Вертикальный градиент (сверху вниз)
+var vGradient = new LinearGradientBrush(
+    new Point(0, 0),
+    new Point(0, 100),
+    Color.Blue,
+    Color.Green
+);
+g.FillRectangle(vGradient, 220, 10, 100, 100);
+
+// Диагональный градиент
+var dGradient = new LinearGradientBrush(
+    new Point(0, 0),
+    new Point(200, 200),
+    Color.Purple,
+    Color.Cyan
+);
+g.FillRectangle(dGradient, 10, 120, 200, 200);</code></pre></div>
+<h3>Несколько цветов (ColorBlend):</h3>
+<div class="code-block"><pre><code class="language-csharp">LinearGradientBrush brush = new LinearGradientBrush(
+    new Point(0, 0),
+    new Point(300, 0),
+    Color.Red,
+    Color.Blue
+);
+
+// Добавляем промежуточный цвет (зеленый) в50% пути
+ColorBlend colorBlend = new ColorBlend(3);
+colorBlend.Colors = new[] { Color.Red, Color.Green, Color.Blue };
+colorBlend.Positions = new[] { 0f, 0.5f, 1f };
+
+brush.InterpolationColors = colorBlend;
+g.FillRectangle(brush, 10, 10, 300, 50);</code></pre></div>
+<h2>RadialGradientBrush — радиальный градиент</h2>
+<p>Градиент лучится из центра наружу, создавая эффект подсветки:</p>
+<div class="code-block"><pre><code class="language-csharp">using System.Drawing.Drawing2D;
+
+GraphicsPath path = new GraphicsPath();
+path.AddEllipse(10, 10, 200, 200);
+
+var brush = new PathGradientBrush(path);
+brush.CenterColor = Color.Yellow;      // Центр
+brush.SurroundingColors = new[] { Color.Red };  // Края
+
+g.FillEllipse(brush, 10, 10, 200, 200);</code></pre></div>
+<h2>TextureBrush — заливка текстурой</h2>
+<p>Заполняет область изображением, как паттерном обоев:</p>
+<div class="code-block"><pre><code class="language-csharp">// Загружаем изображение
+Bitmap texture = new Bitmap("wood_texture.jpg");
+
+// Создаем brush из изображения
+TextureBrush brush = new TextureBrush(texture);
+
+// Заполняем фигуры
+g.FillRectangle(brush, 0, 0, 500, 500);
+g.FillEllipse(brush, 100, 100, 300, 300);
+
+// Сдвиг текстуры (offset)
+brush.TranslateTransform(50, 50);
+g.FillRectangle(brush, 300, 300, 200, 200);
+
+texture.Dispose();
+brush.Dispose();</code></pre></div>
+<h2>Прозрачность (Alpha channel)</h2>
+<p>Brush'и поддерживают полупрозрачность через компонент Alpha в цвете:</p>
+<div class="code-block"><pre><code class="language-csharp">// Полупрозрачная красная заливка (50%)
+Color semiTransparent = Color.FromArgb(128, 255, 0, 0);
+SolidBrush brush = new SolidBrush(semiTransparent);
+
+g.FillRectangle(brush, 10, 10, 200, 200);
+g.DrawString("Видно через меня", new Font("Arial", 20), Brushes.Black, 50, 100);
+
+// Alpha от 0 (полностью прозрачный) до 255 (полностью непрозрачный)
+for (int i = 0; i &lt; 10; i++)
+{
+    var alphaColor = Color.FromArgb(i * 25, 0, 0, 255);
+    var alphaBrush = new SolidBrush(alphaColor);
+    g.FillRectangle(alphaBrush, 10 + i * 50, 250, 40, 100);
+    alphaBrush.Dispose();
+}</code></pre></div>
+<h2>Методы заливки</h2>
+<h3>FillRectangle — заполняет прямоугольник:</h3>
+<div class="code-block"><pre><code class="language-csharp">g.FillRectangle(Brushes.Red, 10, 10, 100, 50);</code></pre></div>
+<h3>FillEllipse — заполняет эллипс/круг:</h3>
+<div class="code-block"><pre><code class="language-csharp">g.FillEllipse(Brushes.Blue, 50, 50, 100, 100);  // Круг когда ширина=высота</code></pre></div>
+<h3>FillPolygon — заполняет многоугольник:</h3>
+<div class="code-block"><pre><code class="language-csharp">Point[] points = { new Point(50, 10), new Point(100, 50), new Point(50, 100), new Point(0, 50) };
+g.FillPolygon(Brushes.Green, points);</code></pre></div>
+<h3>FillPie — заполняет сектор круга:</h3>
+<div class="code-block"><pre><code class="language-csharp">g.FillPie(Brushes.Yellow, 10, 10, 100, 100, 0, 90);  // Сектор 90 градусов</code></pre></div>
+<h3>FillPath — заполняет сложный путь:</h3>
+<div class="code-block"><pre><code class="language-csharp">GraphicsPath path = new GraphicsPath();
+path.AddEllipse(50, 50, 100, 100);
+path.AddRectangle(new Rectangle(120, 120, 100, 100));
+g.FillPath(Brushes.Red, path);</code></pre></div>
+<h2>Best Practices</h2>
+<ul>
+<li>✅ Переиспользуйте Brush'и вместо создания новых в цикле</li>
+<li>✅ Вызывайте Dispose() на созданных Brush'ах</li>
+<li>✅ Используйте готовые Brushes.Color для простых случаев</li>
+<li>✅ Для заливки с градиентом — правильно выбирайте точки начала/конца</li>
+<li>✅ LineraGradientBrush для скоростиных фонов, RadialGradientBrush для эффектов</li>
+<li>🚫 Не используйте HatchBrush для большого количества фигур — медленно</li>
+</ul>
+<h2>📝 Пример задания — градиенты (Task04)</h2>
+<p>Три прямоугольника с горизонтальным, вертикальным и диагональным градиентами:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class Task04_Gradients : Form
+    {
+        public Task04_Gradients()
+        {
+            Text = "Задание 4 — Градиентные заливки";
+            Size = new Size(400, 300);
+            BackColor = Color.White;
+            DoubleBuffered = true;
+            Paint += Form1_Paint;
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+
+            Rectangle r1 = new Rectangle(10, 10, 150, 60);
+            using (var b1 = new LinearGradientBrush(r1,
+                Color.Red, Color.Yellow, LinearGradientMode.Horizontal))
+            {
+                g.FillRectangle(b1, r1);
+                g.DrawString("Horizontal", SystemFonts.DefaultFont,
+                    Brushes.Black, r1.X, r1.Bottom + 2);
+            }
+
+            Rectangle r2 = new Rectangle(10, 90, 150, 60);
+            using (var b2 = new LinearGradientBrush(r2,
+                Color.Blue, Color.Green, LinearGradientMode.Vertical))
+            {
+                g.FillRectangle(b2, r2);
+                g.DrawString("Vertical", SystemFonts.DefaultFont,
+                    Brushes.Black, r2.X, r2.Bottom + 2);
+            }
+
+            Rectangle r3 = new Rectangle(10, 170, 150, 60);
+            using (var b3 = new LinearGradientBrush(r3,
+                Color.Purple, Color.Orange, 45f))
+            {
+                g.FillRectangle(b3, r3);
+                g.DrawString("Diagonal (45°)", SystemFonts.DefaultFont,
+                    Brushes.Black, r3.X, r3.Bottom + 2);
+            }
+        }
+    }
+}</code></pre>
+</div>
+<h2>📝 Пример задания — текстурная кисть (Task09)</h2>
+<p>Загружает текстуру из файла (или генерирует её программно) и заполняет ею эллипс и прямоугольник:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class Task09_TextureBrush : Form
+    {
+        private Image texture;
+
+        public Task09_TextureBrush()
+        {
+            Text = "Задание 9 — Текстурные кисти";
+            Size = new Size(500, 350);
+            BackColor = Color.White;
+            DoubleBuffered = true;
+            Paint += Form1_Paint;
+            Load += (s, e) =&gt;
+            {
+                try   { texture = Image.FromFile("texture.jpg"); }
+                catch { texture = GenerateTexture(64, 64); }
+            };
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            if (texture == null) return;
+            Graphics g = e.Graphics;
+            using (System.Drawing.TextureBrush tb =
+                new System.Drawing.TextureBrush(texture))
+            {
+                g.FillEllipse(tb, 20, 40, 200, 120);
+                g.DrawString("Эллипс с текстурой",
+                    SystemFonts.DefaultFont, Brushes.Black, 20, 165);
+                g.FillRectangle(tb, 250, 40, 200, 120);
+                g.DrawString("Прямоугольник с текстурой",
+                    SystemFonts.DefaultFont, Brushes.Black, 250, 165);
+            }
+        }
+
+        private static Bitmap GenerateTexture(int w, int h)
+        {
+            Bitmap bmp = new Bitmap(w, h);
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.Clear(Color.LightGray);
+                using (Pen pen = new Pen(Color.DarkGray, 2))
+                {
+                    for (int i = 0; i &lt; w; i += 8)
+                        g.DrawLine(pen, i, 0, i, h);
+                    for (int i = 0; i &lt; h; i += 8)
+                        g.DrawLine(pen, 0, i, w, i);
+                }
+                g.DrawString("TEX", new Font("Arial", 10, FontStyle.Bold),
+                    Brushes.Red, 2, 2);
+            }
+            return bmp;
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            texture?.Dispose();
+            base.OnFormClosed(e);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="tab-content" data-tab="practice">
+<h2>Практическое задание</h2>
+<div class="practice-section">
+<h3>Задание 1: Использование готовых Brushes</h3>
+<ol class="practice-steps">
+<li>Создайте обработчик события Paint</li>
+<li>Используя IntelliSense, изучите список готовых Brushes (напишите "Brushes.")</li>
+<li>Нарисуйте фигуры с разными готовыми Brushes:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+
+    // Используем готовые Brushes
+    g.FillRectangle(Brushes.Red, 10, 10, 100, 50);
+    g.FillEllipse(Brushes.Blue, 10, 70, 80, 80);
+    g.FillRectangle(Brushes.Green, 100, 70, 100, 50);
+}</code></pre>
+</div>
+</li>
+<li>Запустите приложение и проверьте результат</li>
+</ol>
+</div>
+<div class="practice-section">
+<h3>Задание 2: SolidBrush</h3>
+<ol class="practice-steps">
+<li>Создайте свой SolidBrush:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+
+    // Создаем свой Brush
+    SolidBrush myBrush = new SolidBrush(Color.Purple);
+    g.FillRectangle(myBrush, 10, 150, 100, 50);
+
+    // Меняем цвет
+    myBrush.Color = Color.Orange;
+    g.FillEllipse(myBrush, 10, 210, 80, 80);
+
+    // Полупрозрачный
+    myBrush.Color = Color.FromArgb(128, 0, 255, 0);
+    g.FillRectangle(myBrush, 100, 150, 100, 100);
+
+    // Освобождаем ресурсы
+    myBrush.Dispose();
+}</code></pre>
+</div>
+</li>
+<li>Запустите приложение</li>
+</ol>
+</div>
+<div class="practice-section">
+<h3>Задание 3: LinearGradientBrush</h3>
+<ol class="practice-steps">
+<li>Создайте градиентный фон:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+
+    // Горизонтальный градиент
+    LinearGradientBrush hGradient = new LinearGradientBrush(
+        new Point(0, 300),
+        new Point(400, 300),
+        Color.Red,
+        Color.Yellow
+    );
+    g.FillRectangle(hGradient, 10, 300, 300, 50);
+    hGradient.Dispose();
+
+    // Вертикальный градиент
+    LinearGradientBrush vGradient = new LinearGradientBrush(
+        new Point(320, 300),
+        new Point(320, 400),
+        Color.Blue,
+        Color.Green
+    );
+    g.FillRectangle(vGradient, 320, 300, 50, 100);
+    vGradient.Dispose();
+
+    // Диагональный градиент
+    LinearGradientBrush dGradient = new LinearGradientBrush(
+        new Point(10, 400),
+        new Point(200, 500),
+        Color.Purple,
+        Color.Cyan
+    );
+    g.FillRectangle(dGradient, 10, 400, 200, 100);
+    dGradient.Dispose();
+}</code></pre>
+</div>
+</li>
+<li>Запустите приложение</li>
+</ol>
+</div>
+<div class="practice-section">
+<h3>Задание 4: HatchBrush</h3>
+<ol class="practice-steps">
+<li>Добавьте using System.Drawing.Drawing2D;</li>
+<li>Нарисуйте фигуры с разными штриховками:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+
+    var styles = new[] {
+        HatchStyle.Horizontal,
+        HatchStyle.Vertical,
+        HatchStyle.Cross,
+        HatchStyle.Diagonal
+    };
+
+    for (int i = 0; i &lt; styles.Length; i++)
+    {
+        HatchBrush brush = new HatchBrush(styles[i], Color.Black, Color.LightGray);
+        g.FillRectangle(brush, 10 + i * 80, 520, 60, 60);
+        brush.Dispose();
+    }
+}</code></pre>
+</div>
+</li>
+<li>Запустите приложение</li>
+</ol>
+</div>
+<div class="practice-section">
+<h3>Задание 5: Прозрачность</h3>
+<ol class="practice-steps">
+<li>Создайте эффект наложения фигур с прозрачностью:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+            
+    // Рисуем три перекрывающихся круга с прозрачностью
+    SolidBrush redBrush = new SolidBrush(Color.FromArgb(128, 255, 0, 0));
+    SolidBrush greenBrush = new SolidBrush(Color.FromArgb(128, 0, 255, 0));
+    SolidBrush blueBrush = new SolidBrush(Color.FromArgb(128, 0, 0, 255));
+
+    g.FillEllipse(redBrush, 100, 600, 100, 100);
+    g.FillEllipse(greenBrush, 150, 600, 100, 100);
+    g.FillEllipse(blueBrush, 125, 650, 100, 100);
+
+    redBrush.Dispose();
+    greenBrush.Dispose();
+    blueBrush.Dispose();
+}</code></pre>
+</div>
+</li>
+<li>Запустите приложение и посмотрите, как цвета смешиваются</li>
+</ol>
+</div>
+<div class="practice-tip">
+<strong>💡 Совет:</strong> Используйте IntelliSense для изучения всех типов Brush. Начните вводить "Linear" — вы увидите LinearGradientBrush.
+            </div>
+<div class="practice-section">
+<h3>Задание по аналогии: Три вида градиентов</h3>
+<p>По аналогии с <code>Task04_Gradients</code> нарисуйте три прямоугольника с разными режимами <code>LinearGradientBrush</code>.</p>
+<ol class="practice-steps">
+<li>Создайте форму 400×300 с <code>DoubleBuffered = true</code>.</li>
+<li>Нарисуйте прямоугольник с горизонтальным градиентом (<code>LinearGradientMode.Horizontal</code>), выберите свои цвета.</li>
+<li>Нарисуйте прямоугольник с вертикальным градиентом (<code>LinearGradientMode.Vertical</code>).</li>
+<li>Нарисуйте прямоугольник с диагональным градиентом (угол 45°).</li>
+<li>Под каждым прямоугольником выведите его название через <code>g.DrawString</code>.</li>
+</ol>
+<div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task04" class="lesson-image task-screenshot" src="../images/tasks/task04_gradients.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task04)</p></div><div class="practice-tip">
+<strong>💡 Совет:</strong> Каждый <code>LinearGradientBrush</code> должен получать <code>Rectangle</code> той же фигуры, что вы собираетесь залить — иначе градиент может «срезаться».
+                </div>
+</div>
+<div class="practice-section">
+<h3>Задание по аналогии: Текстурная заливка</h3>
+<p>По аналогии с <code>Task09_TextureBrush</code> создайте форму, заполняющую фигуры текстурой.</p>
+<ol class="practice-steps">
+<li>Попробуйте загрузить любой PNG/JPG-файл через <code>Image.FromFile</code>, а при ошибке — создайте текстуру программно с помощью <code>Bitmap</code> и <code>Graphics.FromImage</code>.</li>
+<li>Создайте <code>TextureBrush</code> на основе загруженного изображения.</li>
+<li>Залейте текстурой эллипс и прямоугольник.</li>
+<li>Добавьте подписи под фигурами.</li>
+<li>Не забудьте освободить ресурс изображения в <code>OnFormClosed</code>.</li>
+</ol>
+<div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task09" class="lesson-image task-screenshot" src="../images/tasks/task09_texture_brush.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task09)</p></div><div class="practice-tip">
+<strong>💡 Совет:</strong> <code>TextureBrush</code> тоже реализует <code>IDisposable</code> — оборачивайте в <code>using</code>.
+                </div>
+</div>
+</div>
+<div class="tab-content" data-tab="tests">
+<div class="test-section">
+<h2>Проверка знаний</h2>
+<p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+<div class="question" data-correct="0">
+<div class="question-text">1. Какой тип кисти используется для сплошной заливки?</div>
+<ul class="answer-options">
+<li class="answer-option">SolidBrush</li>
+<li class="answer-option">HatchBrush</li>
+<li class="answer-option">LinearGradientBrush</li>
+<li class="answer-option">TextureBrush</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="2">
+<div class="question-text">2. Какой тип кисти создает градиентную заливку?</div>
+<ul class="answer-options">
+<li class="answer-option">SolidBrush</li>
+<li class="answer-option">HatchBrush</li>
+<li class="answer-option">LinearGradientBrush</li>
+<li class="answer-option">TextureBrush</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="1">
+<div class="question-text">3. Какой метод используется для заливки эллипса?</div>
+<ul class="answer-options">
+<li class="answer-option">DrawEllipse</li>
+<li class="answer-option">FillEllipse</li>
+<li class="answer-option">FillRectangle</li>
+<li class="answer-option">DrawEllipse</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="3">
+<div class="question-text">4. Какой тип кисти создает штриховку?</div>
+<ul class="answer-options">
+<li class="answer-option">SolidBrush</li>
+<li class="answer-option">LinearGradientBrush</li>
+<li class="answer-option">TextureBrush</li>
+<li class="answer-option">HatchBrush</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="0">
+<div class="question-text">5. Нужно ли вызывать Dispose() для готовых Brushes (Brushes.Red)?</div>
+<ul class="answer-options">
+<li class="answer-option">Нет, это статические объекты</li>
+<li class="answer-option">Да, обязательно</li>
+<li class="answer-option">Только если используется много раз</li>
+<li class="answer-option">Только в конце программы</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="2">
+<div class="question-text">6. Какой метод создает полупрозрачный цвет?</div>
+<ul class="answer-options">
+<li class="answer-option">Color.FromRgb()</li>
+<li class="answer-option">Color.FromName()</li>
+<li class="answer-option">Color.FromArgb()</li>
+<li class="answer-option">Color.Transparent()</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="1">
+<div class="question-text">7. Какое значение Alpha означает полную прозрачность?</div>
+<ul class="answer-options">
+<li class="answer-option">255</li>
+<li class="answer-option">0</li>
+<li class="answer-option">128</li>
+<li class="answer-option">100</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="3">
+<div class="question-text">8. Какой метод заливает прямоугольник?</div>
+<ul class="answer-options">
+<li class="answer-option">DrawRectangle</li>
+<li class="answer-option">FillEllipse</li>
+<li class="answer-option">FillPolygon</li>
+<li class="answer-option">FillRectangle</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+</div>
+</div>
+<div class="navigation">
+<a class="nav-btn secondary" href="lesson2-3.html">← Предыдущий урок</a>
+<a class="nav-btn" href="lesson2-5.html">Следующий урок →</a>
+</div>
+</div></div></main>
+<footer>
+<div class="container">
+<p>© 2026 Курс "Графическое программирование на C#"</p>
+</div>
+</footer>
+</body>
+</html>

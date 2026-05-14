@@ -1,0 +1,1514 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 1.3: От Консоли к Окну</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="../lesson-quiz.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="../index.html" class="course-title-link">
+                <h1>🎨 Графическое программирование на C#</h1>
+            </a>
+        </div>
+    </header>
+
+    <main class="lesson-container">
+        <a href="../modules/module1.html" class="back-link">← Вернуться к модулю 1</a>
+        
+        <div class="lesson-header">
+            <h1>Урок 1.3: От Консоли к Окну</h1>
+            <div class="lesson-meta">
+                <span>Модуль 1</span>
+                <span>⏱️ ~1.5 часа</span>
+            </div>
+        </div>
+
+        <div class="lesson-content">
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" data-tab="theory">📚 Теория</button>
+                <button class="tab-button" data-tab="practice">💻 Практика</button>
+                <button class="tab-button" data-tab="tests">✅ Тесты</button>
+            </div>
+            
+            <div class="tab-content active" data-tab="theory">
+            <div class="learning-objectives">
+                <h3>📌 Ключевые моменты этого урока:</h3>
+                <ul style="margin: 10px 0;">
+                    <li>Вспомните из урока 1.1: Program.cs — это точка входа, где запускается приложение</li>
+                    <li>Windows Forms — технология для создания GUI приложений в .NET Framework</li>
+                    <li>Form — это окно приложения с заголовком, границами и клиентской областью</li>
+                    <li>Свойства формы (Size, Location, Text) определяют её внешний вид и поведение</li>
+                    <li>В конструкторе Form вы можете программно настраивать любые свойства</li>
+                </ul>
+            </div>
+
+            <h2>Интерфейс Visual Studio для работы с Windows Forms</h2>
+            <p>Visual Studio — это мощная интегрированная среда разработки (IDE) от Microsoft, предназначенная для создания приложений на различных языках программирования, включая C#. При работе с Windows Forms вы будете взаимодействовать с несколькими ключевыми окнами и панелями.</p>
+
+            <h3>Основные составные части Visual Studio:</h3>
+            <ul>
+                <li><strong>Горизонтальное меню (Menu Bar)</strong> — содержит пункты File, Edit, View, Project и др.</li>
+                <li><strong>Панель инструментов (Standard Toolbar)</strong> — команды для быстрого доступа</li>
+                <li><strong>Панель элементов (Toolbox)</strong> — компоненты для размещения на форме</li>
+                <li><strong>Окно свойств (Properties Window)</strong> — для настройки свойств компонентов</li>
+                <li><strong>Обозреватель решений (Solution Explorer)</strong> — структура файлов проекта</li>
+                <li><strong>Дизайнер форм (Form Designer)</strong> — визуальное редактирование формы</li>
+                <li><strong>Редактор кода (Code Editor)</strong> — написание и редактирование кода</li>
+            </ul>
+            
+            <h3>Схема интерфейса Visual Studio:</h3>
+            <div class="code-block">
+<pre><code class="language-text">┌─────────────────────────────────────────────────────────────────┐
+│ File  Edit  View  Project  Build  Debug  Tools  Help  │  🔄 📌 □ ✕ │ ← Меню и Панель инструментов
+├──────────────────────┬────────────────────────────────────────────┤
+│                      │                                            │
+│  Панель элементов    │           Дизайнер форм                  │
+│  (Toolbox)           │           (Form Designer)                  │
+│                      │                                            │
+│  ┌────────────────┐  │   ┌──────────────────────────────────┐   │
+│  │ Common Controls│  │   │  Мое первое приложение    _ □ ✕  │   │
+│  │ • Button       │  │   ├──────────────────────────────────┤   │
+│  │ • Label        │  │   │                                  │   │
+│  │ • TextBox      │  │   │        [Form1]                   │   │
+│  │ • CheckBox     │  │   │                                  │   │
+│  │ • RadioButton  │  │   │                                  │   │
+│  ├────────────────┤  │   │                                  │   │
+│  │ Containers     │  │   │                                  │   │
+│  │ • Panel        │  │   └──────────────────────────────────┘   │
+│  │ • GroupBox     │  │                                            │
+│  │ • TabControl   │  │                                            │
+│  └────────────────┘  │                                            │
+│                      │                                            │
+├──────────────────────┼────────────────────────────────────────────┤
+│ Обозреватель решений │       Окно свойств (Properties)          │
+│ (Solution Explorer)  │       ┌────────────────────────────────┐  │
+│                      │       │ Form1 System.Windows.Forms.Form│  │
+│ ▶ MyGraphicsApp      │       ├────────────────────────────────┤  │
+│   ▶ Properties       │       │ Properties   Events            │  │
+│   ▶ References       │       ├────────────────────────────────┤  │
+│   ▸ Form1.cs         │       │ (Name)         Form1            │  │
+│   ▸ Form1.Designer.cs│       │ AcceptButton                   │  │
+│   ▸ Program.cs       │       │ AccessibleRole                │  │
+│   ▸ AssemblyInfo.cs  │       │ AllowDrop                      │  │
+│   ▸ Resources.resx   │       │ Anchor                         │  │
+│                      │       │ AutoScroll                     │  │
+│                      │       │ AutoScrollMargin               │  │
+│                      │       │ AutoSize                       │  │
+│                      │       │ BackColor       Control        │  │
+│                      │       │ BackgroundImage                │  │
+│                      │       │ └───────────────────────────────┘  │
+└──────────────────────┴────────────────────────────────────────────┘
+                              Вкладка: Form1.cs [Design]  │  Form1.cs*
+</code></pre>
+            </div>
+
+            <h2>Описание основных окон и панелей</h2>
+
+            <h3>1. Горизонтальное меню (Menu Bar)</h3>
+            <p>Меню находится в верхней части окна и содержит основные команды для управления проектом и средой разработки:</p>
+            <ul>
+                <li><strong>File (Файл)</strong> — создание, открытие, сохранение проектов и файлов</li>
+                <li><strong>Edit (Правка)</strong> — операции редактирования (копирование, вставка, поиск)</li>
+                <li><strong>View (Вид)</strong> — показ/скрытие окон и панелей</li>
+                <li><strong>Project (Проект)</strong> — управление проектом, добавление ссылок</li>
+                <li><strong>Build (Сборка)</strong> — компиляция проекта</li>
+                <li><strong>Debug (Отладка)</strong> — запуск, остановка, пошаговое выполнение</li>
+                <li><strong>Tools (Сервис)</strong> — настройки среды, параметры</li>
+            </ul>
+
+            <h3>2. Панель инструментов (Standard Toolbar)</h3>
+            <p>Находится под меню и содержит кнопки для быстрого доступа к часто используемым командам:</p>
+            <ul>
+                <li><strong>New Project</strong> — создать новый проект</li>
+                <li><strong>Add New Item</strong> — добавить новый файл в проект</li>
+                <li><strong>Open File</strong> — открыть файл</li>
+                <li><strong>Save</strong> — сохранить текущий файл</li>
+                <li><strong>Save All</strong> — сохранить все файлы</li>
+                <li><strong>Undo/Redo</strong> — отмена/повтор действий</li>
+                <li><strong>Start Debugging</strong> — запустить приложение (F5)</li>
+                <li><strong>Start Without Debugging</strong> — запустить без отладки (Ctrl+F5)</li>
+            </ul>
+
+            <h3>3. Панель элементов (Toolbox)</h3>
+            <p>Панель элементов содержит все компоненты, которые можно разместить на форме. Обычно находится слева. Компоненты организованы по категориям:</p>
+
+            <h4>Основные категории:</h4>
+            <div class="code-block">
+<pre><code class="language-text">Common Controls (Общие элементы управления):
+├─ Button        — кнопка
+├─ Label         — текстовая метка
+├─ TextBox       — поле ввода текста
+├─ CheckBox      — флажок (может быть отмечен/не отмечен)
+├─ RadioButton   — переключатель (выбор одного из нескольких)
+├─ ComboBox      — выпадающий список
+├─ ListBox       — список элементов
+├─ ProgressBar   — индикатор выполнения
+└─ LinkLabel     — гиперссылка
+
+Containers (Контейнеры):
+├─ Panel         — панель для группировки элементов
+├─ GroupBox      — группа с заголовком
+├─ TabControl    — вкладки
+├─ SplitContainer — разделяемая панель
+└─ FlowLayoutPanel — панель с автоматическим выравниванием
+
+Menus & Toolbars (Меню и панели инструментов):
+├─ MenuStrip     — главное меню
+├─ ContextMenuStrip — контекстное меню (правый клик)
+├─ StatusStrip   — строка состояния
+└─ ToolStrip     — панель инструментов
+
+Dialogs (Диалоговые окна):
+├─ OpenFileDialog    — диалог открытия файла
+├─ SaveFileDialog    — диалог сохранения файла
+├─ ColorDialog       — диалог выбора цвета
+└─ FolderBrowserDialog — диалог выбора папки
+</code></pre>
+            </div>
+            
+            <p><strong>Как использовать Toolbox:</strong></p>
+            <ol>
+                <li>Откройте вкладку "View" → "Toolbox" или нажмите Ctrl+Alt+X</li>
+                <li>Дважды кликните на компонент — он добавится на форму</li>
+                <li>Или перетащите компонент мышью на форму</li>
+                <li>Разверните категории, нажав на + слева от названия</li>
+            </ol>
+
+            <h3>4. Окно свойств (Properties Window)</h3>
+            <p>Окно свойств (нажмите F4 для вызова) предназначено для изменения свойств выбранного компонента. Оно состоит из двух вкладок:</p>
+
+            <h4>Вкладка Properties (Свойства):</h4>
+            <ul>
+                <li>Позволяет изменять свойства выделенного компонента</li>
+                <li>Свойства организованы по категориям (Appearance, Behavior, Design и т.д.)</li>
+                <li>Можно сортировать по алфавиту или категориям</li>
+            </ul>
+
+            <h4>Вкладка Events (События):</h4>
+            <ul>
+                <li>Позволяет определить реакцию компонента на события</li>
+                <li>Двойной клик по событию создает обработчик в коде</li>
+                <li>Примеры событий: Click, Load, Paint, KeyPress</li>
+            </ul>
+
+            <h4>Основные свойства компонентов:</h4>
+            <div class="code-block">
+<pre><code class="language-text">Общие свойства для большинства компонентов:
+├─ (Name)         — имя компонента в коде (обязательно уникальное!)
+├─ Text/Caption   — текст, отображаемый на компоненте
+├─ Location       — позиция на форме (Point {X, Y})
+├─ Size           — размер компонента (Size {Width, Height})
+├─ BackColor      — цвет фона
+├─ ForeColor      — цвет текста
+├─ Font           — шрифт текста
+├─ Visible        — видимость (true/false)
+├─ Enabled        — доступность (true/false)
+├─ Anchor         — привязка к краям при изменении размера формы
+└─ Dock           — прикрепление к краю формы
+
+Свойства, специфичные для Button:
+├─ DialogResult   — результат закрытия диалога
+└─ FlatStyle      — стиль отображения кнопки
+
+Свойства, специфичные для TextBox:
+├─ Text           — текст в поле ввода
+├─ Multiline      — многострочный режим
+├─ PasswordChar   — символ для скрытия пароля
+├─ ReadOnly       — только для чтения
+└─ ScrollBars     — полосы прокрутки
+</code></pre>
+            </div>
+            
+            <p><strong>Как использовать Properties:</strong></p>
+            <ol>
+                <li>Выделите компонент на форме или в списке компонентов (вверху окна)</li>
+                <li>Выберите вкладку Properties или Events</li>
+                <li>Измените значение свойства — оно сразу применится</li>
+                <li>Нажмите F1 на свойстве для получения справки</li>
+            </ol>
+
+            <h3>5. Обозреватель решений (Solution Explorer)</h3>
+            <p>Обозреватель решений показывает структуру всего проекта — все файлы, папки и ссылки. Обычно находится справа.</p>
+
+            <h4>Структура типичного проекта:</h4>
+            <div class="code-block">
+<pre><code class="language-text">Solution 'MyGraphicsApp' (1 project)
+└─ 📂 MyGraphicsApp
+   ├─ 📂 Properties            — свойства проекта
+   │  ├─ AssemblyInfo.cs      — информация о сборке
+   │  ├─ Resources.resx       — ресурсы (изображения, иконки)
+   │  └─ Settings.settings    — настройки приложения
+   ├─ 📂 References            — ссылки на библиотеки
+   │  ├─ System               — базовые классы .NET
+   │  ├─ System.Drawing       — работа с графикой
+   │  ├─ System.Windows.Forms — Windows Forms
+   │  └─ ...                  — другие библиотеки
+   ├─ 📄 App.config            — конфигурационный файл
+   ├─ 📄 Form1.cs              — код формы (логика)
+   ├─ 📄 Form1.Designer.cs     — дизайнер формы (автогенерируемый)
+   ├─ 📄 Form1.resx            — ресурсы формы
+   └─ 📄 Program.cs            — точка входа приложения
+</code></pre>
+            </div>
+            
+            <p><strong>Как использовать Solution Explorer:</strong></p>
+            <ul>
+                <li><strong>Двойной клик</strong> — открыть файл в редакторе</li>
+                <li><strong>Правый клик</strong> — контекстное меню (добавить, удалить, переименовать)</li>
+                <li><strong>Кнопка "Show All Files"</strong> — показать скрытые файлы (bin, obj)</li>
+                <li><strong>Перетаскивание</strong> — можно перемещать файлы между папками</li>
+            </ul>
+
+            <h3>6. Дизайнер форм (Form Designer)</h3>
+            <p>Дизайнер форм — это визуальный редактор, где вы создаете интерфейс приложения. Здесь вы:</p>
+            <ul>
+                <li>Размещаете компоненты из Toolbox на форме</li>
+                <li>Перемещаете и изменяете размер компонентов мышью</li>
+                <li>Выравниваете и группируете элементы</li>
+                <li>Видите, как будет выглядеть ваше приложение</li>
+            </ul>
+
+            <h4>Переключение между Дизайнером и Кодом:</h4>
+            <ul>
+                <li><strong>F7</strong> — перейти к коду</li>
+                <li><strong>Shift+F7</strong> — перейти к дизайнеру</li>
+                <li><strong>Вкладки внизу</strong> — Form1.cs [Design] / Form1.cs</li>
+            </ul>
+
+            <h4>Работа с компонентами в дизайнере:</h4>
+            <div class="code-block">
+<pre><code class="language-text">Выбор компонента:
+• Клик по компоненту — выделение (появятся маркеры размера)
+• Клик по форме — выделение самой формы
+• Shift+клик — множественный выбор
+
+Перемещение:
+• Перетащите компонент мышью
+• Используйте стрелки на клавиатуре (точное позиционирование)
+
+Изменение размера:
+• Потяните за маркеры по краям компонента
+• Используйте Shift+стрелки для точного изменения
+
+Выравнивание:
+• Format → Align → Lefts/Tops/Centers — выравнивание
+• Format → Vertical Spacing → Make Equal — равные расстояния
+• Format → Center in Form → по центру формы
+
+Группировка:
+• Ctrl+G — группировка выбранных компонентов
+• Format → Lock Controls — зафиксировать положение
+</code></pre>
+            </div>
+            
+            <h3>7. Редактор кода (Code Editor)</h3>
+            <p>Редактор кода — это место, где вы пишете программный код. Он имеет множество полезных функций:</p>
+            
+            <h4>Основные функции редактора:</h4>
+            <ul>
+                <li><strong>Подсветка синтаксиса</strong> — код цветом для лучшей читаемости</li>
+                <li><strong>IntelliSense</strong> — автодополнение кода (Ctrl+Space)</li>
+                <li><strong>Автоформатирование</strong> — правильные отступы (Ctrl+K, Ctrl+D)</li>
+                <li><strong>Сворачивание кода</strong> —Regions (#region) и методы</li>
+                <li><strong>Навигация</strong> — Go to Definition (F12), Find All References (Shift+F12)</li>
+                <li><strong>Закладки</strong> — Ctrl+K, Ctrl+K — поставить/убрать закладку</li>
+            </ul>
+
+            <h4>Горячие клавиши редактора:</h4>
+            <div class="code-block">
+<pre><code class="language-text">Навигация:
+F5              — запустить с отладкой
+Ctrl+F5         — запустить без отладки
+Shift+F5        — остановить отладку
+F9              — поставить/убрать точку останова
+F10             — шаг с заходом в функцию
+F11             — шаг без захода в функцию
+
+Редактирование:
+Ctrl+Space      — IntelliSense (автодополнение)
+Ctrl+K, Ctrl+D  — форматировать документ
+Ctrl+K, Ctrl+C  — закомментировать выделенное
+Ctrl+K, Ctrl+U  — раскомментировать
+Ctrl+F          — поиск
+Ctrl+H          — замена
+Ctrl+G          — перейти к строке
+
+Окна:
+F4              — окно свойств (Properties)
+Ctrl+Alt+X      — панель элементов (Toolbox)
+Ctrl+Alt+L      — обозреватель решений
+Ctrl+Alt+O      — окно вывода (Output)
+Ctrl+Alt+E      — список ошибок (Error List)
+</code></pre>
+            </div>
+
+            <h2>Создание Windows Forms приложения</h2>
+            <p>Windows Forms — это классическая технология от Microsoft для создания графических приложений в .NET. Она предоставляет готовые элементы управления (кнопки, текстовые поля, менюшки) и систему событий для создания интерактивных интерфейсов. В отличие от консольных приложений, здесь пользователь видит окно с визуальными элементами.</p>
+
+            <h3>Почему Windows Forms для начинающих?</h3>
+            <ul>
+                <li><strong>Простота</strong> — готовые элементы управления, не нужно рисовать всё с нуля</li>
+                <li><strong>Интуитивность</strong> — знакомый интерфейс, как в обычных Windows приложениях</li>
+                <li><strong>Модернизм</strong> — WPF сложнее, WinForms подходит для обучения</li>
+                <li><strong>Совместимость</strong> — работает на Windows XP через Windows 11</li>
+            </ul>
+
+            <h3>Создание нового проекта шаг за шагом:</h3>
+            <ol>
+                <li><strong>Откройте Visual Studio</strong> — Free Community Edition подходит идеально</li>
+                <li><strong>Нажмите "Create a new project"</strong> (или File → New → Project)</li>
+                <li><strong>Выберите "Windows Forms App (.NET Framework)"</strong> — это важно! Not .NET Core</li>
+                <li><strong>Укажите имя проекта</strong> — например "MyGraphicsApp"</li>
+                <li><strong>Выберите расположение папки</strong> — где сохранится проект</li>
+                <li><strong>Кликните Create</strong> — Visual Studio создаст проект за вас</li>
+            </ol>
+
+            <h3>Что произойдет автоматически:</h3>
+            <div class="code-block">
+<pre><code class="language-text">Visual Studio создаст:
+├── Form1.cs                    // Ваша форма (главное окно)
+├── Form1.Designer.cs           // Дизайнер (не меняйте вручную!)
+├── Program.cs                  // Точка входа
+├── Properties/
+│   ├── AssemblyInfo.cs
+│   └── Resources.resx
+└── packages.config             // Зависимости</code></pre>
+            </div>
+
+            <h3>Подробное описание файлов проекта:</h3>
+            <p>Каждый файл в проекте имеет свое назначение. Понимание этой структуры поможет вам эффективно работать с проектом.</p>
+
+            <h4>1. Program.cs — точка входа приложения</h4>
+            <p>Это главный файл, который запускается первым. Содержит метод Main(), который:</p>
+            <ul>
+                <li>Настраивает визуальные стили приложения</li>
+                <li>Создает и показывает главную форму</li>
+                <li>Запускает цикл обработки сообщений Windows</li>
+            </ul>
+
+            <div class="code-block">
+<pre><code class="language-csharp">static class Program
+{
+    [STAThread]
+    static void Main()
+    {
+        // Включить визуальные стили XP и выше
+        Application.EnableVisualStyles();
+
+        // Использовать текстовый рендеринг GDI+ вместо GDI
+        Application.SetCompatibleTextRenderingDefault(false);
+
+        // Запустить главную форму приложения
+        Application.Run(new Form1());
+    }
+}</code></pre>
+            </div>
+
+            <h4>2. Form1.cs — код формы</h4>
+            <p>Основной файл формы, где вы:</p>
+            <ul>
+                <li>Пишете обработчики событий (клик по кнопке, загрузка формы и т.д.)</li>
+                <li>Добавляете свои методы и свойства</li>
+                <li>Программно создаете компоненты (если нужно)</li>
+            </ul>
+
+            <div class="code-block">
+<pre><code class="language-csharp">public partial class Form1 : Form
+{
+    public Form1()
+    {
+        InitializeComponent(); // Инициализация дизайнера
+    }
+
+    // Обработчик события клика по кнопке
+    private void button1_Click(object sender, EventArgs e)
+    {
+        MessageBox.Show("Кнопка нажата!");
+    }
+
+    // Обработчик события загрузки формы
+    private void Form1_Load(object sender, EventArgs e)
+    {
+        // Код, выполняющийся при загрузке формы
+    }
+}</code></pre>
+            </div>
+            
+            <h4>3. Form1.Designer.cs — дизайнер формы</h4>
+            <p>Этот файл генерируется автоматически Visual Studio. Он содержит:</p>
+            <ul>
+                <li>Объявление всех компонентов, размещенных на форме</li>
+                <li>Код инициализации компонентов (InitializeComponent)</li>
+                <li>Настройки свойств компонентов</li>
+            </ul>
+
+            <div class="warning-box">
+                <p>⚠️ <strong>Важно:</strong> Не редактируйте этот файл вручную! Ваши изменения будут потеряны при следующем сохранении дизайнера. Все изменения делайте через Дизайнер форм или в Form1.cs.</p>
+            </div>
+            
+            <div class="code-block">
+<pre><code class="language-csharp">partial class Form1
+{
+    /// <summary>
+    /// Обязательная переменная конструктора.
+    /// </summary>
+    private System.ComponentModel.IContainer components = null;
+
+    /// <summary>
+    /// Освободить все используемые ресурсы.
+    /// </summary>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing && (components != null))
+        {
+            components.Dispose();
+        }
+        base.Dispose(disposing);
+    }
+
+    #region Код, автоматически созданный конструктором форм Windows
+
+    /// <summary>
+    /// Требуемый метод для поддержки конструктора — не изменяйте
+    /// содержимое этого метода с помощью редактора кода.
+    /// </summary>
+    private void InitializeComponent()
+    {
+        this.button1 = new System.Windows.Forms.Button();
+        this.label1 = new System.Windows.Forms.Label();
+        this.SuspendLayout();
+        //
+        // button1
+        //
+        this.button1.Location = new System.Drawing.Point(100, 100);
+        this.button1.Name = "button1";
+        this.button1.Size = new System.Drawing.Size(75, 23);
+        this.button1.TabIndex = 0;
+        this.button1.Text = "button1";
+        this.button1.UseVisualStyleBackColor = true;
+        this.button1.Click += new System.EventHandler(this.button1_Click);
+        //
+        // label1
+        //
+        this.label1.AutoSize = true;
+        this.label1.Location = new System.Drawing.Point(100, 50);
+        this.label1.Name = "label1";
+        this.label1.Size = new System.Drawing.Size(35, 13);
+        this.label1.TabIndex = 1;
+        this.label1.Text = "label1";
+        //
+        // Form1
+        //
+        this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+        this.ClientSize = new System.Drawing.Size(284, 261);
+        this.Controls.Add(this.label1);
+        this.Controls.Add(this.button1);
+        this.Name = "Form1";
+        this.Text = "Form1";
+        this.Load += new System.EventHandler(this.Form1_Load);
+        this.ResumeLayout(false);
+        this.PerformLayout();
+
+    }
+
+    #endregion
+
+    private System.Windows.Forms.Button button1;
+    private System.Windows.Forms.Label label1;
+}</code></pre>
+            </div>
+            
+            <h4>4. Form1.resx — ресурсы формы</h4>
+            <p>XML-файл, содержащий ресурсы формы:</p>
+            <ul>
+                <li>Изображения, используемые на форме</li>
+                <li>Иконки</li>
+                <li>Строки локализации</li>
+                <li>Другие двоичные данные</li>
+            </ul>
+
+            <h4>5. AssemblyInfo.cs — информация о сборке</h4>
+            <p>Содержит метаданные о приложении:</p>
+            <ul>
+                <li>Версия сборки</li>
+                <li>Название компании</li>
+                <li>Информация о продукте</li>
+                <li>Авторские права</li>
+            </ul>
+
+            <div class="code-block">
+<pre><code class="language-csharp">using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+// Общие сведения о сборке
+[assembly: AssemblyTitle("MyGraphicsApp")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("MyGraphicsApp")]
+[assembly: AssemblyCopyright("Copyright ©  2026")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+
+// Установка ComVisible в false делает типы в сборке невидимыми
+// для COM-компонентов
+[assembly: ComVisible(false)]
+
+// Если этот проект предоставлен COM, следующий GUID используется
+// как ID библиотеки типов
+[assembly: Guid("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")]
+
+// Информация о версии для сборки состоит из следующих четырех значений:
+//
+//      Основной номер версии
+//      Дополнительный номер версии
+//      Номер сборки
+//      Редакция
+//
+// Можно задать все значения или принять номер сборки и номер редакции
+// по умолчанию, используя "*", как показано ниже:
+// [assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]</code></pre>
+            </div>
+            
+            <h4>6. Папки bin и obj (скрыты по умолчанию)</h4>
+            <p>Эти папки содержат скомпилированные файлы:</p>
+            
+            <div class="code-block">
+<pre><code class="language-text">bin/
+├─ Debug/              — отладочная версия
+│  ├─ MyGraphicsApp.exe      — исполняемый файл
+│  ├─ MyGraphicsApp.pdb      — символы отладки
+│  └─ ...                    — другие файлы
+└─ Release/            — релизная версия
+   ├─ MyGraphicsApp.exe      — оптимизированный exe
+   └─ ...
+
+obj/                 — временные файлы компиляции
+   ├─ Debug/
+   │  └─ ...         — промежуточные файлы
+   └─ Release/
+      └─ ...
+</code></pre>
+            </div>
+
+            <p><strong>Примечание:</strong> Папки bin и obj не показываются в Solution Explorer по умолчанию. Нажмите кнопку "Show All Files" (📄) для их просмотра. Эти папки можно удалить — они пересоздадутся при следующей компиляции.</p>
+
+            <h4>7. App.config — конфигурационный файл</h4>
+            <p>XML-файл с настройками приложения:</p>
+            <ul>
+                <li>Настройки запуска (версия .NET)</li>
+                <li>Пользовательские настройки</li>
+                <li>Строки подключения к базе данных</li>
+            </ul>
+
+            <div class="code-block">
+<pre><code class="language-xml">&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;configuration&gt;
+    &lt;startup&gt; 
+        &lt;supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.7.2" /&gt;
+    &lt;/startup&gt;
+&lt;/configuration&gt;</code></pre>
+            </div>
+
+            <h3>Процесс компиляции и запуска</h3>
+            <p>Когда вы нажимаете F5 (Start Debugging), происходит следующее:</p>
+
+            <div class="code-block">
+<pre><code class="language-text">1. Сохранение всех файлов
+   ↓
+2. Компиляция (Build)
+   • Все .cs файлы компилируются в IL код
+   • Создаются .dll и .exe файлы в папке bin/Debug
+   ↓
+3. Запуск приложения
+   • CLR загружает .exe файл
+   • JIT компилятор преобразует IL в машинный код
+   • Приложение запускается
+   ↓
+4. Отладка (если включена)
+   • Точки останова (breakpoints) работают
+   • Можно смотреть значения переменных
+   • Пошаговое выполнение (F10, F11)
+   ↓
+5. Завершение работы
+   • При закрытии главной формы приложение завершается
+</code></pre>
+            </div>
+
+            <h3>Режимы сборки: Debug vs Release</h3>
+
+            <div class="code-block">
+<pre><code class="language-text">┌──────────────────┬──────────────────┬──────────────────┐
+│  Характеристика  │ Debug            │ Release          │
+├──────────────────┼──────────────────┼──────────────────┤
+│ Назначение       │ Разработка       │ Продукция        │
+│ Оптимизация      │ ❌ Отключена     │ ✅ Включена      │
+│ Символы отладки  │ ✅ Включены (.pdb)│ ❌ Отключены     │
+│ Размер файла     │ ❌ Больший       │ ✅ Меньший       │
+│ Скорость         │ ❌ Медленнее     │ ✅ Быстрее       │
+│ Точки останова   │ ✅ Работают      │ ❌ Не работают    │
+│ Папка вывода     │ bin/Debug/       │ bin/Release/     │
+└──────────────────┴──────────────────┴──────────────────┘
+
+Переключение:
+• Toolbar: Debug → Release (выпадающий список)
+• Или: Build → Configuration Manager
+</code></pre>
+            </div>
+
+            <h2>Структура Form — что находится внутри вашего окна</h2>
+            <p>Каждая Form — это объект на экране, который имеет физическую структуру. Понимание этой структуры поможет вам контролировать внешний вид приложения.</p>
+
+            <h3>Анатомия окна:</h3>
+            <div class="code-block">
+<pre><code class="language-text">┌─────────────────────────────────────────────────────────────┐
+│ Мое первое приложение                    _ □ ✕              │ ← Заголовок (Title Bar)
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│                                                             │
+│                    Клиентская область                       │
+│                 (Client Area)                               │
+│                                                             │
+│              [Здесь размещаются компоненты]                 │
+│                                                             │
+│              ┌─────────────┐                                │
+│              │   Button1   │                                │
+│              └─────────────┘                                │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+ ↑                                                           ↑
+ Левый край (Left)                                         Правый край (Right)
+ Верхний край (Top)                                        Нижний край (Bottom)
+
+Части окна:
+• Заголовок (Title Bar) — показывает свойство Text и кнопки управления
+• Клиентская область (Client Area) — белое пространство для компонентов
+• Границы (Borders) — края, которые можно перетаскивать для изменения размера
+• Кнопки управления — свернуть (_), развернуть (□), закрыть (✕)</code></pre>
+            </div>
+
+            <h3>Основные компоненты Form:</h3>
+            <ul>
+                <li><strong>Заголовок (Title Bar)</strong> — текст в верхней части окна показывает свойство Text</li>
+                <li><strong>Клиентская область (Client Area)</strong> — место, где находятся кнопки, текстовые поля и другие элементы управления</li>
+                <li><strong>Границы (Borders)</strong> — можно перетаскивать для изменения размера формы</li>
+                <li><strong>Кнопки управления</strong> — свернуть, развернуть, закрыть (обычно справа вверху)</li>
+            </ul>
+
+            <h3>Свойства размера и позиции:</h3>
+            <div class="code-block">
+<pre><code class="language-text">┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│  (0, 0) ───────────────────────────────────────────→ X     │
+│    │  ┌─────────────────────────────────────┐           │
+│    ↓  │                                     │           │
+│   Y   │         Клиентская область          │           │
+│        │                                     │           │
+│        │                                     │           │
+│        │                                     │           │
+│        └─────────────────────────────────────┘           │
+│                                                             │
+│                 ↓                                          │
+│              (Width, Height)                               │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+Size (Размер):
+• Width — ширина формы в пикселях
+• Height — высота формы в пикселях
+• ClientSize — размер только клиентской области (без границ и заголовка)
+
+Location (Позиция):
+• Point {X, Y} — координаты левого верхнего угла на экране
+• X — расстояние от левого края экрана
+• Y — расстояние от верхнего края экрана
+
+Пример:
+this.Size = new Size(800, 600);        // Общий размер формы
+this.ClientSize = new Size(780, 550);  // Размер клиентской области
+this.Location = new Point(100, 50);   // Позиция на экране</code></pre>
+            </div>
+
+            <h2>Работа с компонентами на форме</h2>
+            <p>Компоненты — это визуальные элементы управления, которые вы размещаете на форме: кнопки, текстовые поля, метки и т.д. Каждый компонент имеет свои свойства, события и методы.</p>
+
+            <h3>Основные группы компонентов:</h3>
+
+            <h4>1. Компоненты вывода информации:</h4>
+            <ul>
+                <li><strong>Label</strong> — текстовая метка для отображения статического текста</li>
+                <li><strong>PictureBox</strong> — отображение изображений</li>
+                <li><strong>ProgressBar</strong> — индикатор выполнения операции</li>
+                <li><strong>StatusStrip</strong> — строка состояния внизу формы</li>
+            </ul>
+            
+            <h4>2. Компоненты ввода информации:</h4>
+            <ul>
+                <li><strong>TextBox</strong> — однострочное поле ввода текста</li>
+                <li><strong>RichTextBox</strong> — многострочное поле с форматированием</li>
+                <li><strong>MaskedTextBox</strong> — поле ввода с маской (например, для телефона)</li>
+                <li><strong>NumericUpDown</strong> — ввод чисел с кнопками вверх/вниз</li>
+                <li><strong>DateTimePicker</strong> — выбор даты и времени</li>
+            </ul>
+
+            <h4>3. Компоненты выбора (выбор из списка):</h4>
+            <ul>
+                <li><strong>CheckBox</strong> — флажок (может быть отмечен/не отмечен)</li>
+                <li><strong>RadioButton</strong> — переключатель (выбор одного из нескольких)</li>
+                <li><strong>ComboBox</strong> — выпадающий список</li>
+                <li><strong>ListBox</strong> — список элементов</li>
+                <li><strong>CheckedListBox</strong> — список с флажками</li>
+                <li><strong>TreeView</strong> — иерархический список (дерево)</li>
+                <li><strong>ListView</strong> — список с иконками (как в проводнике)</li>
+            </ul>
+
+            <h4>4. Компоненты выполнения действий:</h4>
+            <ul>
+                <li><strong>Button</strong> — кнопка</li>
+                <li><strong>LinkLabel</strong> — гиперссылка</li>
+                <li><strong>ToolStrip</strong> — панель инструментов с кнопками</li>
+            </ul>
+
+            <h4>5. Контейнеры (для группировки компонентов):</h4>
+            <ul>
+                <li><strong>Panel</strong> — простая панель</li>
+                <li><strong>GroupBox</strong> — группа с заголовком</li>
+                <li><strong>TabControl</strong> — вкладки</li>
+                <li><strong>SplitContainer</strong> — разделяемая панель</li>
+                <li><strong>FlowLayoutPanel</strong> — панель с автоматическим выравниванием</li>
+                <li><strong>TableLayoutPanel</strong> — панель с табличной структурой</li>
+            </ul>
+
+            <h3>Размещение компонента на форме:</h3>
+            <div class="code-block">
+<pre><code class="language-text">Способ 1: Двойной клик в Toolbox
+1. Откройте Toolbox (Ctrl+Alt+X)
+2. Разверните нужную категорию (например, Common Controls)
+3. Дважды кликните по компоненту (например, Button)
+4. Компонент появится на форме в позиции по умолчанию
+
+Способ 2: Перетаскивание мышью
+1. Откройте Toolbox
+2. Нажмите на компонент левой кнопкой мыши
+3. Не отпуская кнопку, перетащите на форму
+4. Отпустите кнопку в нужном месте
+
+Способ 3: Программно (в коде)
+Button myButton = new Button();
+myButton.Text = "Новая кнопка";
+myButton.Location = new Point(50, 50);
+myButton.Size = new Size(100, 30);
+this.Controls.Add(myButton);</code></pre>
+            </div>
+            
+            <h3>Настройка свойств компонента:</h3>
+            <p>После размещения компонента на форме вы можете настроить его свойства через окно Properties (F4):</p>
+
+            <div class="code-block">
+<pre><code class="language-text">Пример настройки Button:
+┌────────────────────────────────────────┐
+│ Button System.Windows.Forms.Button    │ ← Выбранный компонент
+├────────────────────────────────────────┤
+│ Properties   Events                   │ ← Вкладки
+├────────────────────────────────────────┤
+│ (Name)         button1                │ ← Имя в коде
+│ Accessibility                         │
+│ ▼ Appearance                          │
+│   BackColor     Control               │
+│   BackgroundImage (none)              │
+│   Cursor        Default               │
+│   FlatStyle     Standard              │
+│   Font          Microsoft Sans...     │
+│   ForeColor     ControlText           │
+│   Image         (none)                │
+│   ImageAlign    MiddleCenter          │
+│   Text          button1               │ ← Текст на кнопке
+│   TextAlign     MiddleCenter          │
+│ ▼ Behavior                            │
+│   AutoSize      True                  │
+│   AutoSizeMode   GrowAndShrink        │
+│   Enabled       True                  │
+│ ▼ Design                               │
+│   GenerateMember True                 │
+│   Locked        False                 │
+│   Modifiers     Private               │
+│ ▼ Layout                               │
+│   Anchor        Top, Left             │
+│   Dock          None                  │
+│   Location      100, 100              │ ← Позиция {X, Y}
+│   Margin        3, 3, 3, 3            │
+│   MaximumSize   0, 0                  │
+│   MinimumSize   0, 0                  │
+│   Padding       0, 0, 0, 0            │
+│   Size          75, 23                │ ← Размер {Width, Height}
+│   TabIndex      0                     │
+│   TabStop       True                  │
+└────────────────────────────────────────┘
+
+Изменение свойства:
+• Кликните по свойству
+• Введите новое значение или выберите из списка
+• Для некоторых свойств есть диалоговое окно (например, Font)
+• Изменения сразу применяются к компоненту</code></pre>
+            </div>
+            
+            <h2>Работа с событиями компонентов</h2>
+            <p>События — это действия, на которые компонент может реагировать: клик мыши, нажатие клавиши, загрузка формы и т.д. Вы можете написать код-обработчик, который будет выполняться при наступлении события.</p>
+
+            <h3>Основные события компонентов:</h3>
+
+            <div class="code-block">
+<pre><code class="language-text">События Button (кнопка):
+├─ Click          — клик по кнопке (самое частое!)
+├─ DoubleClick    — двойной клик
+├─ MouseEnter     — курсор мыши вошел в область кнопки
+├─ MouseLeave     — курсор мыши покинул область кнопки
+├─ MouseDown      — нажата кнопка мыши
+├─ MouseUp        — отпущена кнопка мыши
+└─ KeyPress       — нажата клавиша на клавиатуре
+
+События TextBox (поле ввода):
+├─ TextChanged    — изменился текст в поле
+├─ KeyPress       — нажата клавиша
+├─ KeyDown        — клавиша нажата
+├─ KeyUp          — клавиша отпущена
+├─ GotFocus       — поле получило фокус
+├─ LostFocus      — поле потеряло фокус
+└─ Enter          — нажата клавиша Enter
+
+События Form (форма):
+├─ Load           — форма загружается (перед показом)
+├─ Shown          — форма показана на экране
+├─ Activated      — форма стала активной
+├─ Deactivate     — форма перестала быть активной
+├─ Closing        — форма закрывается (можно отменить)
+├─ Closed         — форма закрыта
+├─ Resize         — изменился размер формы
+├─ Move           — форма перемещена
+└─ Paint          — форма перерисовывается</code></pre>
+            </div>
+            
+            <h3>Создание обработчика события:</h3>
+
+            <h4>Способ 1: Через окно Properties (рекомендуется)</h4>
+            <div class="code-block">
+<pre><code class="language-text">1. Выделите компонент на форме (например, Button)
+2. Откройте окно Properties (F4)
+3. Перейдите на вкладку Events (события) — значок ⚡
+4. Найдите нужное событие (например, Click)
+5. Дважды кликните по пустому полю справа от события
+6. Visual Studio автоматически создаст обработчик в коде и перейдет к нему
+
+Пример созданного обработчика:
+private void button1_Click(object sender, EventArgs e)
+{
+    // Ваш код здесь
+}</code></pre>
+            </div>
+            
+            <h4>Способ 2: Двойной клик по компоненту в дизайнере</h4>
+            <div class="code-block">
+<pre><code class="language-text">1. Откройте Дизайнер форм (Shift+F7)
+2. Дважды кликните по компоненту (например, Button)
+3. Visual Studio создаст обработчик для события по умолчанию
+   (для Button это Click, для Form это Load)
+            
+Примечание: Этот способ работает только для основного события компонента!</code></pre>
+            </div>
+
+            <h4>Способ 3: Программно (в коде)</h4>
+            <div class="code-block">
+<pre><code class="language-csharp">public Form1()
+{
+    InitializeComponent();
+
+    // Создаем кнопку программно
+    Button myButton = new Button();
+    myButton.Text = "Нажми меня";
+    myButton.Location = new Point(50, 50);
+    myButton.Size = new Size(100, 30);
+
+    // Подписываемся на событие Click
+    myButton.Click += MyButton_Click;
+
+    // Добавляем кнопку на форму
+    this.Controls.Add(myButton);
+}
+
+// Обработчик события
+private void MyButton_Click(object sender, EventArgs e)
+{
+    MessageBox.Show("Кнопка была нажата!");
+}</code></pre>
+            </div>
+
+            <h3>Параметры обработчика события:</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">private void button1_Click(object sender, EventArgs e)
+//                     ↑           ↑           ↑
+//                     │           │           │
+//           Возвращаемое значение  │     Аргументы события
+//                   (обычно void)  │     (дополнительная информация)
+//                                 │
+//                           Отправитель события
+//                           (объект, который вызвал событие)
+
+// sender — объект, который вызвал событие
+// Например, если несколько кнопок подписаны на один обработчик,
+// можно определить, какая именно кнопка была нажата:
+
+private void AnyButton_Click(object sender, EventArgs e)
+{
+    Button clickedButton = sender as Button;
+    if (clickedButton != null)
+    {
+        MessageBox.Show($"Нажата кнопка: {clickedButton.Text}");
+    }
+}
+
+// e — аргументы события (дополнительная информация)
+// Например, MouseEventArgs содержит координаты мыши:
+
+private void Form1_MouseClick(object sender, MouseEventArgs e)
+{
+    MessageBox.Show($"Клик в точке: X={e.X}, Y={e.Y}");
+}</code></pre>
+            </div>
+
+            <h3>Пример: Полное приложение с обработчиками событий</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">public partial class Form1 : Form
+{
+    public Form1()
+    {
+        InitializeComponent();
+    }
+
+    // Обработчик загрузки формы
+    private void Form1_Load(object sender, EventArgs e)
+    {
+        // Начальные настройки
+        this.Text = "Мое приложение";
+        buttonOK.Text = "OK";
+        labelInfo.Text = "Нажмите кнопку для начала";
+    }
+
+    // Обработчик клика по кнопке OK
+    private void buttonOK_Click(object sender, EventArgs e)
+    {
+        labelInfo.Text = "Кнопка OK была нажата!";
+        labelInfo.ForeColor = Color.Green;
+    }
+
+    // Обработчик клика по кнопке Cancel
+    private void buttonCancel_Click(object sender, EventArgs e)
+    {
+        labelInfo.Text = "Операция отменена";
+        labelInfo.ForeColor = Color.Red;
+    }
+
+    // Обработчик изменения текста в TextBox
+    private void textBoxInput_TextChanged(object sender, EventArgs e)
+    {
+        // Показываем количество символов
+        labelCharCount.Text = $"Символов: {textBoxInput.Text.Length}";
+    }
+
+    // Обработчик нажатия клавиши Enter в TextBox
+    private void textBoxInput_KeyPress(object sender, KeyPressEventArgs e)
+    {
+        if (e.KeyChar == (char)Keys.Enter)
+        {
+            MessageBox.Show($"Вы ввели: {textBoxInput.Text}");
+            e.Handled = true; // Предотвращаем звуковой сигнал
+        }
+    }
+}</code></pre>
+            </div>
+
+            <h2>Первое окно — создание и настройка</h2>
+            <p>После создания проекта Visual Studio автоматически создает Form1 для вас. Давайте посмотрим как это выглядит и как это работает.</p>
+
+            <h3>Базовая пустая Form при создании проекта:</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">namespace MyGraphicsApp
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            // Это вызывает Designer (настройку из Visual Studio Designer)
+            InitializeComponent();
+
+            // ЗДЕСЬ вы можете добавить свой код инициализации
+        }
+    }
+}</code></pre>
+            </div>
+
+            <h3>Расширенный пример с контролем свойств:</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">public partial class Form1 : Form
+{
+    public Form1()
+    {
+        InitializeComponent();
+        
+        // Установка свойств формы программно
+
+        // Заголовок окна (то что видно вверху)
+        this.Text = "Мое первое графическое приложение";
+        
+        // Размер в пикселях (ширина, высота)
+        this.Size = new Size(800, 600);
+        
+        // Начальная позиция на экране
+        this.StartPosition = FormStartPosition.CenterScreen; // Центр экрана
+        
+        // Цвет фона
+        this.BackColor = Color.LightBlue;
+        
+        // Можно ли изменять размер окна?
+        this.FormBorderStyle = FormBorderStyle.Sizable; // Да, можно
+        
+        // Стиль показа при запуске
+        this.WindowState = FormWindowState.Normal; // Not Maximized or Minimized
+    }
+}</code></pre>
+            </div>
+
+            <h2>Свойства формы — как контролировать внешний вид</h2>
+            <p>У Form есть много свойств, которые контролируют её внешний вид и поведение. Разберемся в главных из них.</p>
+            
+            <h3>Размер и положение на экране:</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">// Text — заголовок окна (строка вверху)
+this.Text = "Название приложения";
+
+// Size — размер окна в пикселях (ширина x высота)
+this.Size = new Size(1024, 768); // Стандартное разрешение
+// или отдельно:
+this.Width = 1024;
+this.Height = 768;
+
+// Location — позиция левого верхнего угла на экране
+this.Location = new Point(100, 50); // Х=100 пиксели справа, Y=50 вниз
+
+// ClientSize — размер только клиентской области (без границ и заголовка)
+Size clientArea = this.ClientSize;
+
+// StartPosition — как размещать окно при запуске
+this.StartPosition = FormStartPosition.CenterScreen;  // В центре монитора
+// Other options: Manual, CenterParent, WindowsDefaultLocation, WindowsDefaultBounds</code></pre>
+            </div>
+
+            <h3>Внешний вид и оформление:</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">// BackColor — цвет фона (фон всей формы)
+this.BackColor = Color.White;           // Белый фон
+this.BackColor = Color.FromArgb(200, 200, 255); // Светло-синий (RGB)
+
+// ForeColor — основной цвет текста по умолчанию
+this.ForeColor = Color.Black;
+
+// FormBorderStyle — тип границ окна (как его можно менять)
+this.FormBorderStyle = FormBorderStyle.Sizable;    // Можно перетаскивать края
+// this.FormBorderStyle = FormBorderStyle.Fixed3D;  // Нельзя менять размер
+// this.FormBorderStyle = FormBorderStyle.None;     // Вообще без границ
+
+// Font — шрифт по умолчанию для текста на форме
+this.Font = new Font("Arial", 12, FontStyle.Regular);
+
+// Opacity — прозрачность окна (0=полностью прозрачное, 1=непрозрачное)
+this.Opacity = 0.9; // 90% видимости
+
+// Icon — значок в левом углу заголовка и на панели задач
+this.Icon = new Icon("myIcon.ico");</code></pre>
+            </div>
+            
+            <h3>Поведение и управление:</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">// MaximizeBox — показывать ли кнопку развернуть (верхний правый угол)
+this.MaximizeBox = true;   // Покажет кнопку □
+
+// MinimizeBox — показывать ли кнопку свернуть
+this.MinimizeBox = true;   // Покажет кнопку _
+
+// ControlBox — показывать ли все кнопки управления (влияет на обе выше)
+this.ControlBox = true;    // true = show, false = hide все три кнопки
+
+// TopMost — будет ли окно всегда над другими окнами?
+this.TopMost = true;       // Like "Always on Top"
+
+// ShowInTaskbar — показывать в панели задач
+this.ShowInTaskbar = true; // Обычно true
+
+// WindowState — в каком состоянии открыть окно
+this.WindowState = FormWindowState.Normal;      // Нормальное
+// this.WindowState = FormWindowState.Maximized; // Во весь экран
+// this.WindowState = FormWindowState.Minimized; // Свернуто</code></pre>
+            </div>
+            
+            <h3>Полный пример настройки формы:</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">public partial class Form1 : Form
+{
+    public Form1()
+    {
+        InitializeComponent();
+        
+        // ОФОРМЛЕНИЕ
+        this.Text = "Графический редактор v1.0";
+        this.Size = new Size(1280, 800);
+        this.BackColor = Color.White;
+        this.Font = new Font("Segoe UI", 10);
+        
+        // ПОЗИЦИЯ
+        this.StartPosition = FormStartPosition.CenterScreen;
+        
+        // УПРАВЛЕНИЕ
+        this.MaximizeBox = true;
+        this.MinimizeBox = true;
+        this.FormBorderStyle = FormBorderStyle.Sizable;
+        this.WindowState = FormWindowState.Normal;
+        
+        // ПОВЕДЕНИЕ
+        this.TopMost = false;      // Не "всегда сверху"
+        this.ShowInTaskbar = true; // Видимо в панели задач
+    }
+}</code></pre>
+            </div>
+            
+            <h3>Частые ошибки при конфигурации формы:</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">// ❌ НЕПРАВИЛЬНО: забыли InitializeComponent() в начале конструктора
+public Form1()
+{
+    this.Text = "Ошибка!"; // Может крашнуть если Designer элементы не инициализированы
+    InitializeComponent();
+}
+
+// ✅ ПРАВИЛЬНО: InitializeComponent() ПЕРВЫМ
+public Form1()
+{
+    InitializeComponent();  // ВСЕГДА первым!
+    this.Text = "Правильно";
+}
+
+// ❌ НЕПРАВИЛЬНО: забыли new Size() лучше не использовать string
+this.Size = "800x600"; // Ошибка типа!
+
+// ✅ ПРАВИЛЬНО: new Size с двумя int параметрами
+this.Size = new Size(800, 600);</code></pre>
+            </div>
+            
+            <h3>Best Practices:</h3>
+            <ul>
+                <li><strong>Всегда вызывайте InitializeComponent() первым</strong> — он инициализирует элементы из Designer</li>
+                <li><strong>Устанавливайте размер после инициализации</strong> — иначе могут быть проблемы с элементами</li>
+                <li><strong>Используйте понятные названия формам</strong> — MainForm, EditorForm, SettingsForm лучше чем Form1</li>
+                <li><strong>Совместите размер с вашим контентом</strong> — окно 200x100 для большого интерфейса плохо</li>
+                <li><strong>Тестируйте на разных разрешениях экрана</strong> — не все используют 1920x1080</li>
+            </ul>
+            
+            <h3>Что дальше:</h3>
+            <p>Когда вы освоите создание и настройку формы, пришло время изучить жизненный цикл рисования. В следующем уроке 1.4 мы посмотрим на события Paint и Invalidate(), которые позволяют рисовать собственную графику внутри формы.</p>
+            
+            </div>
+            
+            </div>
+            
+            <div class="tab-content" data-tab="practice">
+                <h2>Практическое задание</h2>
+            <div class="practice-section">
+                <h3>Задание 1: Изучение интерфейса Visual Studio</h3>
+                <ol class="practice-steps">
+                    <li>Откройте Visual Studio и создайте новый проект "Windows Forms App (.NET Framework)"</li>
+                    <li>Изучите основные окна и панели:
+                        <ul>
+                            <li>Найдите и откройте Toolbox (Ctrl+Alt+X)</li>
+                            <li>Найдите и откройте Solution Explorer (Ctrl+Alt+L)</li>
+                            <li>Найдите и откройте Properties Window (F4)</li>
+                            <li>Попробуйте переключаться между Дизайнером и Кодом (F7, Shift+F7)</li>
+                        </ul>
+                    </li>
+                    <li>Изучите горизонтальное меню:
+                        <ul>
+                            <li>File → New → Project</li>
+                            <li>View → Toolbox / Solution Explorer / Properties Window</li>
+                            <li>Build → Build Solution</li>
+                            <li>Debug → Start Debugging</li>
+                        </ul>
+                    </li>
+                    <li>Попробуйте горячие клавиши:
+                        <ul>
+                            <li>F5 — запустить приложение</li>
+                            <li>Shift+F5 — остановить</li>
+                            <li>Ctrl+S — сохранить</li>
+                            <li>Ctrl+Shift+S — сохранить все</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+            
+            <div class="practice-section">
+                <h3>Задание 2: Создание простой формы с компонентами</h3>
+                <ol class="practice-steps">
+                    <li>Создайте новый проект Windows Forms</li>
+                    <li>Настройте свойства формы через окно Properties:
+                        <ul>
+                            <li>(Name): MainForm</li>
+                            <li>Text: "Мое первое приложение"</li>
+                            <li>Size: 600, 400</li>
+                            <li>StartPosition: CenterScreen</li>
+                            <li>BackColor: LightBlue</li>
+                        </ul>
+                    </li>
+                    <li>Разместите на форме следующие компоненты из Toolbox:
+                        <ul>
+                            <li>Label — измените Text на "Введите ваше имя:"</li>
+                            <li>TextBox — очистите Text</li>
+                            <li>Button — измените Text на "Приветствовать"</li>
+                            <li>Label — измените (Name) на labelResult, Text оставьте пустым</li>
+                        </ul>
+                    </li>
+                    <li>Выровняйте компоненты:
+                        <ul>
+                            <li>Выделите Label и TextBox</li>
+                            <li>Format → Align → Tops</li>
+                            <li>Format → Vertical Spacing → Make Equal</li>
+                        </ul>
+                    </li>
+                    <li>Создайте обработчик события Click для кнопки:
+                        <ul>
+                            <li>Дважды кликните по кнопке</li>
+                            <li>Добавьте код:
+                                <div class="code-block">
+<pre><code class="language-csharp">private void button1_Click(object sender, EventArgs e)
+{
+    string name = textBox1.Text;
+    labelResult.Text = $"Привет, {name}!";
+    labelResult.ForeColor = Color.Green;
+}</code></pre>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>Запустите приложение (F5) и проверьте работу</li>
+                </ol>
+            </div>
+            
+            <div class="practice-section">
+                <h3>Задание 3: Работа со свойствами компонентов</h3>
+                <ol class="practice-steps">
+                    <li>На форме из задания 2 измените свойства компонентов:
+                        <ul>
+                            <li>Button: FlatStyle = Flat, BackColor = LightGreen</li>
+                            <li>TextBox: Font = Arial, 12pt, Bold</li>
+                            <li>Label (первый): Font = Arial, 10pt, Italic</li>
+                        </ul>
+                    </li>
+                    <li>Добавьте обработчик события Load для формы:
+                        <ul>
+                            <li>Перейдите в Дизайнер форм</li>
+                            <li>Выделите форму</li>
+                            <li>В окне Properties перейдите на вкладку Events</li>
+                            <li>Дважды кликните по событию Load</li>
+                            <li>Добавьте код:
+                                <div class="code-block">
+<pre><code class="language-csharp">private void MainForm_Load(object sender, EventArgs e)
+{
+    textBox1.Text = "";
+    labelResult.Text = "Введите имя и нажмите кнопку";
+    labelResult.ForeColor = Color.Gray;
+}</code></pre>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>Запустите приложение и проверьте, что текст устанавливается автоматически при загрузке</li>
+                </ol>
+            </div>
+            
+            <div class="practice-section">
+                <h3>Задание 4: Изучение файлов проекта</h3>
+                <ol class="practice-steps">
+                    <li>Откройте Solution Explorer</li>
+                    <li>Изучите структуру проекта:
+                        <ul>
+                            <li>Program.cs — посмотрите на метод Main()</li>
+                            <li>Form1.cs — ваш код формы</li>
+                            <li>Form1.Designer.cs — автогенерируемый код (только посмотреть!)</li>
+                            <li>Properties/AssemblyInfo.cs — информация о сборке</li>
+                        </ul>
+                    </li>
+                    <li>Нажмите кнопку "Show All Files" в Solution Explorer</li>
+                    <li>Разверните папки bin и obj, посмотрите на скомпилированные файлы</li>
+                    <li>Измените версию в AssemblyInfo.cs и перекомпилируйте проект</li>
+                </ol>
+            </div>
+
+            <div class="practice-tip">
+                <strong>💡 Совет:</strong> Используйте IntelliSense (Ctrl+Space) при написании кода — он поможет найти нужные свойства и методы компонентов.
+            </div>
+
+            </div>
+            
+            
+            <div class="tab-content" data-tab="tests">
+                <div class="test-section">
+                <h2>Проверка знаний</h2>
+                <p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+                
+                <div class="question" data-correct="0">
+                    <div class="question-text">1. Какое окно в Visual Studio используется для изменения свойств компонентов?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Properties Window (Окно свойств)</li>
+                        <li class="answer-option">Solution Explorer (Обозреватель решений)</li>
+                        <li class="answer-option">Toolbox (Панель элементов)</li>
+                        <li class="answer-option">Output (Вывод)</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="2">
+                    <div class="question-text">2. Какая горячая клавиша открывает Панель элементов (Toolbox)?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">F4</li>
+                        <li class="answer-option">Ctrl+Alt+L</li>
+                        <li class="answer-option">Ctrl+Alt+X</li>
+                        <li class="answer-option">Ctrl+K, Ctrl+D</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="1">
+                    <div class="question-text">3. В каком файле находится точка входа приложения Windows Forms?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Form1.cs</li>
+                        <li class="answer-option">Program.cs</li>
+                        <li class="answer-option">Form1.Designer.cs</li>
+                        <li class="answer-option">AssemblyInfo.cs</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="3">
+                    <div class="question-text">4. Какой компонент используется для отображения статического текста?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">TextBox</li>
+                        <li class="answer-option">Button</li>
+                        <li class="answer-option">Label</li>
+                        <li class="answer-option">ComboBox</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">5. Какая горячая клавиша переключается между Дизайнером форм и Кодом?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">F7</li>
+                        <li class="answer-option">F4</li>
+                        <li class="answer-option">F5</li>
+                        <li class="answer-option">F9</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="2">
+                    <div class="question-text">6. В каком файле хранится автогенерируемый код дизайнера формы?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Form1.cs</li>
+                        <li class="answer-option">Program.cs</li>
+                        <li class="answer-option">Form1.Designer.cs</li>
+                        <li class="answer-option">Form1.resx</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="1">
+                    <div class="question-text">7. Какое событие кнопки вызывается при клике мышью?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">DoubleClick</li>
+                        <li class="answer-option">Click</li>
+                        <li class="answer-option">MouseDown</li>
+                        <li class="answer-option">MouseUp</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="3">
+                    <div class="question-text">8. Какой компонент используется для ввода текста пользователем?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Label</li>
+                        <li class="answer-option">Button</li>
+                        <li class="answer-option">CheckBox</li>
+                        <li class="answer-option">TextBox</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">9. Какое свойство формы задает заголовок окна?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Text</li>
+                        <li class="answer-option">Name</li>
+                        <li class="answer-option">Title</li>
+                        <li class="answer-option">Caption</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="2">
+                    <div class="question-text">10. Как создать обработчик события через окно Properties?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Двойной клик по компоненту в дизайнере</li>
+                        <li class="answer-option">Клик правой кнопкой мыши → "View Code"</li>
+                        <li class="answer-option">Перейти на вкладку Events и двойной клик по нужному событию</li>
+                        <li class="answer-option">Написать код вручную в Form1.cs</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+                </div>
+        </div>
+
+        <div class="navigation">
+            <a href="lesson1-2.html" class="nav-btn secondary">← Предыдущий урок</a>
+            <a href="lesson1-4.html" class="nav-btn">Следующий урок →</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Курс "Графическое программирование на C#"</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+

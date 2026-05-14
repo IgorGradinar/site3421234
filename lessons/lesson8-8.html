@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Урок 8.8: Геометрические шаблоны</title>
+<link href="../styles.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="../lesson-quiz.js"></script>
+</head>
+<body>
+<header>
+<div class="container">
+<a class="course-title-link" href="../index.html">
+<h1>🎨 Графическое программирование на C#</h1>
+</a>
+</div>
+</header>
+<main class="lesson-container">
+<a class="back-link" href="../modules/module8.html">← Вернуться к модулю 8</a>
+<div class="lesson-header">
+<h1>Урок 8.8: Геометрические шаблоны</h1>
+<div class="lesson-meta">
+<span>Модуль 8</span>
+<span>⏱️ ~1 час</span>
+</div>
+</div>
+<div class="lesson-content">
+<div class="tabs-container">
+<div class="tabs-nav">
+<button class="tab-button active" data-tab="theory">📚 Теория</button>
+<button class="tab-button" data-tab="practice">💻 Практика</button>
+<button class="tab-button" data-tab="tests">✅ Тесты</button>
+</div>
+<div class="tab-content active" data-tab="theory">
+<h2>Генерация узоров</h2>
+<p>Геометрические шаблоны создаются повторяющимися элементами, трансформированными с помощью вращения, масштабирования и смещения.</p>
+<div class="code-block"><pre><code class="language-csharp">for (int layer = 0; layer &lt; 8; layer++)
+{
+    g.TranslateTransform(centerX, centerY);
+    g.RotateTransform(rotation + layer * 45);
+    for (int item = 0; item &lt; 6; item++)
+    {
+        float angle = item * 360f / 6;
+        g.RotateTransform(angle);
+        g.FillEllipse(brush, 150, -10, 20, 20);
+        g.RotateTransform(-angle);
+    }
+    g.ResetTransform();
+}
+</code></pre></div>
+<h2>📝 Пример задания — геометрический узор</h2>
+<p>8 слоёв с вращающимися орбитами. Каждый слой пульсирует по масштабу через <code>Math.Sin</code>. Пульсация и вращение независимы для каждого слоя:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class Task28_GeometricPattern : Form
+    {
+        private float rotationAngle = 0;
+        private float scaleValue = 1;
+        private readonly Timer timer = new Timer();
+
+        public Task28_GeometricPattern()
+        {
+            Text = "Задание 28 — Геометрический узор (Geometric Pattern)";
+            Size = new Size(800, 800);
+            BackColor = Color.White;
+            DoubleBuffered = true;
+            Paint += Form_Paint;
+
+            timer.Interval = 16;
+            timer.Tick += (s, e) =&gt;
+            {
+                rotationAngle += 2f;
+                scaleValue = 1 + (float)Math.Sin(rotationAngle * Math.PI / 180) * 0.3f;
+                Invalidate();
+            };
+            timer.Start();
+            FormClosed += (s, e) =&gt; timer.Stop();
+        }
+
+        private void Form_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            e.Graphics.Clear(Color.White);
+
+            float cx = ClientSize.Width / 2f;
+            float cy = ClientSize.Height / 2f;
+            int layers = 8, itemsPerLayer = 6;
+
+            Color[] colors = { Color.Red, Color.Orange, Color.Yellow, Color.Green,
+                               Color.Blue, Color.Purple, Color.Pink, Color.Cyan };
+
+            for (int layer = 0; layer &lt; layers; layer++)
+            {
+                var state = e.Graphics.Save();
+                e.Graphics.TranslateTransform(cx, cy);
+                e.Graphics.RotateTransform(rotationAngle + layer * 30);
+
+                float baseRadius = 50 + layer * 40;
+                float scale = scaleValue * (0.8f + layer * 0.1f);
+
+                for (int i = 0; i &lt; itemsPerLayer; i++)
+                {
+                    float angle = (float)(i * 2 * Math.PI / itemsPerLayer);
+                    float x = baseRadius * (float)Math.Cos(angle);
+                    float y = baseRadius * (float)Math.Sin(angle);
+                    float size = 10 * scale;
+
+                    using (var brush = new SolidBrush(colors[layer % colors.Length]))
+                        e.Graphics.FillEllipse(brush,
+                            x - size / 2, y - size / 2, size, size);
+                }
+
+                e.Graphics.Restore(state);
+            }
+
+            e.Graphics.FillEllipse(Brushes.Black, cx - 8, cy - 8, 16, 16);
+            e.Graphics.DrawString(
+                $"Угол: {rotationAngle:F0}° | Масштаб: {scaleValue:F2}x",
+                new Font("Segoe UI", 11, FontStyle.Bold), Brushes.Black, 10, 10);
+        }
+    }
+}</code></pre>
+</div>
+<h2>📝 Бонус: комплексная анимация</h2>
+<p>Четыре независимых слоя на чёрном фоне: анимированная сетка, пульсирующая звезда в центре, орбитирующие «планеты» и расширяющиеся волны-риплы:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class BonusAnimationTechniques : Form
+    {
+        private float time = 0;
+        private readonly Timer timer = new Timer();
+
+        public BonusAnimationTechniques()
+        {
+            Text = "Бонус: Продвинутые техники анимации (Advanced Animation)";
+            Size = new Size(1000, 700);
+            BackColor = Color.Black;
+            DoubleBuffered = true;
+            Paint += Form_Paint;
+            timer.Interval = 16;
+            timer.Tick += (s, e) =&gt; { time += 0.016f; Invalidate(); };
+            timer.Start();
+            FormClosed += (s, e) =&gt; timer.Stop();
+        }
+
+        private void Form_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            int w = ClientSize.Width, h = ClientSize.Height;
+            int cx = w / 2, cy = h / 2;
+
+            // 1. Анимированная сетка
+            int gs = 50, offset = (int)(time * 20) % gs;
+            using (var pen = new Pen(Color.FromArgb(50, Color.Cyan), 1))
+            {
+                for (int x = -offset; x &lt; w; x += gs) e.Graphics.DrawLine(pen, x, 0, x, h);
+                for (int y = -offset; y &lt; h; y += gs) e.Graphics.DrawLine(pen, 0, y, w, y);
+            }
+
+            // 2. Пульсирующая звезда
+            var st = e.Graphics.Save();
+            e.Graphics.TranslateTransform(cx, cy);
+            e.Graphics.RotateTransform(time * 30f);
+            float sc = 1 + (float)Math.Sin(time * 3) * 0.3f;
+            e.Graphics.ScaleTransform(sc, sc);
+            var starPts = new PointF[16];
+            for (int i = 0; i &lt; 16; i++)
+            {
+                float a = (float)(i * Math.PI / 8);
+                float r = (i % 2 == 0) ? 60 : 24;
+                starPts[i] = new PointF(r * (float)Math.Cos(a), r * (float)Math.Sin(a));
+            }
+            using (var b = new SolidBrush(Color.FromArgb(200, Color.Yellow)))
+                e.Graphics.FillPolygon(b, starPts);
+            e.Graphics.Restore(st);
+
+            // 3. Орбитирующие частицы
+            Color[] oc = { Color.Red, Color.Green, Color.Blue, Color.Magenta, Color.Cyan };
+            for (int i = 0; i &lt; 5; i++)
+            {
+                float radius = 150 + i * 30;
+                float angle = (float)(time * (1 + i * 0.3f) * 2 * Math.PI);
+                float x = cx + radius * (float)Math.Cos(angle);
+                float y = cy + radius * (float)Math.Sin(angle);
+                float size = 15 - i * 2;
+                using (var orbitPen = new Pen(Color.FromArgb(30, oc[i]), 1))
+                    e.Graphics.DrawEllipse(orbitPen, cx - radius, cy - radius, radius * 2, radius * 2);
+                using (var b = new SolidBrush(oc[i]))
+                    e.Graphics.FillEllipse(b, x - size / 2, y - size / 2, size, size);
+            }
+
+            // 4. Рипл-эффект (расширяющиеся кольца)
+            for (int i = 0; i &lt; 5; i++)
+            {
+                float rt = (time - i * 0.3f) % 2.0f;
+                if (rt &lt; 0) continue;
+                float radius = rt * 200;
+                float alpha = 200 * (1 - rt / 2.0f);
+                using (var pen = new Pen(Color.FromArgb((int)alpha, Color.White), 2))
+                    e.Graphics.DrawEllipse(pen,
+                        cx - radius, cy - radius, radius * 2, radius * 2);
+            }
+
+            e.Graphics.DrawString($"Время: {time:F1}s | FPS: ~60",
+                new Font("Segoe UI", 11, FontStyle.Bold), Brushes.Cyan, 20, 20);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="tab-content" data-tab="practice">
+<h2>Практическое задание</h2>
+<ul>
+<li>Создайте несколько слоев узоров.</li>
+<li>Добавьте анимацию вращения и масштаба.</li>
+<li>Используйте разные цвета для каждого слоя.</li>
+<li>Экспериментируйте с числом повторений.</li>
+</ul>
+<div class="practice-section">
+<h3>Задание по аналогии: Геометрический узор</h3>
+<p>По аналогии с <code>Task28_GeometricPattern</code> создайте анимированный многослойный геометрический узор.</p>
+<ol class="practice-steps">
+<li>Объявите поля <code>float rotationAngle = 0</code> и <code>float scaleValue = 1</code>. В <code>Timer_Tick</code> увеличивайте <code>rotationAngle += 2f</code> и вычисляйте пульсацию: <code>scaleValue = 1 + Math.Sin(rotationAngle * π / 180) * 0.3f</code>.</li>
+<li>В <code>Form_Paint</code> создайте цикл по слоям (8 слоёв). Для каждого слоя сохраняйте состояние, вызывайте <code>TranslateTransform(cx, cy)</code> и <code>RotateTransform(rotationAngle + layer * 30)</code>.</li>
+<li>Внутри каждого слоя в цикле по элементам (6 штук) вычисляйте позицию по полярным координатам: <code>baseRadius = 50 + layer * 40</code>, <code>angle = i * 2π / 6</code>.</li>
+<li>Рисуйте элемент через <code>FillEllipse</code> с размером <code>10 * scaleValue</code>, восстанавливайте состояние через <code>Restore(state)</code> после каждого слоя.</li>
+<li>Дополнительно: вместо кружков используйте маленькие звёздочки (6 лучей) или квадраты, поворачивая их дополнительным <code>RotateTransform</code> перед рисованием.</li>
+</ol>
+<div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task28" class="lesson-image task-screenshot" src="../images/tasks/task28_geometric_pattern.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task28)</p></div><div class="practice-tip">
+<strong>💡 Совет:</strong> Чтобы каждый слой вращался с разной скоростью, прибавляйте к углу вращения поправку пропорциональную номеру слоя: <code>RotateTransform(rotationAngle * (1 + layer * 0.1f) + layer * 30)</code>.
+                        </div>
+</div>
+<div class="practice-section">
+<h3>Задание по аналогии: Комплексная анимация</h3>
+<p>По аналогии с <code>BonusAnimationTechniques</code> создайте сцену, сочетающую четыре независимых анимационных слоя.</p>
+<ol class="practice-steps">
+<li>Используйте поле <code>float time = 0</code> и <code>Timer</code> с Interval = 16 мс. В <code>Timer_Tick</code> увеличивайте <code>time += 0.016f</code>.</li>
+<li>Реализуйте <code>DrawAnimatedGrid</code>: рисуйте сетку с офсетом <code>(int)(time * 20) % gridSize</code> — сетка "едет" вправо-вниз. Используйте полупрозрачное перо.</li>
+<li>Реализуйте <code>DrawCentralElement</code>: сохраняйте состояние, переносите в центр, вращайте (<code>time * 30f</code>), масштабируйте (<code>1 + sin(time*3)*0.3</code>), рисуйте звезду из <code>FillPolygon</code>.</li>
+<li>Реализуйте <code>DrawOrbitingParticles</code>: 5 частиц с разными скоростями и орбитальными радиусами. Каждая движется по эллипсу: <code>x = cx + radius * cos(time * speed * 2π)</code>.</li>
+<li>Реализуйте <code>DrawRippleEffect</code>: 5 концентрических волн с разными фазами (<code>time - i * 0.3f</code>). Радиус = <code>rt * 200</code>, альфа уменьшается с <code>rt</code>.</li>
+</ol>
+<div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Bonus" class="lesson-image task-screenshot" src="../images/tasks/bonus_animation.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Bonus)</p></div><div class="practice-tip">
+<strong>💡 Совет:</strong> Разбивайте сложную сцену на методы — это значительно упрощает отладку и позволяет независимо включать/отключать каждый эффект для проверки.
+                        </div>
+</div>
+</div>
+<div class="tab-content" data-tab="tests">
+<h2>Проверка</h2>
+<p>Почему горизонтальное и вертикальное повторение дают разные ощущения? Как влияет масштаб на глубину рисунка?</p>
+</div>
+</div>
+</div>
+<div class="navigation">
+<a class="nav-btn secondary" href="lesson8-7.html">← Предыдущий урок</a>
+<a class="nav-btn" href="../modules/module8.html">К модулю →</a>
+</div>
+</main>
+<footer>
+<div class="container">
+<p>© 2026 Курс "Графическое программирование на C#"</p>
+</div>
+</footer>
+</body>
+</html>

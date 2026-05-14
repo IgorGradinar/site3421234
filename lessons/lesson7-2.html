@@ -1,0 +1,182 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 7.2: Векторная графика в XAML</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="../lesson-quiz.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🎨 Графическое программирование на C#</h1>
+        </div>
+    </header>
+
+    <main class="lesson-container">
+        <a href="../modules/module7.html" class="back-link">← Вернуться к модулю 7</a>
+        
+        <div class="lesson-header">
+            <h1>Урок 7.2: Векторная графика в XAML</h1>
+            <div class="lesson-meta">
+                <span>Модуль 7</span>
+                <span>⏱️ ~2 часа</span>
+            </div>
+        </div>
+
+        <div class="lesson-content">
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" data-tab="theory">📚 Теория</button>
+                <button class="tab-button" data-tab="practice">💻 Практика</button>
+                <button class="tab-button" data-tab="tests">✅ Тесты</button>
+            </div>
+            
+            <div class="tab-content active" data-tab="theory">
+            <h2>Shape элементы</h2>
+            <div class="code-block"><pre><code class="language-csharp">&lt;Canvas&gt;
+    &lt;Rectangle Width="100" Height="50" 
+               Fill="Blue" Stroke="Black" 
+               Canvas.Left="10" Canvas.Top="10"/&gt;
+    
+    &lt;Ellipse Width="80" Height="80" 
+             Fill="Red" 
+             Canvas.Left="120" Canvas.Top="10"/&gt;
+    
+    &lt;Line X1="10" Y1="100" X2="200" Y2="100" 
+          Stroke="Green" StrokeThickness="2"/&gt;
+&lt;/Canvas&gt;</code></pre></div>
+
+            <h2>Path и геометрия</h2>
+            <div class="code-block"><pre><code class="language-csharp">&lt;Path Stroke="Black" StrokeThickness="2" Fill="Yellow"&gt;
+    &lt;Path.Data&gt;
+        &lt;PathGeometry&gt;
+            &lt;PathFigure StartPoint="10,10"&gt;
+                &lt;LineSegment Point="50,50"/&gt;
+                &lt;ArcSegment Point="100,10" 
+                            Size="50,50" 
+                            SweepDirection="Clockwise"/&gt;
+            &lt;/PathFigure&gt;
+        &lt;/PathGeometry&gt;
+    &lt;/Path.Data&gt;
+&lt;/Path&gt;</code></pre></div>
+
+            <h2>Анимация в WPF</h2>
+            <div class="code-block"><pre><code class="language-csharp">&lt;Rectangle x:Name="rect" Width="50" Height="50" Fill="Blue"&gt;
+    &lt;Rectangle.Triggers&gt;
+        &lt;EventTrigger RoutedEvent="Loaded"&gt;
+            &lt;BeginStoryboard&gt;
+                &lt;Storyboard&gt;
+                    &lt;DoubleAnimation Storyboard.TargetName="rect"
+                                     Storyboard.TargetProperty="(Canvas.Left)"
+                                     From="0" To="300" 
+                                     Duration="0:0:2"
+                                     RepeatBehavior="Forever"/&gt;
+                &lt;/Storyboard&gt;
+            &lt;/BeginStoryboard&gt;
+        &lt;/EventTrigger&gt;
+    &lt;/Rectangle.Triggers&gt;
+&lt;/Rectangle&gt;</code></pre></div>
+
+            <h2>Стили и шаблоны</h2>
+            <div class="code-block"><pre><code class="language-csharp">&lt;Window.Resources&gt;
+    &lt;Style TargetType="Button"&gt;
+        &lt;Setter Property="Background" Value="LightBlue"/&gt;
+        &lt;Setter Property="FontSize" Value="16"/&gt;
+        &lt;Setter Property="Template"&gt;
+            &lt;Setter.Value&gt;
+                &lt;ControlTemplate TargetType="Button"&gt;
+                    &lt;Border Background="{TemplateBinding Background}"
+                            CornerRadius="5"&gt;
+                        &lt;ContentPresenter HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/&gt;
+                    &lt;/Border&gt;
+                &lt;/ControlTemplate&gt;
+            &lt;/Setter.Value&gt;
+        &lt;/Setter&gt;
+    &lt;/Style&gt;
+&lt;/Window.Resources&gt;</code></pre>
+            </div>
+            
+            </div>
+            
+            <div class="tab-content" data-tab="practice">
+                <h2>Практическое задание</h2>
+            <div class="practice-section">
+                <h3>Задание: Векторная графика в XAML</h3>
+                <ol class="practice-steps">
+                    <li>Создайте WPF приложение с векторной графикой</li>
+                    <li>Добавьте различные фигуры, анимацию движения</li>
+                    <li>Примените стили</li>
+                </ol>
+            </div>
+            
+            </div>
+            
+            
+            <div class="tab-content" data-tab="tests">
+                <div class="test-section">
+                <h2>Проверка знаний</h2>
+                <p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+                
+                <div class="question" data-correct="0">
+                    <div class="question-text">1. Усвоили ли вы основные концепции урока?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Да, материал понятен</li>
+                        <li class="answer-option">Частично понятен</li>
+                        <li class="answer-option">Нужно повторить</li>
+                        <li class="answer-option">Не понял</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="1">
+                    <div class="question-text">2. Готовы ли вы применить изученное на практике?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Нет, нужно еще изучить</li>
+                        <li class="answer-option">Да, готов попробовать</li>
+                        <li class="answer-option">Возможно</li>
+                        <li class="answer-option">Не уверен</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">3. Что такое Path в XAML?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Элемент для рисования сложных векторных фигур</li>
+                        <li class="answer-option">Путь к файлу</li>
+                        <li class="answer-option">Маршрут анимации</li>
+                        <li class="answer-option">Свойство элемента</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+</div>
+                        </div>
+        </div>
+
+        <div class="navigation">
+            <a href="lesson7-1.html" class="nav-btn secondary">← Предыдущий урок</a>
+            <a href="lesson7-3.html" class="nav-btn">Следующий урок →</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Курс "Графическое программирование на C#"</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+

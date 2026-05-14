@@ -1,0 +1,67 @@
+<svg width="650" height="400" viewBox="0 0 650 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="650" height="400" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="325" y="20" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">Пространства имен GDI+</text>
+  
+  <!-- System.Drawing -->
+  <rect x="25" y="40" width="190" height="150" rx="8" fill="#0078d4" stroke="#005a9e" stroke-width="2"/>
+  <text x="120" y="65" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">System.Drawing</text>
+  <text x="120" y="82" font-family="Arial, sans-serif" font-size="9" fill="#e6f2ff" text-anchor="middle">ГЛАВНЫЙ NAMESPACE</text>
+  
+  <text x="40" y="100" font-family="Arial, sans-serif" font-size="9" fill="white">• Graphics</text>
+  <text x="40" y="115" font-family="Arial, sans-serif" font-size="9" fill="white">• Pen</text>
+  <text x="40" y="130" font-family="Arial, sans-serif" font-size="9" fill="white">• Brush</text>
+  <text x="40" y="145" font-family="Arial, sans-serif" font-size="9" fill="white">• Color</text>
+  <text x="40" y="160" font-family="Arial, sans-serif" font-size="9" fill="white">• Font</text>
+  <text x="40" y="175" font-family="Arial, sans-serif" font-size="9" fill="white">• Image/Bitmap</text>
+  
+  <!-- System.Drawing.Drawing2D -->
+  <rect x="230" y="40" width="190" height="150" rx="8" fill="#28a745" stroke="#1e7e34" stroke-width="2"/>
+  <text x="325" y="65" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">System.Drawing.Drawing2D</text>
+  <text x="325" y="82" font-family="Arial, sans-serif" font-size="9" fill="#d4edda" text-anchor="middle">ПРОДВИНУТЫЕ ЭФФЕКТЫ</text>
+  
+  <text x="245" y="100" font-family="Arial, sans-serif" font-size="9" fill="white">• SmoothingMode</text>
+  <text x="245" y="115" font-family="Arial, sans-serif" font-size="9" fill="white">• LinearGradientBrush</text>
+  <text x="245" y="130" font-family="Arial, sans-serif" font-size="9" fill="white">• GraphicsPath</text>
+  <text x="245" y="145" font-family="Arial, sans-serif" font-size="9" fill="white">• HatchBrush</text>
+  <text x="245" y="160" font-family="Arial, sans-serif" font-size="9" fill="white">• Matrix</text>
+  <text x="245" y="175" font-family="Arial, sans-serif" font-size="9" fill="white">• DashStyle</text>
+  
+  <!-- System.Drawing.Imaging -->
+  <rect x="435" y="40" width="190" height="150" rx="8" fill="#dc3545" stroke="#c82333" stroke-width="2"/>
+  <text x="530" y="65" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">System.Drawing.Imaging</text>
+  <text x="530" y="82" font-family="Arial, sans-serif" font-size="9" fill="#f8d7da" text-anchor="middle">РАБОТА С ИЗОБРАЖЕНИЯМИ</text>
+  
+  <text x="450" y="100" font-family="Arial, sans-serif" font-size="9" fill="white">• ImageFormat</text>
+  <text x="450" y="115" font-family="Arial, sans-serif" font-size="9" fill="white">• Encoder</text>
+  <text x="450" y="130" font-family="Arial, sans-serif" font-size="9" fill="white">• ImageAttributes</text>
+  <text x="450" y="145" font-family="Arial, sans-serif" font-size="9" fill="white">• EncoderParameters</text>
+  <text x="450" y="160" font-family="Arial, sans-serif" font-size="9" fill="white">• PropertyItem</text>
+  
+  <!-- System.Drawing.Text -->
+  <rect x="25" y="210" width="190" height="120" rx="8" fill="#ffc107" stroke="#e0a800" stroke-width="2"/>
+  <text x="120" y="235" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">System.Drawing.Text</text>
+  <text x="120" y="252" font-family="Arial, sans-serif" font-size="9" fill="#666" text-anchor="middle">ТЕКСТ И ШРИФТЫ</text>
+  
+  <text x="40" y="270" font-family="Arial, sans-serif" font-size="9" fill="#333">• PrivateFontCollection</text>
+  <text x="40" y="285" font-family="Arial, sans-serif" font-size="9" fill="#333">• TextRenderingHint</text>
+  <text x="40" y="300" font-family="Arial, sans-serif" font-size="9" fill="#333">• FontFamily</text>
+  <text x="40" y="315" font-family="Arial, sans-serif" font-size="9" fill="#333">• InstalledFontCollection</text>
+  
+  <!-- Usage Box -->
+  <rect x="230" y="210" width="395" height="120" rx="8" fill="#ffffff" stroke="#333" stroke-width="2"/>
+  <text x="427" y="235" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">Типичная структура файла:</text>
+  
+  <rect x="245" y="250" width="365" height="70" rx="4" fill="#f8f9fa" stroke="#ccc" stroke-width="1"/>
+  <text x="255" y="270" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#0078d4">using System.Drawing;</text>
+  <text x="255" y="285" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#28a745">using System.Drawing.Drawing2D;</text>
+  <text x="255" y="300" font-family="Arial, sans-serif" font-size="10" fill="#999">// using System.Drawing.Imaging;</text>
+  <text x="255" y="315" font-family="Arial, sans-serif" font-size="10" fill="#999">// using System.Drawing.Text;</text>
+  
+  <!-- Note -->
+  <rect x="25" y="345" width="600" height="40" rx="4" fill="#cce5ff" stroke="#007bff" stroke-width="1"/>
+  <text x="325" y="360" font-family="Arial, sans-serif" font-size="10" fill="#004085" text-anchor="middle">💡 System.Drawing — основной namespace, добавляйте другие по необходимости</text>
+  <text x="325" y="375" font-family="Arial, sans-serif" font-size="9" fill="#004085" text-anchor="middle">Для базовой графики достаточно System.Drawing</text>
+</svg>

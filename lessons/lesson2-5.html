@@ -1,0 +1,581 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 2.5: Геометрические примитивы</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="../lesson-quiz.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🎨 Графическое программирование на C#</h1>
+        </div>
+    </header>
+
+    <main class="lesson-container">
+        <a href="../modules/module2.html" class="back-link">← Вернуться к модулю 2</a>
+        
+        <div class="lesson-header">
+            <h1>Урок 2.5: Геометрические примитивы</h1>
+            <div class="lesson-meta">
+                <span>Модуль 2</span>
+                <span>⏱️ ~2 часа</span>
+            </div>
+        </div>
+
+        <div class="lesson-content">
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" data-tab="theory">📚 Теория</button>
+                <button class="tab-button" data-tab="practice">💻 Практика</button>
+                <button class="tab-button" data-tab="tests">✅ Тесты</button>
+            </div>
+            
+            <div class="tab-content active" data-tab="theory">
+            <div class="learning-objectives">
+                <h3>📌 Ключевые моменты этого урока:</h3>
+                <ul style="margin: 10px 0;">
+                    <li>Геометрические примитивы — это базовые фигуры: прямоугольники, эллипсы, многоугольники</li>
+                    <li>Для каждой фигуры есть Draw* и Fill* методы (контур и заливка)</li>
+                    <li>Кривая Безье используется для создания гладких кривых линий</li>
+                    <li>DrawPolygon рисует замкнутую ломаную, DrawLines — разомкнутую</li>
+                    <li>Дуги (Arc) и секторы (Pie) используются для создания круговых диаграмм</li>
+                    <li>GraphicsPath позволяет комбинировать разные примитивы в один путь</li>
+                </ul>
+            </div>
+
+            <h2>Работа с геометрическими примитивами в Visual Studio</h2>
+            <p>В Visual Studio вы можете использовать IntelliSense для изучения всех методов рисования фигур.</p>
+
+            <h3>Использование IntelliSense с Graphics:</h3>
+            <div class="code-block">
+<pre><code class="language-text">В обработчике Paint:
+private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+    
+    // Напишите "g.Draw" и увидите список методов
+    g.Draw  ← IntelliSense покажет:
+    ┌──────────────────────────────────┐
+    │ Graphics                        │
+    │ ▼                               │
+    │ • DrawArc(...)                  │
+    │ • Bezier(...)                   │
+    │ • BezierS(...)                  │
+    │ • ClosedCurve(...)              │
+    │ • Curve(...)                    │
+    │ • Ellipse(...)                  │
+    │ • Icon(...)                     │
+    │ • Image(...)                    │
+    │ • Line(...)                     │
+    │ • Lines(...)                    │
+    │ • Path(...)                     │
+    │ • Pie(...)                      │
+    │ • Polygon(...)                  │
+    │ • Rectangle(...)                │
+    │ • String(...)                   │
+    └──────────────────────────────────┘
+
+    Аналогично для "g.Fill":
+    ┌──────────────────────────────────┐
+    │ Graphics                        │
+    │ ▼                               │
+    │ • ClosedCurve(...)              │
+    │ • Curve(...)                    │
+    │ • Ellipse(...)                  │
+    │ • Path(...)                     │
+    │ • Pie(...)                      │
+    │ • Polygon(...)                  │
+    │ • Rectangle(...)                │
+    │ • Region(...)                   │
+    └──────────────────────────────────┘
+}</code></pre>
+            </div>
+            
+            <h2>Прямоугольники (Rectangle & RoundedRectangle)</h2>
+
+            <h3>Простые прямоугольники:</h3>
+            <div class="code-block"><pre><code class="language-csharp">// Контур прямоугольника
+g.DrawRectangle(Pens.Black, 10, 10, 100, 50);
+
+// Заполненный прямоугольник
+g.FillRectangle(Brushes.Red, 10, 10, 100, 50);
+
+// Использование структуры Rectangle
+Rectangle rect = new Rectangle(10, 10, 100, 50);
+g.DrawRectangle(Pens.Black, rect);
+g.FillRectangle(Brushes.Blue, rect);</code></pre></div>
+
+            <h3>Скругленные углы (Rounded Corners):</h3>
+            <p>GDI+ не имеет встроенного DrawRoundedRectangle, но можно сделать вручную:</p>
+            <div class="code-block"><pre><code class="language-csharp">using System.Drawing.Drawing2D;
+
+public void DrawRoundedRectangle(Graphics g, Pen pen, int x, int y, int width, int height, int radius)
+{
+    GraphicsPath path = new GraphicsPath();
+    
+    // Четыре угла и четыре стороны
+    path.AddArc(x, y, radius * 2, radius * 2, 180, 90);                    // Верхний левый
+    path.AddLine(x + radius, y, x + width - radius, y);                   // Верхняя сторона
+    path.AddArc(x + width - radius * 2, y, radius * 2, radius * 2, 270, 90);  // Верхний правый
+    path.AddLine(x + width, y + radius, x + width, y + height - radius);  // Правая сторона
+    path.AddArc(x + width - radius * 2, y + height - radius * 2, radius * 2, radius * 2, 0, 90);   // Нижний правый
+    path.AddLine(x + width - radius, y + height, x + radius, y + height); // Нижняя сторона
+    path.AddArc(x, y + height - radius * 2, radius * 2, radius * 2, 90, 90);   // Нижний левый
+    path.AddLine(x, y + height - radius, x, y + radius);                  // Левая сторона
+    
+    path.CloseFigure();
+    g.DrawPath(pen, path);
+}</code></pre></div>
+
+            <h2>Эллипсы и круги</h2>
+            
+            <h3>Основные методы:</h3>
+            <div class="code-block"><pre><code class="language-csharp">// Эллипс (овал) — контур
+g.DrawEllipse(Pens.Black, 10, 10, 100, 50);  // Ширина > высота = овал
+
+// Круг — контур (ширина = высота!)
+g.DrawEllipse(Pens.Black, 50, 50, 100, 100);  // Ширина = высота = круг
+
+// Заполненный эллипс
+g.FillEllipse(Brushes.Red, 10, 10, 100, 50);
+
+// Заполненный круг
+g.FillEllipse(Brushes.Blue, 50, 50, 100, 100);</code></pre></div>
+
+            <h3>Важная разница между параметрами:</h3>
+            <ul>
+                <li>Параметры: (x, y, width, height) — это ОГРАНИЧИВАЮЩИЙ ПРЯМОУГОЛЬНИК (bounding box), не центр!</li>
+                <li>x, y — левый верхний угол прямоугольника, в который вписан эллипс</li>
+                <li>width, height — размер этого прямоугольника</li>
+            </ul>
+
+            <h3>Практический пример:</h3>
+            <div class="code-block"><pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+    
+    // Рисуем серый прямоугольник (bounding box)
+    g.DrawRectangle(Pens.Gray, 50, 50, 100, 100);
+    
+    // Рисуем круг, вписанный в этот прямоугольник
+    g.DrawEllipse(Pens.Black, 50, 50, 100, 100);
+    
+    // Рисуем овал (эллипс)
+    g.DrawEllipse(Pens.Red, 50, 200, 150, 80);
+}</code></pre></div>
+
+            <h2>Многоугольники (Polygon)</h2>
+            <p>Многоугольник — это фигура, образованная несколькими прямыми линиями, которые замыкаются (возвращаются обратно в начальную точку).</p>
+            
+            <h3>DrawPolygon vs DrawLines:</h3>
+            <div class="code-block"><pre><code class="language-csharp">Point[] points = {
+    new Point(100, 10),   // Верхняя точка
+    new Point(150, 50),   // Правая
+    new Point(120, 100),  // Нижняя правая
+    new Point(80, 100),   // Нижняя левая
+    new Point(50, 50)     // Левая
+};
+
+// DrawPolygon — ЗАМКНУТАЯ фигура (сама замыкает контур)
+g.DrawPolygon(Pens.Black, points);
+g.FillPolygon(Brushes.Red, points);
+
+// DrawLines — ОТКРЫТАЯ линия (не замыкается)
+g.DrawLines(Pens.Blue, points);  // Не вернется в начальную точку</code></pre></div>
+
+            <h3>Примеры многоугольников:</h3>
+            <div class="code-block"><pre><code class="language-csharp">// Треугольник
+Point[] triangle = { new Point(50, 10), new Point(100, 100), new Point(0, 100) };
+g.FillPolygon(Brushes.Red, triangle);
+
+// Пятиугольник (звезда)
+Point[] star = {
+    new Point(50, 0),
+    new Point(60, 40),
+    new Point(100, 40),
+    new Point(70, 70),
+    new Point(80, 110),
+    new Point(50, 80),
+    new Point(20, 110),
+    new Point(30, 70),
+    new Point(0, 40),
+    new Point(40, 40)
+};
+g.FillPolygon(Brushes.Gold, star);
+g.DrawPolygon(Pens.Orange, star);</code></pre></div>
+
+            <h2>Кривые Безье (Bezier Curves)</h2>
+            <p>Кривая Безье используется для создания гладких кривых линий, контролируемых контрольными точками.</p>
+            
+            <h3>Кубическая кривая Безье (самая распространенная):</h3>
+            <p>Определяется 4 точками: начало, 2 контрольные точки, конец.</p>
+            <div class="code-block"><pre><code class="language-csharp">// DrawBezier — одна кривая
+g.DrawBezier(Pens.Black,
+    new Point(10, 100),   // P0 — начало
+    new Point(50, 10),    // P1 — контрольная 1 (тянет кривую вверх)
+    new Point(150, 10),   // P2 — контрольная 2 (тянет кривую вверх)
+    new Point(200, 100)   // P3 — конец
+);
+
+// Несколько кривых подряд
+g.DrawBeziers(Pens.Blue, new Point[]
+{
+    new Point(10, 100),      // P0
+    new Point(50, 10),       // P1
+    new Point(150, 10),      // P2
+    new Point(200, 100),     // P3 (одновременно следующий P0)
+    new Point(250, 10),      // P1
+    new Point(350, 10),      // P2
+    new Point(400, 100)      // P3
+});</code></pre></div>
+
+            <h3>Как работают контрольные точки:</h3>
+            <div class="image-container">
+                <img src="../images/2.5/bezier-control-points.svg" alt="Как работают контрольные точки Безье" class="lesson-image">
+                <p class="image-caption">Контрольные точки кривой Безье</p>
+            </div>
+            
+            <h2>Дуги (Arc) и секторы (Pie)</h2>
+            
+            <h3>DrawArc — дуга окружности:</h3>
+            <div class="code-block"><pre><code class="language-csharp">// Дуга от 0 до 90 градусов (четверть окружности)
+g.DrawArc(Pens.Black, 50, 50, 100, 100, 0, 90);
+
+// Дуга от 45 до 135 градусов (полукруг, сдвинутый)
+g.DrawArc(Pens.Red, 50, 50, 100, 100, 45, 90);
+
+// Полная окружность (0 до 360)
+g.DrawArc(Pens.Blue, 50, 50, 100, 100, 0, 360);</code></pre></div>
+
+            <h3>FillPie — сектор (как кусок пируга):</h3>
+            <div class="code-block"><pre><code class="language-csharp">// Рисуем "круговую диаграмму" (три сектора)
+// Сектор 1: от 0 до 120 градусов (красный)
+g.FillPie(Brushes.Red, 50, 50, 100, 100, 0, 120);
+
+// Сектор 2: от 120 до 240 градусов (синий)
+// Нужно считать заново: начало от градуса 120, угол 120
+g.FillPie(Brushes.Blue, 50, 50, 100, 100, 120, 120);
+
+// Сектор 3: остаток (зеленый)
+g.FillPie(Brushes.Green, 50, 50, 100, 100, 240, 120);</code></pre></div>
+
+            <h2>Кривые (Curve/Spline)</h2>
+            <p>В отличие от Безье, кривая сплайна ПРОХОДИТ через все точки (интерполирует):</p>
+            
+            <div class="code-block"><pre><code class="language-csharp">Point[] curvePoints = {
+    new Point(10, 100),
+    new Point(50, 50),
+    new Point(100, 80),
+    new Point(150, 30),
+    new Point(200, 90)
+};
+
+// DrawCurve проходит через ВСЕ точки (интерполяция)
+g.DrawCurve(Pens.Black, curvePoints);
+
+// DrawCurve с натяжением (tension параметр 0..1)
+g.DrawCurve(Pens.Blue, curvePoints, 0.5f);  // Более гладкая
+g.DrawCurve(Pens.Red, curvePoints, 0.1f);   // Более острая</code></pre></div>
+
+            <h2>GraphicsPath — комбинирование примитивов</h2>
+            <p>GraphicsPath позволяет объединить несколько фигур в один путь и рисовать их вместе:</p>
+            
+            <div class="code-block"><pre><code class="language-csharp">using System.Drawing.Drawing2D;
+
+GraphicsPath path = new GraphicsPath();
+
+// Добавляем разные примитивы в один путь
+path.AddEllipse(50, 50, 100, 100);        // Круг
+path.AddRectangle(new Rectangle(200, 50, 100, 100));  // Квадрат
+path.AddLine(350, 50, 400, 150);          // Линия
+
+// Рисуем весь путь одной командой
+g.DrawPath(Pens.Black, path);
+g.FillPath(Brushes.Red, path);</code></pre></div>
+            
+            </div>
+
+            <div class="tab-content" data-tab="practice">
+                <h2>Практическое задание</h2>
+            <div class="practice-section">
+                <h3>Задание 1: Прямоугольники и эллипсы</h3>
+                <ol class="practice-steps">
+                    <li>Нарисуйте прямоугольники разных размеров:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+
+    // Прямоугольники
+    g.DrawRectangle(Pens.Black, 10, 10, 100, 50);
+    g.FillRectangle(Brushes.Red, 120, 10, 80, 50);
+
+    // Эллипсы
+    g.DrawEllipse(Pens.Blue, 10, 70, 100, 60);
+    g.FillEllipse(Brushes.Green, 120, 70, 80, 60);
+
+    // Круг (ширина = высота)
+    g.DrawEllipse(Pens.Black, 10, 140, 80, 80);
+}</code></pre>
+                        </div>
+                    </li>
+                    <li>Используйте IntelliSense для изучения методов (напишите "g.Draw" и "g.Fill")</li>
+                    <li>Запустите приложение</li>
+                </ol>
+            </div>
+
+            <div class="practice-section">
+                <h3>Задание 2: Многоугольники</h3>
+                <ol class="practice-steps">
+                    <li>Нарисуйте треугольник и пятиугольник:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+
+    // Треугольник
+    Point[] triangle = {
+        new Point(50, 240),
+        new Point(100, 340),
+        new Point(0, 340)
+    };
+    g.FillPolygon(Brushes.Red, triangle);
+    g.DrawPolygon(Pens.Black, triangle);
+
+    // Пятиугольник
+    Point[] pentagon = {
+        new Point(150, 240),
+        new Point(190, 260),
+        new Point(180, 310),
+        new Point(120, 310),
+        new Point(110, 260)
+    };
+    g.FillPolygon(Brushes.Blue, pentagon);
+    g.DrawPolygon(Pens.Black, pentagon);
+}</code></pre>
+                        </div>
+                    </li>
+                    <li>Запустите приложение</li>
+                </ol>
+            </div>
+
+            <div class="practice-section">
+                <h3>Задание 3: Кривые Безье</h3>
+                <ol class="practice-steps">
+                    <li>Нарисуйте кривую Безье:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+
+    // Кривая Безье
+    g.DrawBezier(Pens.Black,
+        new Point(10, 400),   // Начало
+        new Point(50, 350),   // Контрольная 1
+        new Point(150, 350),  // Контрольная 2
+        new Point(200, 400)   // Конец
+    );
+
+    // Рисуем контрольные точки для наглядности
+    g.FillEllipse(Brushes.Red, 10 - 3, 400 - 3, 6, 6);  // Начало
+    g.FillEllipse(Brushes.Blue, 50 - 3, 350 - 3, 6, 6); // К1
+    g.FillEllipse(Brushes.Blue, 150 - 3, 350 - 3, 6, 6); // К2
+    g.FillEllipse(Brushes.Red, 200 - 3, 400 - 3, 6, 6); // Конец
+}</code></pre>
+                        </div>
+                    </li>
+                    <li>Запустите приложение и посмотрите, как контрольные точки влияют на форму кривой</li>
+                </ol>
+            </div>
+
+            <div class="practice-section">
+                <h3>Задание 4: Секторы (Pie)</h3>
+                <ol class="practice-steps">
+                    <li>Нарисуйте круговую диаграмму:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+
+    // Круговая диаграмма
+    g.FillPie(Brushes.Red, 250, 240, 100, 100, 0, 90);    // 25%
+    g.FillPie(Brushes.Green, 250, 240, 100, 100, 90, 90); // 25%
+    g.FillPie(Brushes.Blue, 250, 240, 100, 100, 180, 90); // 25%
+    g.FillPie(Brushes.Yellow, 250, 240, 100, 100, 270, 90); // 25%
+}</code></pre>
+                        </div>
+                    </li>
+                    <li>Запустите приложение</li>
+                </ol>
+            </div>
+            
+            <div class="practice-section">
+                <h3>Задание 5: Композиция (домик)</h3>
+                <ol class="practice-steps">
+                    <li>Нарисуйте простой домик из примитивов:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+            
+    // Стены
+    g.FillRectangle(Brushes.Wheat, 50, 400, 150, 100);
+    g.DrawRectangle(Pens.Black, 50, 400, 150, 100);
+
+    // Крыша (треугольник)
+    Point[] roof = {
+        new Point(40, 400),
+        new Point(125, 330),
+        new Point(210, 400)
+    };
+    g.FillPolygon(Brushes.Red, roof);
+    g.DrawPolygon(Pens.Black, roof);
+
+    // Окно
+    g.FillRectangle(Brushes.LightBlue, 85, 430, 30, 30);
+    g.DrawRectangle(Pens.Black, 85, 430, 30, 30);
+
+    // Дверь
+    g.FillRectangle(Brushes.Brown, 120, 450, 50, 50);
+    g.DrawRectangle(Pens.Black, 120, 450, 50, 50);
+}</code></pre>
+                        </div>
+                    </li>
+                    <li>Запустите приложение</li>
+                </ol>
+            </div>
+
+            <div class="practice-tip">
+                <strong>💡 Совет:</strong> Используйте IntelliSense для изучения всех методов рисования. Начните вводить "Draw" или "Fill" — вы увидите все доступные методы.
+            </div>
+
+            </div>
+            
+            
+            <div class="tab-content" data-tab="tests">
+                <div class="test-section">
+                <h2>Проверка знаний</h2>
+                <p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+                
+                <div class="question" data-correct="2">
+                    <div class="question-text">1. Как нарисовать круг в GDI+?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Используя DrawCircle</li>
+                        <li class="answer-option">Используя DrawRound</li>
+                        <li class="answer-option">Используя DrawEllipse с равными шириной и высотой</li>
+                        <li class="answer-option">Используя DrawPolygon</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="1">
+                    <div class="question-text">2. Какой метод используется для рисования кривых Безье?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">DrawCurve</li>
+                        <li class="answer-option">DrawBezier</li>
+                        <li class="answer-option">DrawArc</li>
+                        <li class="answer-option">DrawPath</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">3. Сколько контрольных точек нужно для кривой Безье?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">4 точки (начало, 2 контрольные, конец)</li>
+                        <li class="answer-option">2 точки</li>
+                        <li class="answer-option">3 точки</li>
+                        <li class="answer-option">5 точек</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="3">
+                    <div class="question-text">4. Какой метод рисует замкнутый многоугольник?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">DrawLines</li>
+                        <li class="answer-option">DrawLine</li>
+                        <li class="answer-option">DrawPath</li>
+                        <li class="answer-option">DrawPolygon</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="1">
+                    <div class="question-text">5. Какой метод рисует сектор круга?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">DrawArc</li>
+                        <li class="answer-option">FillPie</li>
+                        <li class="answer-option">DrawPie</li>
+                        <li class="answer-option">DrawEllipse</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="2">
+                    <div class="question-text">6. В чем разница между DrawLines и DrawPolygon?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">DrawLines рисует замкнутую фигуру, DrawPolygon — открытую</li>
+                        <li class="answer-option">Нет разницы</li>
+                        <li class="answer-option">DrawLines рисует открытую линию, DrawPolygon — замкнутую фигуру</li>
+                        <li class="answer-option">DrawLines работает только с 2 точками</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">7. Какая структура используется для задания прямоугольника?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Rectangle</li>
+                        <li class="answer-option">Rect</li>
+                        <li class="answer-option">Box</li>
+                        <li class="answer-option">Size</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="3">
+                    <div class="question-text">8. Какой метод рисует кривую, проходящую через все точки?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">DrawBezier</li>
+                        <li class="answer-option">DrawArc</li>
+                        <li class="answer-option">DrawLine</li>
+                        <li class="answer-option">DrawCurve</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+                </div>
+        </div>
+
+        <div class="navigation">
+            <a href="lesson2-4.html" class="nav-btn secondary">← Предыдущий урок</a>
+            <a href="lesson2-6.html" class="nav-btn">Следующий урок →</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Курс "Графическое программирование на C#"</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+

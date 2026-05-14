@@ -1,0 +1,317 @@
+﻿<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Урок 6.5: Итоговый проект</title>
+<link href="../styles.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="../lesson-quiz.js"></script>
+</head>
+<body>
+<header>
+<div class="container">
+<h1>🎨 Графическое программирование на C#</h1>
+</div>
+</header>
+<main class="lesson-container">
+<a class="back-link" href="../modules/module6.html">← Вернуться к модулю 6</a>
+<div class="lesson-header">
+<h1>Урок 6.5: Итоговый проект</h1>
+<div class="lesson-meta">
+<span>Модуль 6</span>
+<span>⏱️ ~5-8 часов</span>
+</div>
+</div>
+<div class="lesson-content">
+<div class="tabs-container">
+<div class="tabs-nav">
+<button class="tab-button active" data-tab="theory">📚 Теория</button>
+<button class="tab-button" data-tab="practice">💻 Практика</button>
+<button class="tab-button" data-tab="tests">✅ Тесты</button>
+</div>
+<div class="tab-content active" data-tab="theory">
+<h2>Планирование проекта</h2>
+<p>Создайте полноценное графическое приложение, демонстрирующее все изученные техники:</p>
+<ul>
+<li>Выберите тип приложения (графический редактор, визуализатор данных, игра, генератор изображений)</li>
+<li>Определите функциональность</li>
+<li>Спланируйте архитектуру</li>
+<li>Создайте список задач</li>
+</ul>
+<h2>Реализация</h2>
+<p>При реализации используйте:</p>
+<ul>
+<li>GDI+ для рисования</li>
+<li>Двойную буферизацию для плавности</li>
+<li>Оптимизацию перерисовки</li>
+<li>Обработку событий мыши и клавиатуры</li>
+<li>Анимацию и трансформации</li>
+</ul>
+<h2>Оптимизация</h2>
+<ul>
+<li>Профилируйте производительность</li>
+<li>Устраните узкие места</li>
+<li>Оптимизируйте использование памяти</li>
+<li>Обеспечьте стабильные 60 FPS</li>
+</ul>
+<h2>Презентация результата</h2>
+<p>Подготовьте:</p>
+<ul>
+<li>Демонстрацию функциональности</li>
+<li>Описание использованных техник</li>
+<li>Скриншоты или видео</li>
+<li>Исходный код с комментариями</li>
+</ul>
+<h2>Примеры проектов</h2>
+<ul>
+<li><strong>Графический редактор:</strong> Рисование, фильтры, слои</li>
+<li><strong>Визуализатор данных:</strong> Графики, диаграммы, интерактивность</li>
+<li><strong>Генератор фракталов:</strong> Множество Мандельброта с zoom и pan</li>
+<li><strong>Игра:</strong> 2D игра с графикой на GDI+</li>
+</ul>
+<h2>📝 Пример задания — итоговый проект с меню</h2>
+<p>Форма с <code>MenuStrip</code> переключает три панели: график, изображение и анимацию. Таймер 50 мс обеспечивает движение и вращение в режиме анимации:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class DoubleBufferedPanel : Panel
+    {
+        public DoubleBufferedPanel() { DoubleBuffered = true; }
+    }
+
+    public class Task20_FinalProject : Form
+    {
+        private readonly Panel graphPanel;
+        private readonly Panel imagePanel;
+        private readonly Panel animPanel;
+        private readonly Timer animTimer = new Timer();
+        private float animAngle = 0;
+        private int animX = 0;
+
+        public Task20_FinalProject()
+        {
+            Text = "Задание 20 — Итоговый проект";
+            Size = new Size(700, 500);
+            BackColor = Color.White;
+
+            var menu = new MenuStrip();
+            var mGraph = new ToolStripMenuItem("График");
+            var mImage = new ToolStripMenuItem("Изображение");
+            var mAnim  = new ToolStripMenuItem("Анимация");
+
+            mGraph.Click += (s, e) =&gt; ShowPanel(graphPanel);
+            mImage.Click += (s, e) =&gt; ShowPanel(imagePanel);
+            mAnim.Click  += (s, e) =&gt; ShowPanel(animPanel);
+
+            menu.Items.AddRange(new ToolStripItem[] { mGraph, mImage, mAnim });
+            MainMenuStrip = menu;
+            Controls.Add(menu);
+
+            graphPanel = CreateGraphPanel();
+            imagePanel = CreateImagePanel();
+            animPanel  = CreateAnimPanel();
+
+            graphPanel.Location = imagePanel.Location = animPanel.Location
+                = new Point(0, menu.Height);
+            Controls.Add(graphPanel);
+            Controls.Add(imagePanel);
+            Controls.Add(animPanel);
+
+            ShowPanel(graphPanel);
+
+            animTimer.Interval = 50;
+            animTimer.Tick += AnimTimer_Tick;
+            animTimer.Start();
+
+            Resize += (s, e) =&gt; ResizePanels(menu.Height);
+            FormClosed += (s, e) =&gt; animTimer.Stop();
+            ResizePanels(menu.Height);
+        }
+
+        private void ResizePanels(int top)
+        {
+            var size = new Size(ClientSize.Width, ClientSize.Height - top);
+            graphPanel.Size = imagePanel.Size = animPanel.Size = size;
+        }
+
+        private void ShowPanel(Panel panel)
+        {
+            graphPanel.Visible = imagePanel.Visible = animPanel.Visible = false;
+            panel.Visible = true;
+            panel.Invalidate();
+        }
+
+        private Panel CreateGraphPanel()
+        {
+            var p = new DoubleBufferedPanel { BackColor = Color.White };
+            p.Paint += (s, e) =&gt;
+            {
+                var g = e.Graphics;
+                int oy = p.ClientSize.Height / 2;
+                int ox = p.ClientSize.Width  / 2;
+                g.DrawLine(Pens.Black, 30, oy, p.ClientSize.Width - 30, oy);
+                g.DrawLine(Pens.Black, ox, 30, ox, p.ClientSize.Height - 30);
+
+                var pts = new List&lt;PointF&gt;();
+                for (float x = -(float)Math.PI * 2; x &lt;= Math.PI * 2; x += 0.05f)
+                {
+                    float y = (float)Math.Sin(x);
+                    pts.Add(new PointF(ox + x * 40, oy - y * 60));
+                }
+                using (var pen = new Pen(Color.Red, 2))
+                    g.DrawLines(pen, pts.ToArray());
+                g.DrawString("График sin(x)",
+                    new Font("Segoe UI", 12, FontStyle.Bold), Brushes.DarkRed, 20, 20);
+            };
+            return p;
+        }
+
+        private Panel CreateImagePanel()
+        {
+            var p = new DoubleBufferedPanel { BackColor = Color.White };
+            p.Paint += (s, e) =&gt;
+            {
+                var g = e.Graphics;
+                var rect = new Rectangle(50, 50, 200, 120);
+                using (var lgb = new LinearGradientBrush(rect, Color.Blue, Color.Yellow, 45f))
+                    g.FillRectangle(lgb, rect);
+
+                var tex = new Bitmap(32, 32);
+                using (var tg = Graphics.FromImage(tex))
+                {
+                    tg.Clear(Color.LightGray);
+                    tg.DrawLine(Pens.DarkGray, 0, 0, 32, 32);
+                    tg.DrawLine(Pens.DarkGray, 32, 0, 0, 32);
+                }
+                using (var tb = new TextureBrush(tex))
+                    g.FillEllipse(tb, 300, 50, 180, 100);
+
+                g.DrawString("Градиент + Текстура",
+                    new Font("Segoe UI", 12, FontStyle.Bold), Brushes.Black, 20, 20);
+            };
+            return p;
+        }
+
+        private Panel CreateAnimPanel()
+        {
+            var p = new DoubleBufferedPanel { BackColor = Color.White };
+            p.Paint += (s, e) =&gt;
+            {
+                var g = e.Graphics;
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                g.FillEllipse(Brushes.Orange, animX, 100, 40, 40);
+
+                g.TranslateTransform(300, 200);
+                g.RotateTransform(animAngle);
+                using (var brush = new SolidBrush(Color.FromArgb(120, Color.Green)))
+                    g.FillRectangle(brush, -30, -20, 60, 40);
+                g.ResetTransform();
+
+                g.DrawString("Анимация: движение + вращение",
+                    new Font("Segoe UI", 12, FontStyle.Bold), Brushes.Black, 20, 20);
+            };
+            return p;
+        }
+
+        private void AnimTimer_Tick(object sender, EventArgs e)
+        {
+            animAngle += 4;
+            animX += 4;
+            if (animX &gt; ClientSize.Width) animX = -40;
+            animPanel.Invalidate();
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-content" data-tab="practice">
+<h2>Практическое задание</h2>
+<div class="practice-section">
+<h3>Задание: Итоговый проект</h3>
+<ol class="practice-steps">
+<li>Выберите тип приложения (графический редактор, визуализатор данных, игра)</li>
+<li>Спланируйте архитектуру</li>
+<li>Реализуйте функциональность</li>
+<li>Оптимизируйте производительность</li>
+<li>Подготовьте презентацию результата</li>
+</ol>
+</div>
+<div class="practice-section">
+<h3>Задание по аналогии: Многопанельное приложение</h3>
+<p>По аналогии с <code>Task20_FinalProject</code> создайте форму с меню и тремя режимами отображения.</p>
+<ol class="practice-steps">
+<li>Добавьте <code>MenuStrip</code> с пунктами "График", "Изображение", "Анимация". В обработчике каждого пункта вызывайте метод <code>ShowPanel(panel)</code>.</li>
+<li>Создайте три панели типа <code>DoubleBufferedPanel</code> (наследник <code>Panel</code> с <code>DoubleBuffered = true</code>). Каждая панель имеет свой обработчик <code>Paint</code>.</li>
+<li>В панели «График» нарисуйте оси и синусоиду (или другую функцию) через <code>DrawLines</code> и список <code>PointF</code>.</li>
+<li>В панели «Изображение» показывайте <code>LinearGradientBrush</code> и <code>TextureBrush</code> на разных фигурах.</li>
+<li>В панели «Анимация» запустите <code>Timer</code> с Interval = 50 мс, обновляйте <code>animAngle</code> и <code>animX</code>, рисуйте движущийся шар и вращающийся прямоугольник.</li>
+</ol>
+<div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task20" class="lesson-image task-screenshot" src="../images/tasks/task20_final_project.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task20)</p></div><div class="practice-tip">
+<strong>💡 Совет:</strong> При переключении панелей скрывайте все три (<code>Visible = false</code>), затем показывайте только нужную и вызывайте <code>Invalidate()</code>. Остановите таймер при закрытии формы через <code>FormClosed</code>.
+                </div>
+</div>
+</div>
+<div class="tab-content" data-tab="tests">
+<div class="test-section">
+<h2>Проверка знаний</h2>
+<p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+<div class="question" data-correct="0">
+<div class="question-text">1. Усвоили ли вы основные концепции урока?</div>
+<ul class="answer-options">
+<li class="answer-option">Да, материал понятен</li>
+<li class="answer-option">Частично понятен</li>
+<li class="answer-option">Нужно повторить</li>
+<li class="answer-option">Не понял</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="1">
+<div class="question-text">2. Готовы ли вы применить изученное на практике?</div>
+<ul class="answer-options">
+<li class="answer-option">Нет, нужно еще изучить</li>
+<li class="answer-option">Да, готов попробовать</li>
+<li class="answer-option">Возможно</li>
+<li class="answer-option">Не уверен</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="0">
+<div class="question-text">3. Что важно при планировании проекта?</div>
+<ul class="answer-options">
+<li class="answer-option">Определение требований и архитектуры</li>
+<li class="answer-option">Выбор цвета интерфейса</li>
+<li class="answer-option">Размер окна</li>
+<li class="answer-option">Название проекта</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="navigation">
+<a class="nav-btn secondary" href="lesson6-4.html">← Предыдущий урок</a>
+<a class="nav-btn" href="../modules/module7.html">Следующий модуль →</a>
+</div>
+</main>
+<footer>
+<div class="container">
+<p>© 2026 Курс "Графическое программирование на C#"</p>
+</div>
+</footer>
+</body>
+</html>

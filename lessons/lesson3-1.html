@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Урок 3.1: Двойная буферизация</title>
+<link href="../styles.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="../lesson-quiz.js"></script>
+</head>
+<body>
+<header>
+<div class="container">
+<a class="course-title-link" href="../index.html">
+<h1>🎨 Графическое программирование на C#</h1>
+</a>
+</div>
+</header>
+<main class="lesson-container">
+<a class="back-link" href="../modules/module3.html">← Вернуться к модулю 3</a>
+<div class="lesson-header">
+<h1>Урок 3.1: Двойная буферизация</h1>
+<div class="lesson-meta">
+<span>Модуль 3</span>
+<span>⏱️ ~1.5 часа</span>
+</div>
+</div>
+<div class="lesson-content">
+<div class="tabs-container">
+<div class="tabs-nav">
+<button class="tab-button active" data-tab="theory">📚 Теория</button>
+<button class="tab-button" data-tab="practice">💻 Практика</button>
+<button class="tab-button" data-tab="tests">✅ Тесты</button>
+</div>
+<div class="tab-content active" data-tab="theory">
+<div class="learning-objectives">
+<h3>📌 Ключевые моменты этого урока:</h3>
+<ul style="margin: 10px 0;">
+<li>Мерцание возникает из-за пошагового рисования на экране</li>
+<li>Двойная буферизация рисует в памяти, потом копирует на экран</li>
+<li>DoubleBuffered = true — один вызов для включения буферизации</li>
+<li>BufferedGraphics для более гибкого управления буферами</li>
+<li>С буферизацией анимация становится плавной и красивой</li>
+</ul>
+</div>
+<h2>Проблема мерцания (Flickering)</h2>
+<p>Мерцание — это визуальный артефакт, когда пользователь видит ПРОЦЕСС рисования вместо готового результата. Происходит потому, что рисование идет медленнее, чем обновление экрана.</p>
+<h3>Как развивается мерцание:</h3>
+<div class="image-container">
+<img alt="Двойная буферизация" class="lesson-image" src="../images/3.1/double-buffering.svg"/>
+<p class="image-caption">Сравнение работы с и без двойной буферизации</p>
+</div>
+<h2>Принцип двойной буферизации (Double Buffering)</h2>
+<p>Двойная буферизация решает мерцание используя прием "невидимого буфера". Вместо рисования напрямую на экран, используются два буфера:</p>
+<h3>Архитектура:</h3>
+<ul>
+<li><strong>Буфер 1 (видимый)</strong> — то, что видит пользователь на экране</li>
+<li><strong>Буфер 2 (невидимый)</strong> — в оперативной памяти ОЗУ, скрыт от пользователя</li>
+<li><strong>Рисование</strong> — все происходит в невидимый буфер</li>
+<li><strong>Обмен</strong> — когда рисование закончено, буферы меняются местами (очень быстро)</li>
+<li><strong>Результат</strong> — пользователь видит только готовые кадры</li>
+</ul>
+<h3>Процесс:</h3>
+<div class="code-block"><pre><code class="language-text">Кадр 1:
+  1. Рисуем в невидимый буфер в памяти
+  2. Готово → обмен указателей
+  3. Экран обновляет видимый буфер
+
+Кадр 2:
+  1. Рисуем в новый невидимый буфер
+  2. Готово → обмен указателей
+  3. Экран обновляет видимый буфер
+
+... и так каждый кадр</code></pre></div>
+<h2>DoubleBuffered свойство</h2>
+<div class="code-block"><pre><code class="language-csharp">// Включение двойной буферизации для формы
+this.DoubleBuffered = true;
+
+// Или в конструкторе
+public Form1()
+{
+    InitializeComponent();
+    this.DoubleBuffered = true;
+}</code></pre></div>
+<h2>BufferedGraphics</h2>
+<p>Для более сложных случаев используйте BufferedGraphics:</p>
+<div class="code-block"><pre><code class="language-csharp">private BufferedGraphicsContext context;
+private BufferedGraphics buffer;
+
+public Form1()
+{
+    InitializeComponent();
+    context = BufferedGraphicsManager.Current;
+    context.MaximumBuffer = new Size(this.Width + 1, this.Height + 1);
+    buffer = context.Allocate(this.CreateGraphics(), 
+        new Rectangle(0, 0, this.Width, this.Height));
+}
+
+private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    // Рисуем в буфер
+    Graphics g = buffer.Graphics;
+    g.Clear(Color.White);
+    
+    // Ваш код рисования
+    g.DrawEllipse(Pens.Black, 50, 50, 100, 100);
+    
+    // Копируем буфер на экран
+    buffer.Render(e.Graphics);
+}</code></pre>
+</div>
+<h2>📝 Пример задания — ручная двойная буферизация (Task19)</h2>
+<p>Программа явно управляет <code>BufferedGraphics</code>: выделяет буфер при загрузке и ресайзе, рисует в него, а в <code>Paint</code> копирует на экран. Это демонстрирует полный контроль над двойной буферизацией:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class Task19_DoubleBuffering : Form
+    {
+        private BufferedGraphics bufferedGraphics;
+        private readonly Timer timer = new Timer();
+        private int x = 0;
+
+        public Task19_DoubleBuffering()
+        {
+            Text = "Задание 19 — Двойная буферизация";
+            Size = new Size(600, 300);
+            BackColor = Color.White;
+            DoubleBuffered = false; // выключаем встроенную — используем ручную
+            Paint += Form1_Paint;
+            Resize += (s, e) =&gt; AllocateBuffer();
+
+            timer.Interval = 30;
+            timer.Tick += Timer_Tick;
+            timer.Start();
+
+            Load += (s, e) =&gt; AllocateBuffer();
+            FormClosed += (s, e) =&gt;
+            {
+                timer.Stop();
+                bufferedGraphics?.Dispose();
+            };
+        }
+
+        private void AllocateBuffer()
+        {
+            bufferedGraphics?.Dispose();
+            var context = BufferedGraphicsManager.Current;
+            bufferedGraphics = context.Allocate(CreateGraphics(), ClientRectangle);
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            x += 5;
+            if (x &gt; ClientSize.Width) x = -50;
+            Invalidate();
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            if (bufferedGraphics == null) return;
+
+            Graphics g = bufferedGraphics.Graphics;
+            g.Clear(Color.White);
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            g.FillEllipse(Brushes.Blue, x, 100, 50, 50);
+            g.DrawString("BufferedGraphics (ручная двойная буферизация)",
+                SystemFonts.DefaultFont, Brushes.Black, 10, 10);
+
+            bufferedGraphics.Render(e.Graphics);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="tab-content" data-tab="practice">
+<h2>Практическое задание</h2>
+<div class="practice-section">
+<h3>Задание 1: Создание анимированного приложения</h3>
+<ol class="practice-steps">
+<li>Создайте новый проект Windows Forms</li>
+<li>Добавьте компонент Timer (из Toolbox → Components)</li>
+<li>В коде формы добавьте поля для позиции круга:
+                        <div class="code-block">
+<pre><code class="language-csharp">private int ballX = 50;
+private int ballY = 50;
+private int ballSpeedX = 3;
+private int ballSpeedY = 3;</code></pre>
+</div>
+</li>
+<li>В конструкторе настройте таймер:
+                        <div class="code-block">
+<pre><code class="language-csharp">public Form1()
+{
+    InitializeComponent();
+    timer1.Interval = 16; // ~60 FPS
+    timer1.Tick += Timer1_Tick;
+    timer1.Start();
+}</code></pre>
+</div>
+</li>
+<li>Добавьте обработчик Tick:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Timer1_Tick(object sender, EventArgs e)
+{
+    // Обновляем позицию
+    ballX += ballSpeedX;
+    ballY += ballSpeedY;
+
+    // Отскок от стенок
+    if (ballX &lt;= 0 || ballX &gt;= this.ClientSize.Width - 20)
+        ballSpeedX = -ballSpeedX;
+    if (ballY &lt;= 0 || ballY &gt;= this.ClientSize.Height - 20)
+        ballSpeedY = -ballSpeedY;
+
+    // Перерисовываем
+    this.Invalidate();
+}</code></pre>
+</div>
+</li>
+<li>Добавьте обработчик Paint:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+    g.FillEllipse(Brushes.Red, ballX, ballY, 20, 20);
+}</code></pre>
+</div>
+</li>
+<li>Запустите приложение (F5)</li>
+</ol>
+</div>
+<div class="practice-section">
+<h3>Задание 2: Включение двойной буферизации</h3>
+<ol class="practice-steps">
+<li>В конструкторе формы добавьте:
+                        <div class="code-block">
+<pre><code class="language-csharp">this.DoubleBuffered = true;</code></pre>
+</div>
+</li>
+<li>Запустите приложение и обратите внимание на отсутствие мерцания</li>
+<li>Теперь временно закомментируйте эту строку:
+                        <div class="code-block">
+<pre><code class="language-csharp">// this.DoubleBuffered = true;</code></pre>
+</div>
+</li>
+<li>Запустите снова и сравните — должно быть заметно мерцание</li>
+<li>Раскомментируйте строку обратно</li>
+</ol>
+</div>
+<div class="practice-section">
+<h3>Задание 3: Использование BufferedGraphics</h3>
+<ol class="practice-steps">
+<li>Добавьте поля для буфера:
+                        <div class="code-block">
+<pre><code class="language-csharp">private BufferedGraphicsContext context;
+private BufferedGraphics buffer;</code></pre>
+</div>
+</li>
+<li>В конструкторе инициализируйте буфер:
+                        <div class="code-block">
+<pre><code class="language-csharp">public Form1()
+{
+    InitializeComponent();
+
+    context = BufferedGraphicsManager.Current;
+    context.MaximumBuffer = new Size(this.Width + 1, this.Height + 1);
+    buffer = context.Allocate(this.CreateGraphics(),
+        new Rectangle(0, 0, this.Width, this.Height));
+
+    this.DoubleBuffered = true;
+    timer1.Interval = 16;
+    timer1.Tick += Timer1_Tick;
+    timer1.Start();
+}</code></pre>
+</div>
+</li>
+<li>Измените обработчик Paint:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    // Рисуем в буфер
+    Graphics g = buffer.Graphics;
+    g.Clear(Color.White);
+    g.FillEllipse(Brushes.Red, ballX, ballY, 20, 20);
+
+    // Копируем буфер на экран
+    buffer.Render(e.Graphics);
+}</code></pre>
+</div>
+</li>
+<li>Запустите приложение и проверьте результат</li>
+</ol>
+</div>
+<div class="practice-tip">
+<strong>💡 Совет:</strong> DoubleBuffered = true — самый простой способ включить двойную буферизацию. Используйте BufferedGraphics только для сложных сцен с множеством объектов.
+            </div>
+<div class="practice-section">
+<h3>Задание по аналогии: Анимация с ручным буфером (Task19)</h3>
+<p>По аналогии с <code>Task19_DoubleBuffering</code> создайте форму с анимацией, используя <code>BufferedGraphics</code> вручную.</p>
+<ol class="practice-steps">
+<li>Создайте форму с <code>DoubleBuffered = false</code> — вы будете управлять буфером самостоятельно.</li>
+<li>Добавьте поле <code>private BufferedGraphics bufferedGraphics</code> и метод <code>AllocateBuffer()</code>, который выделяет буфер через <code>BufferedGraphicsManager.Current.Allocate()</code>.</li>
+<li>Вызовите <code>AllocateBuffer()</code> в событии <code>Load</code> и при <code>Resize</code>.</li>
+<li>Добавьте <code>Timer</code> (интервал 30 мс), который изменяет позицию объекта и вызывает <code>Invalidate()</code>.</li>
+<li>В обработчике <code>Paint</code>: рисуйте в <code>bufferedGraphics.Graphics</code>, затем копируйте на экран через <code>bufferedGraphics.Render(e.Graphics)</code>.</li>
+<li>В <code>FormClosed</code> остановите таймер и вызовите <code>bufferedGraphics.Dispose()</code>.</li>
+</ol>
+<div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task19" class="lesson-image task-screenshot" src="../images/tasks/task19_double_buffering.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task19)</p></div><div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task19" class="lesson-image task-screenshot" src="../images/tasks/task19_double_buffering.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task19)</p></div><div class="practice-tip">
+<strong>💡 Совет:</strong> Перевыделяйте буфер при каждом <code>Resize</code> — старый буфер больше не соответствует размеру клиентской области.
+                </div>
+</div>
+</div>
+<div class="tab-content" data-tab="tests">
+<div class="test-section">
+<h2>Проверка знаний</h2>
+<p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+<div class="question" data-correct="1">
+<div class="question-text">1. Что решает проблема двойной буферизации?</div>
+<ul class="answer-options">
+<li class="answer-option">Низкую производительность</li>
+<li class="answer-option">Мерцание при перерисовке</li>
+<li class="answer-option">Большое использование памяти</li>
+<li class="answer-option">Медленную загрузку</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="0">
+<div class="question-text">2. Как включить двойную буферизацию для формы?</div>
+<ul class="answer-options">
+<li class="answer-option">this.DoubleBuffered = true</li>
+<li class="answer-option">this.Buffered = true</li>
+<li class="answer-option">this.EnableBuffering()</li>
+<li class="answer-option">this.SetDoubleBuffer(true)</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="2">
+<div class="question-text">3. Что такое BufferedGraphicsContext?</div>
+<ul class="answer-options">
+<li class="answer-option">Метод для создания буфера</li>
+<li class="answer-option">Класс для управления буферами графики</li>
+<li class="answer-option">Свойство формы</li>
+<li class="answer-option">Тип данных</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="3">
+<div class="question-text">4. Какой компонент используется для создания анимации?</div>
+<ul class="answer-options">
+<li class="answer-option">Button</li>
+<li class="answer-option">Timer</li>
+<li class="answer-option">ProgressBar</li>
+<li class="answer-option">Label</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="1">
+<div class="question-text">5. Какое значение Interval таймера соответствует примерно 60 FPS?</div>
+<ul class="answer-options">
+<li class="answer-option">100</li>
+<li class="answer-option">16</li>
+<li class="answer-option">1000</li>
+<li class="answer-option">60</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+<div class="question" data-correct="0">
+<div class="question-text">6. Какой метод вызывает перерисовку формы?</div>
+<ul class="answer-options">
+<li class="answer-option">this.Invalidate()</li>
+<li class="answer-option">this.Refresh()</li>
+<li class="answer-option">this.Update()</li>
+<li class="answer-option">this.Repaint()</li>
+</ul>
+<button class="check-answer-btn" disabled="">Проверить ответ</button>
+<div class="feedback"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="navigation">
+<a class="nav-btn secondary" href="../modules/module3.html">← К модулю</a>
+<a class="nav-btn" href="lesson3-2.html">Следующий урок →</a>
+</div>
+</div></main>
+<footer>
+<div class="container">
+<p>© 2026 Курс "Графическое программирование на C#"</p>
+</div>
+</footer>
+</body>
+</html>

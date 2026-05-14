@@ -1,0 +1,363 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 5.4: Интерактивность графиков</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="../lesson-quiz.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🎨 Графическое программирование на C#</h1>
+        </div>
+    </header>
+
+    <main class="lesson-container">
+        <a href="../modules/module5.html" class="back-link">← Вернуться к модулю 5</a>
+        
+        <div class="lesson-header">
+            <h1>Урок 5.4: Интерактивность графиков</h1>
+            <div class="lesson-meta">
+                <span>Модуль 5</span>
+                <span>⏱️ ~2 часа</span>
+            </div>
+        </div>
+
+        <div class="lesson-content">
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" data-tab="theory">📚 Теория</button>
+                <button class="tab-button" data-tab="practice">💻 Практика</button>
+                <button class="tab-button" data-tab="tests">✅ Тесты</button>
+            </div>
+            
+            <div class="tab-content active" data-tab="theory">
+            <h2>Подсветка точек при наведении</h2>
+            <div class="code-block"><pre><code class="language-csharp">private int hoveredPointIndex = -1;
+
+private void Form1_MouseMove(object sender, MouseEventArgs e)
+{
+    int newHoveredIndex = FindNearestPoint(e.X, e.Y);
+    if (newHoveredIndex != hoveredPointIndex)
+    {
+        hoveredPointIndex = newHoveredIndex;
+        this.Invalidate();
+    }
+}
+
+private int FindNearestPoint(int x, int y)
+{
+    float minDistance = float.MaxValue;
+    int nearestIndex = -1;
+    
+    for (int i = 0; i < points.Count; i++)
+    {
+        float distance = (float)Math.Sqrt(
+            Math.Pow(points[i].X - x, 2) + 
+            Math.Pow(points[i].Y - y, 2));
+        
+        if (distance < 10 && distance < minDistance)
+        {
+            minDistance = distance;
+            nearestIndex = i;
+        }
+    }
+    
+    return nearestIndex;
+}</code></pre></div>
+
+            <h2>Zoom и Pan</h2>
+            <div class="code-block"><pre><code class="language-csharp">private float zoom = 1.0f;
+private PointF panOffset = new PointF(0, 0);
+
+private void Form1_MouseWheel(object sender, MouseEventArgs e)
+{
+    // Zoom
+    float zoomFactor = e.Delta > 0 ? 1.1f : 0.9f;
+    zoom *= zoomFactor;
+    this.Invalidate();
+}
+
+private void Form1_MouseDown(object sender, MouseEventArgs e)
+{
+    if (e.Button == MouseButtons.Right)
+    {
+        panStart = e.Location;
+        isPanning = true;
+    }
+}
+
+private void Form1_MouseMove(object sender, MouseEventArgs e)
+{
+    if (isPanning)
+    {
+        panOffset.X += e.X - panStart.X;
+        panOffset.Y += e.Y - panStart.Y;
+        panStart = e.Location;
+        this.Invalidate();
+    }
+}</code></pre></div>
+
+            <h2>Tooltip с данными</h2>
+            <div class="code-block"><pre><code class="language-csharp">private ToolTip tooltip = new ToolTip();
+private int hoveredIndex = -1;
+
+private void Form1_MouseMove(object sender, MouseEventArgs e)
+{
+    int index = FindNearestPoint(e.X, e.Y);
+    if (index != hoveredIndex)
+    {
+        hoveredIndex = index;
+        if (index >= 0)
+        {
+            tooltip.SetToolTip(this, 
+                $"X: {data[index].X:F2}
+Y: {data[index].Y:F2}");
+        }
+        this.Invalidate();
+    }
+}</code></pre></div>
+
+            <h2>Выбор области</h2>
+            <div class="code-block"><pre><code class="language-csharp">private Rectangle selectionRect;
+private bool isSelecting = false;
+
+private void Form1_MouseDown(object sender, MouseEventArgs e)
+{
+    if (e.Button == MouseButtons.Left)
+    {
+        selectionRect = new Rectangle(e.X, e.Y, 0, 0);
+        isSelecting = true;
+    }
+}
+
+private void Form1_MouseMove(object sender, MouseEventArgs e)
+{
+    if (isSelecting)
+    {
+        selectionRect.Width = e.X - selectionRect.X;
+        selectionRect.Height = e.Y - selectionRect.Y;
+        this.Invalidate();
+    }
+}
+
+private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    // Рисование графика
+    // ...
+    
+    // Рисование области выбора
+    if (isSelecting)
+    {
+        using (Pen pen = new Pen(Color.Blue, 1)
+            { DashStyle = DashStyle.Dash })
+        {
+            e.Graphics.DrawRectangle(pen, selectionRect);
+        }
+    }
+}</code></pre>
+            </div>
+
+            <h2>📝 Пример задания — выбор функции через ComboBox</h2>
+            <p>Форма с <code>ComboBox</code> позволяет выбрать одну из 8 функций. При смене выбора панель перерисовывается с новой функцией через вспомогательный класс <code>GraphPlotter</code>:</p>
+            <div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class InteractiveGraphExample : Form
+    {
+        private ComboBox functionSelector;
+        private Panel graphPanel;
+
+        public InteractiveGraphExample()
+        {
+            Text = "Интерактивный выбор функции";
+            Size = new Size(700, 600);
+            BackColor = Color.White;
+
+            var controlPanel = new Panel
+            {
+                Height = 50, Dock = DockStyle.Top,
+                BackColor = Color.WhiteSmoke
+            };
+            controlPanel.Controls.Add(new Label
+            {
+                Text = "Функция:", AutoSize = true, Location = new Point(10, 15)
+            });
+
+            functionSelector = new ComboBox
+            {
+                Location = new Point(80, 12), Width = 200,
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+            functionSelector.Items.AddRange(new object[]
+            {
+                "sin(x)", "cos(x)", "tan(x)", "x²", "x³", "√x", "e^x", "ln(x)"
+            });
+            functionSelector.SelectedIndex = 0;
+            functionSelector.SelectedIndexChanged += (s, e) => graphPanel.Invalidate();
+            controlPanel.Controls.Add(functionSelector);
+            Controls.Add(controlPanel);
+
+            graphPanel = new Panel { Dock = DockStyle.Fill, BackColor = Color.White };
+            graphPanel.Paint += (s, e) => DrawSelectedGraph(e.Graphics, graphPanel.ClientSize);
+            Controls.Add(graphPanel);
+        }
+
+        private void DrawSelectedGraph(Graphics g, System.Drawing.Size size)
+        {
+            // Параметры осей под выбранную функцию
+            Func&lt;float, float&gt; fn;
+            string title;
+            float minX, maxX, minY, maxY;
+
+            switch (functionSelector.SelectedIndex)
+            {
+                case 1:  fn = x =&gt; (float)Math.Cos(x);  title = "cos(x)";
+                         minX = -6.3f; maxX = 6.3f; minY = -1.5f; maxY = 1.5f; break;
+                case 2:  fn = x =&gt; (float)Math.Tan(x);  title = "tan(x)";
+                         minX = -1.4f; maxX = 1.4f; minY = -5f; maxY = 5f; break;
+                case 3:  fn = x =&gt; x * x;                title = "x²";
+                         minX = -4f; maxX = 4f; minY = -1f; maxY = 16f; break;
+                case 4:  fn = x =&gt; x * x * x;            title = "x³";
+                         minX = -3f; maxX = 3f; minY = -27f; maxY = 27f; break;
+                case 5:  fn = x =&gt; x &gt;= 0 ? (float)Math.Sqrt(x) : 0; title = "√x";
+                         minX = 0f; maxX = 10f; minY = 0f; maxY = 3.5f; break;
+                case 6:  fn = x =&gt; (float)Math.Exp(x);   title = "e^x";
+                         minX = -2f; maxX = 2f; minY = -0.5f; maxY = 8f; break;
+                case 7:  fn = x =&gt; x &gt; 0 ? (float)Math.Log(x) : 0; title = "ln(x)";
+                         minX = 0.1f; maxX = 10f; minY = -2.5f; maxY = 2.5f; break;
+                default: fn = x =&gt; (float)Math.Sin(x);   title = "sin(x)";
+                         minX = -6.3f; maxX = 6.3f; minY = -1.5f; maxY = 1.5f; break;
+            }
+
+            // Простая отрисовка без вспомогательного класса
+            int w = size.Width, h = size.Height;
+            int ml = 60, mr = 20, mt = 40, mb = 50;
+
+            // Оси
+            g.DrawLine(Pens.Black, ml, h - mb, w - mr, h - mb); // X
+            g.DrawLine(Pens.Black, ml, mt, ml, h - mb);          // Y
+            g.DrawString(title,
+                new Font("Segoe UI", 12, FontStyle.Bold), Brushes.Blue, ml + 10, mt);
+
+            // Точки функции
+            var pts = new System.Collections.Generic.List&lt;PointF&gt;();
+            float step = (maxX - minX) / (w - ml - mr);
+            for (float x = minX; x &lt;= maxX; x += step)
+            {
+                float y = fn(x);
+                if (float.IsNaN(y) || float.IsInfinity(y)) { pts.Clear(); continue; }
+                float sx = ml + (x - minX) / (maxX - minX) * (w - ml - mr);
+                float sy = (h - mb) - (y - minY) / (maxY - minY) * (h - mt - mb);
+                pts.Add(new PointF(sx, sy));
+            }
+            if (pts.Count &gt; 1)
+                using (Pen pen = new Pen(Color.Blue, 2))
+                    g.DrawLines(pen, pts.ToArray());
+        }
+    }
+}</code></pre>
+            </div>
+
+            </div>
+
+            <div class="tab-content" data-tab="practice">
+                <h2>Практическое задание</h2>
+            <div class="practice-section">
+                <h3>Задание: Интерактивные графики</h3>
+                <ol class="practice-steps">
+                    <li>Создайте интерактивный график с масштабированием колесиком мыши</li>
+                    <li>Реализуйте перемещение правой кнопкой мыши</li>
+                    <li>Добавьте отображение значений при наведении</li>
+                </ol>
+            </div>
+
+            <div class="practice-section">
+                <h3>Задание по аналогии: Выбор функции через ComboBox</h3>
+                <p>По аналогии с <code>InteractiveGraphExample</code> создайте форму с динамическим выбором функции.</p>
+                <ol class="practice-steps">
+                    <li>Добавьте панель управления вверху с <code>ComboBox</code>, содержащим минимум 4 функции (sin, cos, x², √x).</li>
+                    <li>В <code>SelectedIndexChanged</code> вызывайте <code>graphPanel.Invalidate()</code>.</li>
+                    <li>В обработчике Paint определяйте нужную функцию <code>Func&lt;float, float&gt;</code> по <code>SelectedIndex</code>.</li>
+                    <li>Реализуйте отрисовку осей и кривой через список точек <code>PointF</code>.</li>
+                    <li>Обрабатывайте случаи <code>NaN</code> и <code>Infinity</code> — сбрасывайте накопленный список точек, чтобы не рисовать разрывы.</li>
+                </ol>
+                <div class="practice-tip">
+                    <strong>💡 Совет:</strong> Адаптируйте <code>minX, maxX, minY, maxY</code> под каждую функцию — у tan и ln совсем другие допустимые диапазоны.
+                </div>
+            </div>
+
+            </div>
+            
+            
+            <div class="tab-content" data-tab="tests">
+                <div class="test-section">
+                <h2>Проверка знаний</h2>
+                <p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+                
+                <div class="question" data-correct="0">
+                    <div class="question-text">1. Усвоили ли вы основные концепции урока?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Да, материал понятен</li>
+                        <li class="answer-option">Частично понятен</li>
+                        <li class="answer-option">Нужно повторить</li>
+                        <li class="answer-option">Не понял</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="1">
+                    <div class="question-text">2. Готовы ли вы применить изученное на практике?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Нет, нужно еще изучить</li>
+                        <li class="answer-option">Да, готов попробовать</li>
+                        <li class="answer-option">Возможно</li>
+                        <li class="answer-option">Не уверен</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">3. Что такое Zoom в графиках?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Увеличение масштаба отображения</li>
+                        <li class="answer-option">Уменьшение размера окна</li>
+                        <li class="answer-option">Изменение цвета</li>
+                        <li class="answer-option">Фильтрация данных</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+</div>
+                        </div>
+        </div>
+
+        <div class="navigation">
+            <a href="lesson5-3.html" class="nav-btn secondary">← Предыдущий урок</a>
+            <a href="../modules/module6.html" class="nav-btn">Следующий модуль →</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Курс "Графическое программирование на C#"</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+

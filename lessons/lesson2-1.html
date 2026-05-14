@@ -1,0 +1,657 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 2.1: Введение в GDI+</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="../lesson-quiz.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="../index.html" class="course-title-link">
+                <h1>🎨 Графическое программирование на C#</h1>
+            </a>
+        </div>
+    </header>
+
+    <main class="lesson-container">
+        <a href="../modules/module2.html" class="back-link">← Вернуться к модулю 2</a>
+        
+        <div class="lesson-header">
+            <h1>Урок 2.1: Введение в GDI+</h1>
+            <div class="lesson-meta">
+                <span>Модуль 2</span>
+                <span>⏱️ ~1.5 часа</span>
+            </div>
+        </div>
+
+        <div class="lesson-content">
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" data-tab="theory">📚 Теория</button>
+                <button class="tab-button" data-tab="practice">💻 Практика</button>
+                <button class="tab-button" data-tab="tests">✅ Тесты</button>
+            </div>
+            
+            <div class="tab-content active" data-tab="theory">
+            <div class="learning-objectives">
+                <h3>📌 Ключевые моменты этого урока:</h3>
+                <ul style="margin: 10px 0;">
+                    <li>Вспомните из урока 1.4: Paint событие — это где мы получаем Graphics объект</li>
+                    <li>GDI+ — это встроенная в .NET библиотека для всей двухмерной графики</li>
+                    <li>Graphics — главный объект для рисования (линий, фигур, текста, изображений)</li>
+                    <li>Pen рисует контуры (outline), Brush заполняет области (fill)</li>
+                    <li>Модуль 2 будет посвящен овладению GDI+ и рисованию разных элементов</li>
+                </ul>
+            </div>
+
+            <h2>Настройка проекта для работы с GDI+</h2>
+            <p>Прежде чем начать рисовать, нужно правильно настроить проект и добавить необходимые пространства имен.</p>
+
+            <h3>Шаг 1: Создание проекта Windows Forms</h3>
+            <div class="code-block">
+<pre><code class="language-text">1. Откройте Visual Studio
+2. Создайте новый проект "Windows Forms App (.NET Framework)"
+3. Укажите имя проекта, например: "MyGDIPlusApp"
+4. Нажмите "Создать"
+
+Visual Studio автоматически добавит ссылки на библиотеки GDI+:
+┌─────────────────────────────────────────────┐
+│ Solution Explorer                          │
+│ ▼ MyGDIPlusApp                             │
+│   ▶ Properties                             │
+│   ▶ References ← Здесь уже есть ссылки!     │
+│   │   ├─ System.Drawing      ← GDI+        │
+│   │   ├─ System.Drawing.Drawing2D         │
+│   │   ├─ System.Drawing.Imaging           │
+│   │   └─ System.Windows.Forms             │
+│   ▸ Form1.cs                               │
+│   ▸ Program.cs                             │
+└─────────────────────────────────────────────┘</code></pre>
+            </div>
+
+            <h3>Шаг 2: Добавление пространств имен (Namespaces)</h3>
+            <p>В начале каждого файла, где вы работаете с графикой, добавьте необходимые using директивы:</p>
+
+            <div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Windows.Forms;
+using System.Drawing;                   // ← Базовая графика (ОБЯЗАТЕЛЬНО)
+using System.Drawing.Drawing2D;         // ← Градиенты, сглаживание, пути
+// using System.Drawing.Imaging;        // ← Для работы с изображениями
+// using System.Drawing.Text;           // ← Для работы со шрифтами
+
+namespace MyGDIPlusApp
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+    }
+}</code></pre>
+            </div>
+
+            <h3>Шаг 3: Добавление обработчика события Paint</h3>
+            <div class="code-block">
+<pre><code class="language-text">Способ 1: Через Дизайнер форм
+1. Откройте Дизайнер форм (Shift+F7)
+2. Выделите форму (кликните по ней)
+3. Откройте окно Properties (F4)
+4. Перейдите на вкладку Events (значок ⚡)
+5. Найдите событие Paint
+6. Дважды кликните по пустому полю справа от Paint
+
+Способ 2: Через код
+1. Перейдите к коду формы (F7)
+2. В конструкторе добавьте:
+   this.Paint += Form1_Paint;
+3. Нажмите Tab дважды — Visual Studio автоматически создаст обработчик</code></pre>
+            </div>
+
+            <h3>Шаг 4: Получение объекта Graphics</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    // Graphics — главный объект для рисования
+    Graphics g = e.Graphics;
+
+    // Теперь можно рисовать!
+    g.DrawLine(Pens.Black, 10, 10, 100, 100);
+}</code></pre>
+            </div>
+            
+            <h3>Настройка качества рисования</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+
+    // Настройка качества рисования (рекомендуется)
+    g.SmoothingMode = SmoothingMode.AntiAlias;  // Сглаживание краев
+    g.TextRenderingHint = TextRenderingHint.AntiAlias;  // Сглаживание текста
+
+    // Теперь линии и текст будут выглядеть более гладкими
+    g.DrawEllipse(Pens.Blue, 10, 10, 100, 100);
+}</code></pre>
+            </div>
+            
+            <h3>Использование IntelliSense при работе с GDI+</h3>
+            <div class="code-block">
+<pre><code class="language-text">IntelliSense — это автодополнение кода в Visual Studio.
+Он помогает находить методы и свойства объектов.
+
+Пример использования:
+1. Напишите "g." (точку после объекта Graphics)
+2. Появится список методов и свойств:
+   ┌──────────────────────────────────┐
+   │ Graphics                        │
+   │ ▼                               │
+   │ • Clear(...)                    │
+   │ • CopyFromScreen(...)           │
+   │ • DrawArc(...)                  │
+   │ • DrawBezier(...)               │
+   │ • DrawEllipse(...)              │
+   │ • DrawImage(...)                │
+   │ • DrawLine(...)                 │
+   │ • DrawLines(...)                │
+   │ • DrawPath(...)                 │
+   │ • DrawRectangle(...)            │
+   │ • FillEllipse(...)              │
+   │ • FillRectangle(...)            │
+   │ • ...                           │
+   └──────────────────────────────────┘
+
+3. Начните вводить "DrawLine" — список отфильтруется
+4. Нажмите Tab или Enter — код вставится автоматически
+
+Советы по IntelliSense:
+• Ctrl+Space — вызвать IntelliSense вручную
+• Ctrl+J — показать список параметров
+• Ctrl+Shift+Space — показать информацию о параметре
+• F12 — перейти к определению (Declaration)</code></pre>
+            </div>
+            
+            <h2>Что такое GDI+ — главная библиотека для графики</h2>
+            <p>GDI+ (Graphics Device Interface Plus) — это интерфейс программирования приложений (API) для работы с двухмерной графикой, изображениями и типографикой в Windows. Она встроена в .NET Framework и является главным способом рисования на экране в Windows Forms.</p>
+
+            <h3>Историческая справка:</h3>
+            <ul>
+                <li><strong>GDI (старый)</strong> — первая версия от Windows 3.1 (1990е)</li>
+                <li><strong>GDI+</strong> — улучшенная версия с поддержкой современных техник</li>
+                <li><strong>Direct2D</strong> — даже более новая технология, но GDI+ по-прежнему главная для .NET</li>
+            </ul>
+
+            <h3>Почему GDI+ для графического программирования?</h3>
+            <ul>
+                <li><strong>Встроена в .NET</strong> — не нужно устанавливать дополнительные библиотеки</li>
+                <li><strong>Полная функциональность</strong> — линии, фигуры, текст, изображения, эффекты</li>
+                <li><strong>Кроссплатформана</strong> — код работает на Windows XP - Windows 11</li>
+                <li><strong>Хорошо документирована</strong> — много примеров и туториалов</li>
+                <li><strong>Подходит для обучения</strong> — простой API для начинающих</li>
+            </ul>
+
+            <h3>Возможности GDI+:</h3>
+            <div class="image-container">
+                <img src="../images/2.1/gdiplus-capabilities.svg" alt="Возможности GDI+" class="lesson-image">
+                <p class="image-caption">Основные возможности библиотеки GDI+</p>
+            </div>
+            
+            <h2>Архитектура GDI+ — главные компоненты</h2>
+            <p>GDI+ состоит из нескольких ключевых компонентов, каждый отвечает за свою часть графики:</p>
+            
+            <h3>Главный объект: Graphics</h3>
+            <ul>
+                <li><strong>Graphics</strong> — это главный объект для рисования. Все методы рисования вызываются на нем (DrawLine, FillRectangle и т.д.)</li>
+                <li>Вы получаете Graphics из PaintEventArgs в обработчике Paint события</li>
+                <li>Graphics отвечает за:
+                    <ul>
+                        <li>Рисование линий и фигур</li>
+                        <li>Рисование текста</li>
+                        <li>Трансформации (поворот, масштаб)</li>
+                        <li>Управление качеством рисования (сглаживание)</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>Вспомогательные объекты:</h3>
+            <div class="image-container">
+                <img src="../images/2.1/graphics-architecture.svg" alt="Архитектура Graphics" class="lesson-image">
+                <p class="image-caption">Архитектура объекта Graphics и вспомогательные объекты</p>
+            </div>
+
+            <h3>Соотношение Graphics с другими объектами:</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    // Graphics — главный объект
+    Graphics g = e.Graphics;
+    
+    // Pen — нужна для РИСОВАНИЯ контура
+    Pen redPen = new Pen(Color.Red, 2); // Красная линия толщиной 2 пиксела
+    g.DrawLine(redPen, 10, 10, 100, 100); // Методъе Graphics использует Pen
+    
+    // Brush — нужна для ЗАПОЛНЕНИЯ области
+    Brush blueBrush = new SolidBrush(Color.Blue);
+    g.FillRectangle(blueBrush, 20, 20, 50, 50); // Методъе Graphics использует Brush
+    
+    // Font — нужна для ТЕКСТА
+    Font arial = new Font("Arial", 14);
+    g.DrawString("Текст", arial, Brushes.Black, 150, 10);
+    
+    // Color часто используется напрямую с предопределёнными цветами
+    g.DrawEllipse(Pens.Green, 100, 100, 50, 50); // Pens.Green это готовая зелёная линия
+    
+    // Image/Bitmap — для изображений
+    Bitmap image = new Bitmap("image.png");
+    g.DrawImage(image, 10, 100, 100, 100);
+}</code></pre>
+            </div>
+
+            <h2>Основные классы GDI+</h2>
+            <p>Давайте разберемся с основными классами, которые вы будете использовать в графическом программировании:</p>
+
+            <h3>Graphics — мастер рисования</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">// Главные методы Graphics для рисования:
+
+// Линии
+g.DrawLine(Pens.Black, 0, 0, 100, 100);          // Прямая линия
+
+// Фигуры (контур только)
+g.DrawRectangle(Pens.Red, 10, 10, 50, 30);       // Прямоугольник
+g.DrawEllipse(Pens.Blue, 10, 10, 50, 50);        // Эллипс
+g.DrawPolygon(Pens.Green, points);               // Многоугольник
+
+// Фигуры (заполненные)
+g.FillRectangle(Brushes.Red, 10, 10, 50, 30);    // Заполненный прямоугольник
+g.FillEllipse(Brushes.Blue, 10, 10, 50, 50);     // Заполненный эллипс
+g.FillPolygon(Brushes.Green, points);            // Заполненный многоугольник
+
+// Текст
+g.DrawString("Привет", font, Brushes.Black, 10, 10);
+
+// Изображение
+g.DrawImage(image, 0, 0);
+
+// Управление качеством
+g.SmoothingMode = SmoothingMode.AntiAlias;       // Сглаживание краев</code></pre>
+            </div>
+
+            <h3>Pen — рисование контуров</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">// Создание Pen для рисования линий и контуров
+Pen blackPen = new Pen(Color.Black, 1);            // Черная линия толщиной 1px
+Pen thickRed = new Pen(Color.Red, 5);              // Красная линия толщиной 5px
+
+// Свойства Pen
+redPen.Color = Color.Blue;                         // Изменить цвет
+redPen.Width = 3;                                   // Изменить толщину
+redPen.DashStyle = DashStyle.Dash;                 // Пунктирная линия (---)
+redPen.EndCap = LineCap.Round;                     // Скругленный конец
+
+// Использование
+g.DrawLine(blackPen, 10, 10, 50, 50);             // Рисуем линию
+g.DrawRectangle(thickRed, 100, 100, 50, 50);      // Рисуем контур
+
+// Готовые Pen (встроенные)
+g.DrawLine(Pens.Black, 0, 0, 100, 100);           // Предопределённая черная
+g.DrawLine(Pens.Red, 0, 0, 100, 100);             // Предопределённая красная</code></pre>
+            </div>
+
+            <h3>Brush — заполнение областей</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">// SolidBrush — однотонное заполнение
+Brush redBrush = new SolidBrush(Color.Red);
+g.FillRectangle(redBrush, 10, 10, 50, 50);       // Красный прямоугольник
+
+// LinearGradientBrush — градиент (переход цветов)
+LinearGradientBrush gradientBrush = new LinearGradientBrush(
+    new Point(0, 0), 
+    new Point(100, 0),          // От левого к правому края
+    Color.Red, 
+    Color.Blue);
+g.FillRectangle(gradientBrush, 10, 10, 100, 50); // Красный→синий градиент
+
+// TextureBrush — заполнение изображением/текстурой
+Bitmap pattern = new Bitmap("pattern.png");
+TextureBrush textureBrush = new TextureBrush(pattern);
+g.FillRectangle(textureBrush, 10, 10, 100, 100); // Заполнить текстурой
+
+// Готовые Brush (встроенные)
+g.FillRectangle(Brushes.Red, 10, 10, 50, 50);    // Предопределённый красный
+g.FillRectangle(Brushes.Green, 70, 10, 50, 50);  // Предопределённый зелёный</code></pre>
+            </div>
+
+            <h3>Font — стиль текста</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">// Создание Font
+Font arial12 = new Font("Arial", 12);                          // Arial, 12 точек
+Font timesNewRomanBold = new Font("Times New Roman", 14, FontStyle.Bold);
+Font arial10Italic = new Font("Arial", 10, FontStyle.Italic);
+Font arial12BoldUnderline = new Font("Arial", 12, 
+    FontStyle.Bold | FontStyle.Underline);                     // Объединённые стили
+
+// Свойства Font
+Font f = arial12;
+string family = f.Name;                            // "Arial"
+float size = f.Size;                               // 12
+bool isBold = (f.Style & FontStyle.Bold) != 0;     // true если жирный
+
+// Использование
+g.DrawString("Привет", arial12, Brushes.Black, 10, 10);</code></pre>
+            </div>
+
+            <h3>Color — работа с цветами</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">// Создание цветов разными способами
+Color red = Color.Red;                                    // Встроенный красный
+Color customColor = Color.FromArgb(255, 0, 0);            // RGB красный
+Color semiTransparentBlue = Color.FromArgb(128, 0, 0, 255); // ARGB полупрозрачный синий
+
+// Свойства Color
+Color c = Color.Blue;
+int alpha = c.A;      // Прозрачность (0-255)
+int red2 = c.R;        // Красный компонент (0-255)
+int green = c.G;       // Зелёный компонент (0-255)
+int blue = c.B;        // Синий компонент (0-255)
+
+// Встроенные цвета
+Color c1 = Color.AliceBlue;
+Color c2 = Color.Tomato;
+Color c3 = Color.WhiteSmoke;</code></pre>
+            </div>
+
+            <h2>Пространства имен (Namespaces) GDI+</h2>
+            <p>GDI+ разделён на несколько отдельных namespaces при зависимости от функциональности.</p>
+            
+            <div class="code-block">
+<pre><code class="language-csharp">// Обязательно добавьте в начало файла:
+
+// Базовые классы от правде (ВСЕГДА нужно)
+using System.Drawing;
+
+// Продвинутые возможности (нужны для фильтров, градиентов)
+using System.Drawing.Drawing2D;
+
+// Работа с изображениями и форматами (нужны для загрузки/сохранения)
+using System.Drawing.Imaging;
+
+// Работа с текстом и индвидуальными метриками (иногда нужны)
+using System.Drawing.Text;</code></pre>
+            </div>
+
+            <h3>Что находится в каждом namespace:</h3>
+            <div class="image-container">
+                <img src="../images/2.1/gdiplus-namespaces.svg" alt="Пространства имен GDI+" class="lesson-image">
+                <p class="image-caption">Пространства имен GDI+ и их содержимое</p>
+            </div>
+
+            <h3>Типичная структура файла с GDI+:</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Windows.Forms;
+using System.Drawing;                   // ← Базовая графика
+using System.Drawing.Drawing2D;         // ← Градиенты, пути
+// using System.Drawing.Imaging;        // ← Если работаете с форматами
+// using System.Drawing.Text;           // ← Если нужны пользовательские шрифты
+
+namespace MyGraphicsApp
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+            this.Paint += Form1_Paint;
+        }
+        
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            
+            // Улучшить качество рисования
+            g.SmoothingMode = SmoothingMode.AntiAlias; // ← Из Drawing2D
+            
+            // Ваш код рисования
+            // ...
+        }
+    }
+}</code></pre>
+            </div>
+
+            <h3>Best Practices для GDI+:</h3>
+            <ul>
+                <li><strong>Всегда кэшируйте Pen, Brush, Font объекты</strong> — не создавайте их заново в Paint каждый раз</li>
+                <li><strong>Используйте Dispose() для больших объектов</strong> — изображения и кистях требуют освобождения памяти после use (или используйте using ())</li>
+                <li><strong>Используйте SmoothingMode.AntiAlias</strong> — для лучшего качества линий и фигур</li>
+                <li><strong>Избегайте прямого создания Font в Paint</strong> — кэшируйте их</li>
+                <li><strong>Помните о производительности</strong> — сложные трансформации медленнее простых рисунков</li>
+            </ul>
+
+            <h3>Что дальше в Модуле 2:</h3>
+            <p>Теперь когда вы понимаете архитектуру GDI+, будут следующие уроки:</p>
+            <ul>
+                <li><strong>2.2 Рисование линий</strong> — различные способы рисования линий</li>
+                <li><strong>2.3 Рисование фигур</strong> — прямоугольники, эллипсы, многоугольники</li>
+                <li><strong>2.4 Работа с текстом</strong> — размещение и оформление текста</li>
+                <li><strong>2.5 Кисти и градиенты</strong> — красивое заполнение областей</li>
+                <li><strong>2.6 Трансформации</strong> — поворот, масштабирование, сдвиг</li>
+                <li><strong>2.7 Работа с изображениями</strong> — загрузка, отображение, манипуляция</li>
+                <li><strong>2.8 Практический проект</strong> — интеграция всего вместе</li>
+            </ul>
+            
+            </div>
+            </div>
+            
+            </div>
+            
+            <div class="tab-content" data-tab="practice">
+                <h2>Практическое задание</h2>
+            <div class="practice-section">
+                <h3>Задание 1: Настройка проекта для работы с GDI+</h3>
+                <ol class="practice-steps">
+                    <li>Создайте новый проект "Windows Forms App (.NET Framework)"</li>
+                    <li>Назовите проект: "MyGDIPlusApp"</li>
+                    <li>Откройте Solution Explorer (Ctrl+Alt+L)</li>
+                    <li>Разверните раздел References и убедитесь, что там есть System.Drawing</li>
+                    <li>Откройте Form1.cs (F7)</li>
+                    <li>Добавьте using директивы в начало файла:
+                        <div class="code-block">
+<pre><code class="language-csharp">using System.Drawing;
+using System.Drawing.Drawing2D;</code></pre>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="practice-section">
+                <h3>Задание 2: Добавление обработчика Paint</h3>
+                <ol class="practice-steps">
+                    <li>Перейдите в Дизайнер форм (Shift+F7)</li>
+                    <li>Выделите форму (кликните по ней)</li>
+                    <li>Откройте окно Properties (F4)</li>
+                    <li>Перейдите на вкладку Events (значок ⚡)</li>
+                    <li>Найдите событие Paint</li>
+                    <li>Дважды кликните по пустому полю справа от Paint</li>
+                    <li>Visual Studio автоматически перейдет к коду и создаст обработчик</li>
+                </ol>
+            </div>
+
+            <div class="practice-section">
+                <h3>Задание 3: Первое рисование</h3>
+                <ol class="practice-steps">
+                    <li>В обработчике Form1_Paint добавьте код:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void Form1_Paint(object sender, PaintEventArgs e)
+{
+    Graphics g = e.Graphics;
+
+    // Настройка качества
+    g.SmoothingMode = SmoothingMode.AntiAlias;
+
+    // Рисуем линию
+    g.DrawLine(Pens.Black, 10, 10, 100, 100);
+
+    // Рисуем прямоугольник
+    g.DrawRectangle(Pens.Red, 150, 10, 50, 30);
+
+    // Рисуем эллипс
+    g.DrawEllipse(Pens.Blue, 220, 10, 50, 50);
+
+    // Рисуем текст
+    g.DrawString("Привет, GDI+!", new Font("Arial", 12),
+        Brushes.Black, 10, 150);
+}</code></pre>
+                        </div>
+                    </li>
+                    <li>Запустите приложение (F5)</li>
+                    <li>Проверьте, что все элементы отображаются на форме</li>
+                </ol>
+            </div>
+
+            <div class="practice-section">
+                <h3>Задание 4: Работа с IntelliSense</h3>
+                <ol class="practice-steps">
+                    <li>В обработчике Paint напишите "g."</li>
+                    <li>Изучите список доступных методов Graphics</li>
+                    <li>Начните вводить "Draw" и посмотрите, как фильтруется список</li>
+                    <li>Попробуйте использовать Ctrl+Space для вызова IntelliSense</li>
+                    <li>Нажмите F12 на методе DrawLine, чтобы перейти к его определению</li>
+                </ol>
+            </div>
+
+            <div class="practice-tip">
+                <strong>💡 Совет:</strong> Используйте IntelliSense для изучения всех методов Graphics. Начните вводить "Draw" или "Fill" — вы увидите все методы рисования.
+            </div>
+
+            </div>
+            
+            
+            <div class="tab-content" data-tab="tests">
+                <div class="test-section">
+                <h2>Проверка знаний</h2>
+                <p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+                
+                <div class="question" data-correct="1">
+                    <div class="question-text">1. Что такое GDI+?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Графический редактор</li>
+                        <li class="answer-option">API для работы с двухмерной графикой в Windows</li>
+                        <li class="answer-option">Язык программирования</li>
+                        <li class="answer-option">База данных</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">2. В каком пространстве имен находятся основные классы GDI+?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">System.Drawing</li>
+                        <li class="answer-option">System.Windows.Forms</li>
+                        <li class="answer-option">System.IO</li>
+                        <li class="answer-option">System.Collections</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="2">
+                    <div class="question-text">3. Какой объект является основным для рисования в GDI+?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Pen</li>
+                        <li class="answer-option">Brush</li>
+                        <li class="answer-option">Graphics</li>
+                        <li class="answer-option">Color</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="3">
+                    <div class="question-text">4. Какое свойство Graphics включает сглаживание краев?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">TextRenderingHint</li>
+                        <li class="answer-option">Quality</li>
+                        <li class="answer-option">SmoothingMode</li>
+                        <li class="answer-option">AntiAlias</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="1">
+                    <div class="question-text">5. В каком пространстве имен находятся градиенты и сглаживание?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">System.Drawing</li>
+                        <li class="answer-option">System.Drawing.Drawing2D</li>
+                        <li class="answer-option">System.Drawing.Imaging</li>
+                        <li class="answer-option">System.Drawing.Text</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">6. Какая горячая клавиша вызывает IntelliSense?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Ctrl+Space</li>
+                        <li class="answer-option">Ctrl+J</li>
+                        <li class="answer-option">F12</li>
+                        <li class="answer-option">Ctrl+Shift+Space</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="2">
+                    <div class="question-text">7. Какой объект используется для рисования контуров?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Brush</li>
+                        <li class="answer-option">Color</li>
+                        <li class="answer-option">Pen</li>
+                        <li class="answer-option">Font</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="3">
+                    <div class="question-text">8. Какой объект используется для заполнения областей?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Pen</li>
+                        <li class="answer-option">Color</li>
+                        <li class="answer-option">Font</li>
+                        <li class="answer-option">Brush</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+                </div>
+        </div>
+
+        <div class="navigation">
+            <a href="../modules/module2.html" class="nav-btn secondary">← К модулю</a>
+            <a href="lesson2-2.html" class="nav-btn">Следующий урок →</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Курс "Графическое программирование на C#"</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+

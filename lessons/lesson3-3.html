@@ -1,0 +1,421 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 3.3: Работа с Bitmap напрямую</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="../lesson-quiz.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🎨 Графическое программирование на C#</h1>
+        </div>
+    </header>
+
+    <main class="lesson-container">
+        <a href="../modules/module3.html" class="back-link">← Вернуться к модулю 3</a>
+        
+        <div class="lesson-header">
+            <h1>Урок 3.3: Работа с Bitmap напрямую</h1>
+            <div class="lesson-meta">
+                <span>Модуль 3</span>
+                <span>⏱️ ~2 часа</span>
+            </div>
+        </div>
+
+        <div class="lesson-content">
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" data-tab="theory">📚 Теория</button>
+                <button class="tab-button" data-tab="practice">💻 Практика</button>
+                <button class="tab-button" data-tab="tests">✅ Тесты</button>
+            </div>
+            
+            <div class="tab-content active" data-tab="theory">
+            <div class="learning-objectives">
+                <h3>📌 Ключевые моменты этого урока:</h3>
+                <ul style="margin: 10px 0;">
+                    <li>GetPixel/SetPixel медленны в 100+ раз для обработки целых изображений</li>
+                    <li>LockBits предоставляет прямой доступ к пиксельным данным (~100x faster)</li>
+                    <li>Stride - это количество байт в одной строке пикселей (может быть больше чем ширина × 4)</li>
+                    <li>PixelFormat определяет формат каждого пикселя (ARGB, RGB, 8-bit, etc)</li>
+                    <li>Unsafe код позволяет использовать указатели для ещё большей производительности</li>
+                </ul>
+            </div>
+
+            <h2>Производительность: GetPixel vs LockBits</h2>
+            <p>КРИТИЧНО для производительности! GetPixel и SetPixel очень медленные операции:</p>
+            <div class="image-container">
+                <img src="../images/3.3/pixel-access-performance.svg" alt="Производительность доступа к пикселям" class="lesson-image">
+                <p class="image-caption">Сравнение производительности методов доступа к пикселям</p>
+            </div>
+            
+            <h2>LockBits и UnlockBits</h2>
+            <p>Для максимальной производительности при работе с пикселями используйте прямой доступ к данным изображения:</p>
+            <div class="code-block"><pre><code class="language-csharp">Bitmap bmp = new Bitmap(800, 600);
+BitmapData bmpData = bmp.LockBits(
+    new Rectangle(0, 0, bmp.Width, bmp.Height),
+    ImageLockMode.ReadWrite,
+    PixelFormat.Format32bppArgb
+);
+
+// Работа с данными
+IntPtr ptr = bmpData.Scan0;
+int bytes = Math.Abs(bmpData.Stride) * bmp.Height;
+byte[] rgbValues = new byte[bytes];
+System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
+
+// Изменение пикселей
+for (int i = 0; i < rgbValues.Length; i += 4)
+{
+    rgbValues[i] = 255;     // B
+    rgbValues[i + 1] = 0;    // G
+    rgbValues[i + 2] = 0;    // R
+    rgbValues[i + 3] = 255;  // A
+}
+
+System.Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes);
+bmp.UnlockBits(bmpData);</code></pre></div>
+
+            <h2>Stride: понимание структуры памяти</h2>
+            <p>ВАЖНО: Stride - не всегда equals Width × 4! Это реальное количество байт между строками:</p>
+            <div class="code-block"><pre><code class="language-csharp">// Пример: 800×600 изображение
+// Может быть Stride = 3200 (800 × 4), но часто выравнивается до 3200
+BitmapData bmpData = bmp.LockBits(...);
+int stride = bmpData.Stride;  // может быть > Width × 4 по причинам выравнивания
+int width = bmp.Width;
+int height = bmp.Height;
+
+// Правильный способ обхода пикселей:
+unsafe
+{
+    byte* ptr = (byte*)bmpData.Scan0;
+    for (int y = 0; y < height; y++)
+    {
+        // ВАЖНО: используем Stride, не Width × 4
+        byte* row = ptr + (y * stride);
+        for (int x = 0; x < width; x++)
+        {
+            row[x * 4 + 0] = 0;  // Blue
+            row[x * 4 + 1] = 0;  // Green  
+            row[x * 4 + 2] = 255; // Red
+            row[x * 4 + 3] = 255; // Alpha
+        }
+    }
+}
+bmp.UnlockBits(bmpData);</code></pre></div>
+
+            <h2>PixelFormat: форматы пикселей</h2>
+            <div class="code-block"><pre><code class="language-csharp">// Главные форматы:
+PixelFormat.Format32bppArgb    // ARGB 32-bit (самый частый) - 4 байта/пиксель
+PixelFormat.Format24bppRgb     // RGB 24-bit (нет альфы) - 3 байта/пиксель
+PixelFormat.Format8bppIndexed  // 8-bit палитра (самый компактный)
+PixelFormat.Format16bppRgb565  // 16-bit RGB (редко)
+
+// При LockBits всегда проверяйте реальный формат:
+BitmapData bmpData = bmp.LockBits(...);
+int bytesPerPixel = Image.GetPixelFormatSize(bmpData.PixelFormat) / 8;
+// Для Format32bppArgb -> bytesPerPixel = 4
+// Для Format24bppRgb -> bytesPerPixel = 3</code></pre></div>
+            <p>Для еще большей производительности используйте unsafe код:</p>
+            <div class="code-block"><pre><code class="language-csharp">unsafe
+{
+    BitmapData bmpData = bmp.LockBits(...);
+    byte* ptr = (byte*)bmpData.Scan0;
+    
+    for (int y = 0; y < bmp.Height; y++)
+    {
+        byte* row = ptr + (y * bmpData.Stride);
+        for (int x = 0; x < bmp.Width; x++)
+        {
+            int pixelIndex = x * 4;
+            row[pixelIndex] = 255;     // B
+            row[pixelIndex + 1] = 0;   // G
+            row[pixelIndex + 2] = 0;   // R
+            row[pixelIndex + 3] = 255;  // A
+        }
+    }
+    
+    bmp.UnlockBits(bmpData);
+}</code></pre></div>
+            <p><strong>Важно:</strong> Включите "Allow unsafe code" в настройках проекта.</p>
+
+            <h2>Прямой доступ к пикселям</h2>
+            <div class="code-block"><pre><code class="language-csharp">// Медленный способ (для небольших изображений)
+Color pixel = bmp.GetPixel(10, 20);
+bmp.SetPixel(10, 20, Color.Red);
+
+// Быстрый способ (через LockBits)
+// Используйте код выше</code></pre></div>
+
+            <h2>Когда это нужно</h2>
+            <ul>
+                <li>Обработка больших изображений</li>
+                <li>Применение фильтров к изображениям</li>
+                <li>Генерация изображений по пикселям</li>
+                <li>Требования высокой производительности</li>
+            </ul>
+            </div>
+
+            </div>
+
+            <div class="tab-content" data-tab="practice">
+                <h2>Практическое задание</h2>
+            <div class="practice-section">
+                <h3>Задание 1: Инвертирование цветов (GetPixel/SetPixel)</h3>
+                <ol class="practice-steps">
+                    <li>Создайте приложение с кнопкой</li>
+                    <li>Загрузите изображение:
+                        <div class="code-block">
+<pre><code class="language-csharp">private Bitmap originalImage;
+
+private void Form1_Load(object sender, EventArgs e)
+{
+    originalImage = new Bitmap(@"путь\к\изображению.jpg");
+}</code></pre>
+                        </div>
+                    </li>
+                    <li>В обработчике Click кнопки инвертируйте цвета:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void button1_Click(object sender, EventArgs e)
+{
+    Bitmap inverted = new Bitmap(originalImage);
+
+    for (int y = 0; y < inverted.Height; y++)
+    {
+        for (int x = 0; x < inverted.Width; x++)
+        {
+            Color pixel = inverted.GetPixel(x, y);
+            Color invertedPixel = Color.FromArgb(
+                255 - pixel.R,
+                255 - pixel.G,
+                255 - pixel.B
+            );
+            inverted.SetPixel(x, y, invertedPixel);
+        }
+    }
+
+    this.BackgroundImage = inverted;
+}</code></pre>
+                        </div>
+                    </li>
+                    <li>Запустите приложение — посмотрите, как долго это займет</li>
+                </ol>
+            </div>
+
+            <div class="practice-section">
+                <h3>Задание 2: Инвертирование цветов (LockBits)</h3>
+                <ol class="practice-steps">
+                    <li>Используйте LockBits для ускорения:
+                        <div class="code-block">
+<pre><code class="language-csharp">private void button1_Click(object sender, EventArgs e)
+{
+    Bitmap inverted = new Bitmap(originalImage);
+
+    Rectangle rect = new Rectangle(0, 0, inverted.Width, inverted.Height);
+    BitmapData bmpData = inverted.LockBits(
+        rect, ImageLockMode.ReadWrite, inverted.PixelFormat);
+
+    int bytesPerPixel = System.Drawing.Image.GetPixelFormatSize(bmpData.PixelFormat) / 8;
+
+    unsafe
+    {
+        byte* ptr = (byte*)bmpData.Scan0;
+        for (int y = 0; y < inverted.Height; y++)
+        {
+            byte* row = ptr + (y * bmpData.Stride);
+            for (int x = 0; x < inverted.Width; x++)
+            {
+                int pixelIndex = x * bytesPerPixel;
+                row[pixelIndex + 2] = (byte)(255 - row[pixelIndex + 2]); // R
+                row[pixelIndex + 1] = (byte)(255 - row[pixelIndex + 1]); // G
+                row[pixelIndex] = (byte)(255 - row[pixelIndex]);         // B
+            }
+        }
+    }
+
+    inverted.UnlockBits(bmpData);
+    this.BackgroundImage = inverted;
+}</code></pre>
+                        </div>
+                    </li>
+                    <li>Включите "Allow unsafe code" в настройках проекта</li>
+                    <li>Запустите приложение — должно быть намного быстрее!</li>
+                </ol>
+            </div>
+
+            <div class="practice-section">
+                <h3>Задание 3: Черно-белый фильтр</h3>
+                <ol class="practice-steps">
+                    <li>Создайте черно-белый фильтр:
+                        <div class="code-block">
+<pre><code class="language-csharp">private Bitmap ConvertToGrayscale(Bitmap source)
+{
+    Bitmap gray = new Bitmap(source.Width, source.Height);
+    Rectangle rect = new Rectangle(0, 0, gray.Width, gray.Height);
+    BitmapData bmpData = gray.LockBits(
+        rect, ImageLockMode.ReadWrite, gray.PixelFormat);
+
+    unsafe
+    {
+        byte* ptr = (byte*)bmpData.Scan0;
+        for (int y = 0; y < gray.Height; y++)
+        {
+            byte* row = ptr + (y * bmpData.Stride);
+            for (int x = 0; x < gray.Width; x++)
+            {
+                int pixelIndex = x * 4;
+                byte grayValue = (byte)((row[pixelIndex + 2] * 0.299 +
+                                         row[pixelIndex + 1] * 0.587 +
+                                         row[pixelIndex] * 0.114));
+                row[pixelIndex] = grayValue;     // B
+                row[pixelIndex + 1] = grayValue; // G
+                row[pixelIndex + 2] = grayValue; // R
+                row[pixelIndex + 3] = 255;       // A
+            }
+        }
+    }
+
+    gray.UnlockBits(bmpData);
+    return gray;
+}</code></pre>
+                        </div>
+                    </li>
+                    <li>Используйте этот метод в обработчике Click</li>
+                </ol>
+            </div>
+
+            <div class="practice-tip">
+                <strong>💡 Совет:</strong> LockBits в 10-100 раз быстрее GetPixel/SetPixel. Используйте его для обработки больших изображений.
+            </div>
+
+            </div>
+            
+            
+            <div class="tab-content" data-tab="tests">
+                <div class="test-section">
+                <h2>Проверка знаний</h2>
+                <p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+                
+                <div class="question" data-correct="2">
+                    <div class="question-text">1. Для чего используется LockBits?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Для блокировки формы</li>
+                        <li class="answer-option">Для сохранения изображения</li>
+                        <li class="answer-option">Для прямого доступа к пикселям изображения</li>
+                        <li class="answer-option">Для загрузки изображения</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">2. Что быстрее: GetPixel/SetPixel или LockBits?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">LockBits намного быстрее</li>
+                        <li class="answer-option">GetPixel/SetPixel быстрее</li>
+                        <li class="answer-option">Одинаково</li>
+                        <li class="answer-option">Зависит от размера изображения</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="1">
+                    <div class="question-text">3. Что такое Stride в BitmapData?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Количество байт на пиксель</li>
+                        <li class="answer-option">Количество байт в одной строке изображения</li>
+                        <li class="answer-option">Высота изображения</li>
+                        <li class="answer-option">Ширина изображения</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="3">
+                    <div class="question-text">4. Какой PixelFormat использует 4 байта на пиксель?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Format24bppRgb</li>
+                        <li class="answer-option">Format8bppIndexed</li>
+                        <li class="answer-option">Format16bppRgb565</li>
+                        <li class="answer-option">Format32bppArgb</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">5. Какой метод разблокирует Bitmap после LockBits?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">UnlockBits</li>
+                        <li class="answer-option">ReleaseBits</li>
+                        <li class="answer-option">FreeBits</li>
+                        <li class="answer-option">Dispose</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="2">
+                    <div class="question-text">6. В каком порядке идут байты в Format32bppArgb?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">A, R, G, B</li>
+                        <li class="answer-option">R, G, B, A</li>
+                        <li class="answer-option">B, G, R, A</li>
+                        <li class="answer-option">R, A, G, B</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="1">
+                    <div class="question-text">7. Какое свойство BitmapData указывает на начало данных?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Start</li>
+                        <li class="answer-option">Scan0</li>
+                        <li class="answer-option">Pointer</li>
+                        <li class="answer-option">Data</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="3">
+                    <div class="question-text">8. Нужно ли включать "Allow unsafe code" для LockBits?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Да, всегда</li>
+                        <li class="answer-option">Нет, не нужно</li>
+                        <li class="answer-option">Только для Format24bppRgb</li>
+                        <li class="answer-option">Только если используется указатель</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+                </div>
+                        </div>
+        </div>
+
+        <div class="navigation">
+            <a href="lesson3-2.html" class="nav-btn secondary">← Предыдущий урок</a>
+            <a href="lesson3-4.html" class="nav-btn">Следующий урок →</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Курс "Графическое программирование на C#"</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+

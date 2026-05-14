@@ -1,0 +1,58 @@
+<svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="600" height="300" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="300" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#333">Последовательность событий при клике</text>
+  
+  <!-- Single Click Section -->
+  <rect x="25" y="40" width="550" height="80" rx="8" fill="#e7f3ff" stroke="#0078d4" stroke-width="2"/>
+  <text x="300" y="60" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#0078d4" text-anchor="middle">Однократный клик:</text>
+  
+  <rect x="50" y="75" width="120" height="35" rx="4" fill="#0078d4"/>
+  <text x="110" y="98" font-family="Arial, sans-serif" font-size="10" fill="white" text-anchor="middle">MouseDown</text>
+  
+  <line x1="170" y1="92" x2="200" y2="92" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <rect x="200" y="75" width="120" height="35" rx="4" fill="#28a745"/>
+  <text x="260" y="98" font-family="Arial, sans-serif" font-size="10" fill="white" text-anchor="middle">MouseClick</text>
+  
+  <line x1="320" y1="92" x2="350" y2="92" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <rect x="350" y="75" width="120" height="35" rx="4" fill="#ffc107"/>
+  <text x="410" y="98" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">MouseUp</text>
+  
+  <!-- Double Click Section -->
+  <rect x="25" y="135" width="550" height="80" rx="8" fill="#fff3cd" stroke="#ffc107" stroke-width="2"/>
+  <text x="300" y="155" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#856404" text-anchor="middle">Двойной клик:</text>
+  
+  <rect x="50" y="170" width="100" height="30" rx="4" fill="#0078d4"/>
+  <text x="100" y="190" font-family="Arial, sans-serif" font-size="9" fill="white" text-anchor="middle">MouseDown</text>
+  
+  <line x1="150" y1="185" x2="170" y2="185" stroke="#333" stroke-width="2"/>
+  
+  <rect x="170" y="170" width="100" height="30" rx="4" fill="#ffc107"/>
+  <text x="220" y="190" font-family="Arial, sans-serif" font-size="9" fill="#333" text-anchor="middle">MouseUp</text>
+  
+  <line x1="270" y1="185" x2="290" y2="185" stroke="#333" stroke-width="2"/>
+  
+  <rect x="290" y="170" width="100" height="30" rx="4" fill="#0078d4"/>
+  <text x="340" y="190" font-family="Arial, sans-serif" font-size="9" fill="white" text-anchor="middle">MouseDown</text>
+  
+  <line x1="390" y1="185" x2="410" y2="185" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <rect x="410" y="170" width="115" height="30" rx="4" fill="#dc3545"/>
+  <text x="467" y="190" font-family="Arial, sans-serif" font-size="9" fill="white" text-anchor="middle">MouseDoubleClick</text>
+  
+  <!-- Mouse Move Section -->
+  <rect x="25" y="230" width="550" height="55" rx="8" fill="#d4edda" stroke="#28a745" stroke-width="2"/>
+  <text x="300" y="250" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#155724" text-anchor="middle">Движение мыши:</text>
+  <text x="300" y="270" font-family="Arial, sans-serif" font-size="10" fill="#155724" text-anchor="middle">[MouseMove] [MouseMove] [MouseMove] [MouseMove] [MouseMove] ... (много раз в секунду!)</text>
+  
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+</svg>

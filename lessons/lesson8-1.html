@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Урок 8.1: Системы частиц и эффекты</title>
+<link href="../styles.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="../lesson-quiz.js"></script>
+</head>
+<body>
+<header>
+<div class="container">
+<a class="course-title-link" href="../index.html">
+<h1>🎨 Графическое программирование на C#</h1>
+</a>
+</div>
+</header>
+<main class="lesson-container">
+<a class="back-link" href="../modules/module8.html">← Вернуться к модулю 8</a>
+<div class="lesson-header">
+<h1>Урок 8.1: Системы частиц и эффекты</h1>
+<div class="lesson-meta">
+<span>Модуль 8</span>
+<span>⏱️ ~1.5 часа</span>
+</div>
+</div>
+<div class="lesson-content">
+<div class="tabs-container">
+<div class="tabs-nav">
+<button class="tab-button active" data-tab="theory">📚 Теория</button>
+<button class="tab-button" data-tab="practice">💻 Практика</button>
+<button class="tab-button" data-tab="tests">✅ Тесты</button>
+</div>
+<div class="tab-content active" data-tab="theory">
+<div class="learning-objectives">
+<h3>📌 Что вы изучите:</h3>
+<ul>
+<li>Принцип работы эмиттера частиц</li>
+<li>Параметры частиц: скорость, размер, жизнь</li>
+<li>Гравитация и плавное исчезновение</li>
+<li>Отрисовка полупрозрачных частиц</li>
+<li>Оптимизация большого количества элементов</li>
+</ul>
+</div>
+<h2>Система частиц</h2>
+<p>Система частиц состоит из эмиттера, набора объектов частиц и цикла обновления. Каждая частица хранит позицию, скорость, размер, цвет и время жизни.</p>
+<div class="code-block"><pre><code class="language-csharp">private void CreateParticle(float x, float y)
+{
+    particles.Add(new Particle
+    {
+        Position = new PointF(x, y),
+        Velocity = new PointF((float)(rnd.NextDouble() - 0.5) * 6, (float)(rnd.NextDouble() - 1) * 6),
+        Size = (float)(rnd.NextDouble() * 4 + 2),
+        Lifetime = rnd.Next(40, 120),
+        Color = Color.FromArgb(rnd.Next(150, 256), rnd.Next(150, 256), rnd.Next(150, 256))
+    });
+}</code></pre></div>
+<h2>Плавное исчезновение</h2>
+<p>Для эффекта затухания используйте альфа-канал, основанный на оставшейся жизни частицы.</p>
+<h2>📝 Пример задания — система частиц</h2>
+<p>Эмиттер следует за курсором мыши, создаёт до 500 частиц с гравитацией и затуханием по альфа-каналу:</p>
+<div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Windows.Forms;
+
+namespace CSharpGraphicsApp
+{
+    public class Task21_ParticleAnimation : Form
+    {
+        private class Particle
+        {
+            public PointF Position { get; set; }
+            public PointF Velocity { get; set; }
+            public Color Color { get; set; }
+            public float Size { get; set; }
+            public float Lifetime { get; set; }
+            public float MaxLifetime { get; set; }
+            public float Gravity { get; set; }
+
+            public float Alpha =&gt; (Lifetime / MaxLifetime) * 255;
+
+            public void Update()
+            {
+                var pos = Position;
+                pos.X += Velocity.X;
+                pos.Y += Velocity.Y;
+                Position = pos;
+
+                var vel = Velocity;
+                vel.Y += Gravity;
+                Velocity = vel;
+                Lifetime -= 1;
+            }
+
+            public bool IsAlive =&gt; Lifetime &gt; 0;
+        }
+
+        private List&lt;Particle&gt; particles = new List&lt;Particle&gt;();
+        private Random random = new Random();
+        private readonly Timer timer = new Timer();
+        private int emitterX, emitterY;
+
+        public Task21_ParticleAnimation()
+        {
+            Text = "Задание 21 — Система частиц (Particle Animation)";
+            Size = new Size(800, 600);
+            BackColor = Color.Black;
+            DoubleBuffered = true;
+            Paint += Form_Paint;
+            MouseMove += (s, e) =&gt; { emitterX = e.X; emitterY = e.Y; };
+
+            timer.Interval = 16;
+            timer.Tick += Timer_Tick;
+            timer.Start();
+            FormClosed += (s, e) =&gt; timer.Stop();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            if (particles.Count &lt; 500)
+            {
+                for (int i = 0; i &lt; 3; i++)
+                {
+                    particles.Add(new Particle
+                    {
+                        Position = new PointF(emitterX, emitterY),
+                        Velocity = new PointF(
+                            (float)(random.NextDouble() - 0.5) * 6,
+                            (float)(random.NextDouble() - 1) * 6),
+                        Color = Color.FromArgb(
+                            random.Next(100, 256),
+                            random.Next(100, 256),
+                            random.Next(100, 256)),
+                        Size = (float)(random.NextDouble() * 4 + 2),
+                        MaxLifetime = random.Next(40, 120),
+                        Lifetime = random.Next(40, 120),
+                        Gravity = 0.15f
+                    });
+                }
+            }
+
+            for (int i = particles.Count - 1; i &gt;= 0; i--)
+            {
+                particles[i].Update();
+                if (!particles[i].IsAlive)
+                    particles.RemoveAt(i);
+            }
+            Invalidate();
+        }
+
+        private void Form_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            foreach (var p in particles)
+            {
+                byte alpha = (byte)Math.Min(255, Math.Max(0, p.Alpha));
+                using (var brush = new SolidBrush(Color.FromArgb(alpha, p.Color)))
+                    e.Graphics.FillEllipse(brush,
+                        p.Position.X - p.Size / 2,
+                        p.Position.Y - p.Size / 2,
+                        p.Size, p.Size);
+            }
+            e.Graphics.FillEllipse(Brushes.White, emitterX - 5, emitterY - 5, 10, 10);
+            e.Graphics.DrawString($"Частиц: {particles.Count} | двигайте мышью",
+                new Font("Segoe UI", 11, FontStyle.Bold), Brushes.White, 10, 10);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="tab-content" data-tab="practice">
+<h2>Практическое задание</h2>
+<ul>
+<li>Реализуйте эмиттер, который создаёт новые частицы каждый тик.</li>
+<li>Добавьте гравитацию и уменьшение скорости.</li>
+<li>Рисуйте частицы с помощью FillEllipse и полупрозрачного кисти.</li>
+<li>Очищайте устаревшие частицы.</li>
+</ul>
+<div class="practice-section">
+<h3>Задание по аналогии: Система частиц</h3>
+<p>По аналогии с <code>Task21_ParticleAnimation</code> реализуйте эмиттер частиц с физикой.</p>
+<ol class="practice-steps">
+<li>Создайте внутренний класс <code>Particle</code> с полями: <code>Position</code>, <code>Velocity</code>, <code>Color</code>, <code>Size</code>, <code>Lifetime</code>, <code>MaxLifetime</code>, <code>Gravity</code>. Добавьте вычисляемое свойство <code>Alpha = (Lifetime / MaxLifetime) * 255</code>.</li>
+<li>В методе <code>Particle.Update()</code> обновляйте позицию по скорости (<code>pos.X += vel.X</code>), добавляйте гравитацию (<code>vel.Y += Gravity</code>) и уменьшайте <code>Lifetime</code> на 1.</li>
+<li>В <code>Timer_Tick</code> создавайте 3 новые частицы за тик (если &lt; 500), затем обновляйте все частицы и удаляйте мёртвые через цикл с конца списка.</li>
+<li>В <code>Form_Paint</code> для каждой частицы создавайте <code>SolidBrush</code> с <code>Color.FromArgb(alpha, p.Color)</code> и рисуйте <code>FillEllipse</code> размером <code>p.Size</code>.</li>
+<li>Дополнительно: добавьте несколько режимов через <code>ComboBox</code> — фейерверк, фонтан, дым — изменяя начальную скорость и гравитацию.</li>
+</ol>
+<div class="image-container task-result" style="margin-top:1rem;"><p style="font-weight:600;margin-bottom:0.5rem;">Пример результата выполнения задания:</p><img alt="Результат Task21" class="lesson-image task-screenshot" src="../images/tasks/task21_particles.png" style="max-width:480px;"/><p class="image-caption">Скриншот программы (Task21)</p></div><div class="practice-tip">
+<strong>💡 Совет:</strong> Всегда перебирайте список с конца (<code>for (int i = Count - 1; i &gt;= 0; i--)</code>) при удалении элементов — иначе индексы сдвигаются и вы пропустите некоторые частицы.
+                        </div>
+</div>
+</div>
+<div class="tab-content" data-tab="tests">
+<h2>Вопросы для самопроверки</h2>
+<p>Почему важно ограничивать число частиц? Как зависит альфа-канал от времени жизни?</p>
+</div>
+</div>
+</div>
+<div class="navigation">
+<a class="nav-btn" href="lesson8-2.html">Следующий урок →</a>
+</div>
+</main>
+<footer>
+<div class="container">
+<p>© 2026 Курс "Графическое программирование на C#"</p>
+</div>
+</footer>
+</body>
+</html>

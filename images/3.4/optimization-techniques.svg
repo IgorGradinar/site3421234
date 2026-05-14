@@ -1,0 +1,46 @@
+<svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="600" height="300" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="300" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#333">Техники оптимизации производительности</text>
+  
+  <!-- Main Box -->
+  <rect x="25" y="40" width="550" height="240" rx="8" fill="#ffffff" stroke="#333" stroke-width="2"/>
+  
+  <!-- Header -->
+  <rect x="25" y="40" width="550" height="35" rx="8" fill="#0078d4"/>
+  <text x="190" y="62" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white" text-anchor="middle">Техника</text>
+  <text x="340" y="62" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white" text-anchor="middle">Эффект на FPS</text>
+  <text x="470" y="62" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white" text-anchor="middle">Сложность</text>
+  
+  <!-- Row 1 -->
+  <rect x="25" y="75" width="550" height="35" fill="#ffffff" stroke="#ccc" stroke-width="0.5"/>
+  <text x="190" y="97" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">DoubleBuffered = true</text>
+  <text x="340" y="97" font-family="Arial, sans-serif" font-size="10" fill="#28a745" text-anchor="middle">+30-50%</text>
+  <text x="470" y="97" font-family="Arial, sans-serif" font-size="10" fill="#28a745" text-anchor="middle">✓ Легко</text>
+  
+  <!-- Row 2 -->
+  <rect x="25" y="110" width="550" height="35" fill="#f8f9fa" stroke="#ccc" stroke-width="0.5"/>
+  <text x="190" y="132" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">Partial Invalidate</text>
+  <text x="340" y="132" font-family="Arial, sans-serif" font-size="10" fill="#28a745" text-anchor="middle">+50-100%</text>
+  <text x="470" y="132" font-family="Arial, sans-serif" font-size="10" fill="#ffc107" text-anchor="middle">✓ Средне</text>
+  
+  <!-- Row 3 -->
+  <rect x="25" y="145" width="550" height="35" fill="#ffffff" stroke="#ccc" stroke-width="0.5"/>
+  <text x="190" y="167" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">Cache objects (Pen/Brush)</text>
+  <text x="340" y="167" font-family="Arial, sans-serif" font-size="10" fill="#28a745" text-anchor="middle">+20-40%</text>
+  <text x="470" y="167" font-family="Arial, sans-serif" font-size="10" fill="#28a745" text-anchor="middle">✓ Легко</text>
+  
+  <!-- Row 4 -->
+  <rect x="25" y="180" width="550" height="35" fill="#f8f9fa" stroke="#ccc" stroke-width="0.5"/>
+  <text x="190" y="202" font-family="Arial, sans-serif" font-size="10" fill="#333" text-anchor="middle">LockBits вместо GetPixel</text>
+  <text x="340" y="202" font-family="Arial, sans-serif" font-size="10" fill="#007bff" text-anchor="middle">+100x (!)</text>
+  <text x="470" y="202" font-family="Arial, sans-serif" font-size="10" fill="#dc3545" text-anchor="middle">✓✓ Сложно</text>
+  
+  <!-- Row 5 -->
+  <rect x="25" y="215" width="550" height="35" fill="#ffffff" stroke="#ccc" stroke-width="0.5"/>
+  <text x="190" y="237" font-family="Arial, sans-serif" font-size="10" fill="#007bff" font-weight="bold" text-anchor="middle">Все вместе</text>
+  <text x="340" y="237" font-family="Arial, sans-serif" font-size="10" fill="#007bff" font-weight="bold" text-anchor="middle">+200-500%</text>
+  <text x="470" y="237" font-family="Arial, sans-serif" font-size="10" fill="#dc3545" text-anchor="middle">✓✓✓ Сложно</text>
+</svg>

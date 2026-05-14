@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 6.3: Процедурная генерация</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="../lesson-quiz.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🎨 Графическое программирование на C#</h1>
+        </div>
+    </header>
+
+    <main class="lesson-container">
+        <a href="../modules/module6.html" class="back-link">← Вернуться к модулю 6</a>
+        
+        <div class="lesson-header">
+            <h1>Урок 6.3: Процедурная генерация</h1>
+            <div class="lesson-meta">
+                <span>Модуль 6</span>
+                <span>⏱️ ~2 часа</span>
+            </div>
+        </div>
+
+        <div class="lesson-content">
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" data-tab="theory">📚 Теория</button>
+                <button class="tab-button" data-tab="practice">💻 Практика</button>
+                <button class="tab-button" data-tab="tests">✅ Тесты</button>
+            </div>
+            
+            <div class="tab-content active" data-tab="theory">
+            <h2>Шум Перлина</h2>
+            <p>Шум Перлина используется для генерации естественно выглядящих текстур и паттернов.</p>
+            <div class="code-block"><pre><code class="language-csharp">// Упрощенная версия шума Перлина
+private float Noise(int x, int y)
+{
+    int n = x + y * 57;
+    n = (n << 13) ^ n;
+    return (1.0f - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0f);
+}
+
+private float SmoothNoise(float x, float y)
+{
+    int intX = (int)x;
+    int intY = (int)y;
+    float fracX = x - intX;
+    float fracY = y - intY;
+    
+    float v1 = Noise(intX, intY);
+    float v2 = Noise(intX + 1, intY);
+    float v3 = Noise(intX, intY + 1);
+    float v4 = Noise(intX + 1, intY + 1);
+    
+    float i1 = Interpolate(v1, v2, fracX);
+    float i2 = Interpolate(v3, v4, fracX);
+    return Interpolate(i1, i2, fracY);
+}
+
+private float Interpolate(float a, float b, float t)
+{
+    return a + (b - a) * t * t * (3 - 2 * t);
+}</code></pre></div>
+
+            <h2>Генерация текстур</h2>
+            <div class="code-block"><pre><code class="language-csharp">private Bitmap GenerateTexture(int width, int height)
+{
+    Bitmap texture = new Bitmap(width, height);
+    float scale = 0.1f;
+    
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            float noise = SmoothNoise(x * scale, y * scale);
+            int gray = (int)((noise + 1) * 127.5f);
+            texture.SetPixel(x, y, Color.FromArgb(gray, gray, gray));
+        }
+    }
+    
+    return texture;
+}</code></pre></div>
+
+            <h2>Случайные узоры</h2>
+            <div class="code-block"><pre><code class="language-csharp">private void GeneratePattern(Graphics g, int width, int height)
+{
+    Random rnd = new Random();
+    
+    for (int i = 0; i < 1000; i++)
+    {
+        int x = rnd.Next(width);
+        int y = rnd.Next(height);
+        int size = rnd.Next(5, 20);
+        Color color = Color.FromArgb(
+            rnd.Next(256), rnd.Next(256), rnd.Next(256));
+        
+        using (SolidBrush brush = new SolidBrush(color))
+        {
+            g.FillEllipse(brush, x, y, size, size);
+        }
+    }
+}</code></pre></div>
+
+            <h2>Практика: генератор фонов</h2>
+            <p>Создайте генератор фонов, который создает:</p>
+            <ul>
+                <li>Градиентные фоны</li>
+                <li>Текстуры на основе шума</li>
+                <li>Абстрактные узоры</li>
+                <li>Возможность сохранения</li>
+            </ul>
+            </div>
+            
+            </div>
+            
+            <div class="tab-content" data-tab="practice">
+                <h2>Практическое задание</h2>
+            <div class="practice-section">
+                <h3>Задание: Процедурная генерация</h3>
+                <ol class="practice-steps">
+                    <li>Реализуйте генератор текстур используя шум Перлина</li>
+                    <li>Создайте различные типы текстур (дерево, камень, облака)</li>
+                    <li>Добавьте возможность сохранения сгенерированных текстур</li>
+                </ol>
+            </div>
+            
+            </div>
+            
+            
+            <div class="tab-content" data-tab="tests">
+                <div class="test-section">
+                <h2>Проверка знаний</h2>
+                <p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+                
+                <div class="question" data-correct="0">
+                    <div class="question-text">1. Усвоили ли вы основные концепции урока?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Да, материал понятен</li>
+                        <li class="answer-option">Частично понятен</li>
+                        <li class="answer-option">Нужно повторить</li>
+                        <li class="answer-option">Не понял</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="1">
+                    <div class="question-text">2. Готовы ли вы применить изученное на практике?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Нет, нужно еще изучить</li>
+                        <li class="answer-option">Да, готов попробовать</li>
+                        <li class="answer-option">Возможно</li>
+                        <li class="answer-option">Не уверен</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">3. Что такое шум Перлина?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Алгоритм генерации естественно выглядящего шума</li>
+                        <li class="answer-option">Тип изображения</li>
+                        <li class="answer-option">Фильтр размытия</li>
+                        <li class="answer-option">Метод сжатия</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+</div>
+                        </div>
+        </div>
+
+        <div class="navigation">
+            <a href="lesson6-2.html" class="nav-btn secondary">← Предыдущий урок</a>
+            <a href="lesson6-4.html" class="nav-btn">Следующий урок →</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Курс "Графическое программирование на C#"</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+

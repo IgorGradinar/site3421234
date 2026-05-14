@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 1.1: Основы C# и .NET</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="../lesson-quiz.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="../index.html" class="course-title-link">
+                <h1>🎨 Графическое программирование на C#</h1>
+            </a>
+        </div>
+    </header>
+
+    <main class="lesson-container">
+        <a href="../modules/module1.html" class="back-link">← Вернуться к модулю 1</a>
+        
+        <div class="lesson-header">
+            <h1>Урок 1.1: Основы C# и .NET</h1>
+            <div class="lesson-meta">
+                <span>Модуль 1</span>
+                <span>⏱️ ~1-1.5 часа</span>
+            </div>
+        </div>
+
+        <div class="lesson-content">
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" data-tab="theory">📚 Теория</button>
+                <button class="tab-button" data-tab="practice">💻 Практика</button>
+                <button class="tab-button" data-tab="tests">✅ Тесты</button>
+            </div>
+            
+            <div class="tab-content active" data-tab="theory">
+            <div class="learning-objectives">
+                <h3>📌 Ключевые моменты этого урока:</h3>
+                <ul style="margin: 10px 0;">
+                    <li>.NET Framework — это платформа для разработки приложений с единой средой выполнения (CLR)</li>
+                    <li>C# — язык программирования, работающий на платформе .NET</li>
+                    <li>Структура проекта включает точку входа (Program.cs) и формы для графического интерфейса</li>
+                    <li>Типы данных определяют, какие значения может хранить переменная (int, string, bool и т.д.)</li>
+                    <li>Классы и объекты — основа объектно-ориентированного программирования в C#</li>
+                </ul>
+            </div>
+
+            <h2>Создание проекта в Visual Studio</h2>
+            <p>Прежде чем начать программировать, нужно создать проект в Visual Studio. Это первый шаг к созданию любого приложения.</p>
+
+            <h3>Запуск Visual Studio:</h3>
+            <div class="image-container">
+                <img src="../images/1.1/vs-startup.png" alt="Запуск Visual Studio" class="lesson-image">
+                <p class="image-caption">Окно запуска Visual Studio</p>
+            </div>
+
+            <h3>Шаг 1: Выбор типа проекта</h3>
+            <div class="image-container">
+                <img src="../images/1.1/project-type-selection.png" alt="Выбор типа проекта" class="lesson-image">
+                <p class="image-caption">Окно выбора типа проекта</p>
+            </div>
+            <p class="warning">ВАЖНО: Выберите "Windows Forms App (.NET Framework)" — НЕ выбирайте "Windows Forms App" (это .NET Core/6+)</p>
+
+            <h3>Шаг 2: Настройка нового проекта</h3>
+            <div class="image-container">
+                <img src="../images/1.1/new-project-setup.png" alt="Настройка нового проекта" class="lesson-image">
+                <p class="image-caption">Окно настройки нового проекта</p>
+            </div>
+            <div class="info-box">
+                <h4>Советы по именованию:</h4>
+                <ul>
+                    <li>Используйте PascalCase (первая буква заглавная)</li>
+                    <li>Избегайте пробелов и спецсимволов</li>
+                    <li>Используйте описательные имена (MyGraphicsApp, а не App1)</li>
+                </ul>
+            </div>
+
+            <h3>Шаг 3: Структура созданного проекта</h3>
+            <div class="image-container">
+                <img src="../images/1.1/created-project-structure.png" alt="Структура созданного проекта" class="lesson-image">
+                <p class="image-caption">Интерфейс Visual Studio после создания проекта</p>
+            </div>
+            <p><strong>Вы видите:</strong></p>
+            <ul>
+                <li>Слева: Toolbox (компоненты) и Solution Explorer (файлы)</li>
+                <li>В центре: Дизайнер форм с пустой формой Form1</li>
+                <li>Справа: Окно свойств (Properties)</li>
+                <li>Внизу: Вкладки для вывода, ошибок и т.д.</li>
+            </ul>
+            
+            <h3>Быстрый старт: первая настройка</h3>
+            <div class="image-container">
+                <img src="../images/1.1/first-setup.png" alt="Первая настройка" class="lesson-image">
+                <p class="image-caption">Настройка свойств формы</p>
+            </div>
+            <p><strong>Сразу после создания проекта:</strong></p>
+            <ol>
+                <li>Измените свойства формы через окно Properties:
+                    <ul>
+                        <li>(Name): MainForm</li>
+                        <li>Text: "Мое первое приложение"</li>
+                        <li>Size: 800, 600</li>
+                        <li>StartPosition: CenterScreen</li>
+                        <li>BackColor: White</li>
+                    </ul>
+                </li>
+                <li>Сохраните проект: Ctrl+Shift+S — сохранить все</li>
+                <li>Запустите приложение: F5 — запустить с отладкой</li>
+                <li>Остановите приложение: Shift+F5 — остановить отладку</li>
+            </ol>
+
+            <h2>Что такое .NET Framework</h2>
+            <p>.NET Framework — это платформа для разработки приложений от Microsoft, которая предоставляет обширную библиотеку классов и среду выполнения для различных языков программирования, включая C#. Это основа, на которой построены все приложения, которые мы будем создавать.</p>
+
+            <h3>Почему .NET важен для графического программирования?</h3>
+            <p>Графическое программирование требует работы с системными ресурсами, управления памятью и взаимодействия с операционной системой. .NET обеспечивает:</p>
+            <ul>
+                <li><strong>Управление памятью</strong> — автоматическая очистка неиспользуемых объектов (garbage collection)</li>
+                <li><strong>Единую платформу</strong> — одинаковый код работает на разных версиях Windows</li>
+                <li><strong>Богатую библиотеку</strong> — готовые классы для работы с графикой (GDI+, WPF)</li>
+                <li><strong>Безопасность</strong> — контроль доступа к системным ресурсам</li>
+            </ul>
+            
+            <h3>Основные компоненты .NET:</h3>
+            <ul>
+                <li><strong>CLR (Common Language Runtime)</strong> — среда выполнения, которая управляет выполнением кода. Именно CLR переводит ваш код в команды процессора и следит за ресурсами.</li>
+                <li><strong>BCL (Base Class Library)</strong> — базовые классы и типы данных, необходимые для любого приложения</li>
+                <li><strong>FCL (Framework Class Library)</strong> — расширенная библиотека классов для специфических задач (графика, тестирование, сеть и т.д.)</li>
+            </ul>
+            
+            <h3>Архитектура .NET:</h3>
+            <div class="image-container">
+                <img src="../images/1.1/net-architecture.svg" alt="Архитектура .NET" class="lesson-image">
+                <p class="image-caption">Процесс компиляции и выполнения кода в .NET</p>
+            </div>
+
+            <h2>Структура C# проекта</h2>
+            <p>При создании приложения Windows Forms вы получаете структурированный набор файлов. Каждый файл имеет свое назначение:</p>
+            
+            <div class="image-container">
+                <img src="../images/1.1/csharp-project-structure.png" alt="Структура C# проекта" class="lesson-image">
+                <p class="image-caption">Структура проекта в Solution Explorer</p>
+            </div>
+
+            <div class="code-block">
+<pre><code class="language-text">MyProject/
+├── Program.cs          // Точка входа приложения (где всё начинается)
+├── Form1.cs            // Основная форма (логика интерфейса)
+├── Form1.Designer.cs   // Дизайнер формы (автоматически генерируется)
+├── Form1.resx          // Ресурсы (изображения, значки и т.д.)
+├── Properties/
+│   └── AssemblyInfo.cs // Информация о сборке
+├── bin/                // Скомпилированный код (exe, dll файлы)
+└── obj/                // Промежуточные файлы компиляции</code></pre>
+            </div>
+
+            <h3>Program.cs — точка входа приложения:</h3>
+            <p>Это главный файл вашего приложения. Здесь находится метод Main(), который запускается в первую очередь. Именно отсюда загружается основная форма.</p>
+            
+            <div class="image-container">
+                <img src="../images/1.1/program-cs-entry-point.png" alt="Program.cs — точка входа приложения" class="lesson-image">
+                <p class="image-caption">Файл Program.cs с точкой входа приложения</p>
+            </div>
+
+            <div class="code-block">
+<pre><code class="language-csharp">using System;
+using System.Windows.Forms;
+
+namespace MyProject
+{
+    static class Program
+    {
+        // [STAThread] указывает на потокобезопасность для интерфейса
+        [STAThread]
+        static void Main()
+        {
+            // Включить стили визуального оформления (кнопки, текстбоксы выглядят как в Windows)
+            Application.EnableVisualStyles();
+
+            // Совместимость с разными версиями Windows
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            // Запустить главное окно приложения
+            Application.Run(new Form1());
+        }
+    }
+}</code></pre>
+            </div>
+
+            <h3>Что происходит при запуске приложения:</h3>
+            <ol>
+                <li>CLR начинает выполнение метода Main()</li>
+                <li>EnableVisualStyles() настраивает внешний вид элементов управления</li>
+                <li>Application.Run(new Form1()) создает и показывает главное окно</li>
+                <li>Приложение работает, реагируя на события пользователя</li>
+                <li>Когда закрывается главное окно, приложение завершает работу</li>
+            </ol>
+
+            <h2>Основные типы данных</h2>
+            <p>В C# типы данных определяют, какой тип информации может хранить переменная. Это критически важно для графического программирования, где вам нужно работать с координатами, цветами и параметрами объектов.</p>
+            
+            <h3>Примитивные типы данных:</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">// Целые числа
+int x = 100;              // 32-битное целое число (-2 млрд до 2 млрд)
+short width = 50;         // 16-битное число (меньше диапазон, но быстрее)
+long fileSize = 999999;   // 64-битное число (для огромных чисел)
+
+// Числа с плавающей точкой (для координат и расчетов)
+float rotation = 45.5f;   // 32-битное (добавьте 'f' в конце)
+double angle = 3.14159;   // 64-битное (более точное)
+
+// Логические и текстовые значения
+bool isVisible = true;    // true или false
+char symbol = 'A';        // Один символ
+string message = "Hello"; // Строка текста
+
+// Цвета и структуры
+System.Drawing.Color red = System.Drawing.Color.Red;
+System.Drawing.Point center = new System.Drawing.Point(400, 300);</code></pre>
+            </div>
+
+            <h3>Почему это важно для графики:</h3>
+            <ul>
+                <li><strong>int</strong> используется для координат (x, y), размеров и индексов</li>
+                <li><strong>double/float</strong> для углов поворота, масштабирования и вычислений расстояний</li>
+                <li><strong>Color</strong> для работы с цветами элементов</li>
+                <li><strong>Point, Size, Rectangle</strong> — специальные структуры для геометрии</li>
+            </ul>
+            
+            <h3>Примеры использования в графике:</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">// Координаты прямоугольника
+int left = 50, top = 50, width = 200, height = 100;
+
+// Цвет RGB (красный = 255, зеленый = 0, синий = 0)
+Color myColor = Color.FromArgb(255, 0, 0); // Красный цвет
+
+// Точка на экране
+Point startPoint = new Point(100, 50);
+
+// Размер (используется для окон и фигур)
+Size formSize = new Size(800, 600);
+
+// Прямоугольник (положение + размер)
+Rectangle drawArea = new Rectangle(10, 10, 780, 580);</code></pre>
+            </div>
+
+            <h2>Классы и объекты</h2>
+            <p>Класс — это шаблон (чертёж) для создания объектов. Объект — это конкретный экземпляр этого класса с его собственными данными. Это фундаментальная концепция объектно-ориентированного программирования.</p>
+
+            <h3>Аналогия из реальной жизни:</h3>
+            <ul>
+                <li><strong>Класс</strong> = Чертёж дома (описание, как он должен выглядеть)</li>
+                <li><strong>Объект</strong> = Конкретный дом на улице Ленина (построенный по чертежу)</li>
+                <li><strong>Свойства</strong> = Характеристики дома (цвет, высота, кол-во окон)</li>
+                <li><strong>Методы</strong> = Действия, которые может делать дом (открывать двери, светить окнами)</li>
+            </ul>
+            
+            <h3>Пример класса для графического программирования:</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">// Определение класса — это шаблон
+public class Rectangle
+{
+    // Свойства — характеристики объекта
+    public int X { get; set; }        // X координата
+    public int Y { get; set; }        // Y координата
+    public int Width { get; set; }    // Ширина
+    public int Height { get; set; }   // Высота
+    public Color FillColor { get; set; } // Цвет заливки
+    
+    // Конструктор — метод создания объекта
+    public Rectangle(int x, int y, int width, int height)
+    {
+        X = x;
+        Y = y;
+        Width = width;
+        Height = height;
+        FillColor = Color.Blue;
+    }
+    
+    // Методы — действия, которые может делать объект
+    public int GetArea()
+    {
+        return Width * Height;
+    }
+    
+    public void Move(int newX, int newY)
+    {
+        X = newX;
+        Y = newY;
+    }
+    
+    public void Resize(int newWidth, int newHeight)
+    {
+        Width = newWidth;
+        Height = newHeight;
+    }
+}
+
+// Создание объектов (экземпляров класса)
+Rectangle rect1 = new Rectangle(10, 10, 100, 50);
+Rectangle rect2 = new Rectangle(150, 100, 200, 75);
+
+// Работа с объектом
+int area = rect1.GetArea();           // Получить площадь = 5000
+rect1.Move(50, 50);                  // Переместить
+rect1.FillColor = Color.Red;         // Изменить цвет
+rect1.Resize(150, 100);              // Изменить размер</code></pre>
+            </div>
+            
+            <h3>Почему классы важны в графике:</h3>
+            <ul>
+                <li>Вы можете создать класс для рисуемой фигуры, хранящий её свойства (позиция, размер, цвет)</li>
+                <li>Методы класса могут выполнять действия (нарисовать, переместить, изменить размер)</li>
+                <li>Легко работать с множеством объектов одного типа (массивом прямоугольников, кругов и т.д.)</li>
+                <li>Код становится организованным и переиспользуемым</li>
+            </ul>
+            
+            <h3>Частые ошибки начинающих:</h3>
+            <div class="code-block">
+<pre><code class="language-csharp">// ❌ НЕПРАВИЛЬНО: не забывайте ключевое слово new
+Rectangle rect;                  // объект не создан!
+// rect.GetArea();              // ошибка — NullReferenceException
+
+// ✅ ПРАВИЛЬНО:
+Rectangle rect = new Rectangle(0, 0, 100, 100);
+int area = rect.GetArea();       // работает правильно
+
+// ❌ НЕПРАВИЛЬНО: путаница между class (шаблон) и object (конкретный экземпляр)
+// Rectangle — это класс (шаблон)
+// rect — это объект (конкретный экземпляр класса Rectangle)
+
+// ✅ ПРАВИЛЬНО:
+class Shape { }          // это класс (шаблон)
+Shape shape = new Shape(); // shape — это объект/экземпляр</code></pre>
+            </div>
+
+            <h3>Best Practices:</h3>
+            <ul>
+                <li><strong>Всегда используйте свойства для доступа к данным</strong> — это позволяет менять внутреннюю реализацию без изменения остального кода</li>
+                <li><strong>Выделите понять логику класса</strong> — если класс делает слишком много, разделите его на несколько классов</li>
+                <li><strong>Используйте говорящие имена</strong> — Rectangle лучше, чем Rect или R</li>
+                <li><strong>Добавляйте конструкторы</strong> — они помогают создавать объекты с правильными начальными значениями</li>
+            </ul>
+            
+            </div>
+            </div>
+            
+            <div class="tab-content" data-tab="practice">
+                <h2>Практическое задание</h2>
+            <div class="practice-section">
+                <h3>Задание 1: Создание первого проекта</h3>
+                <ol class="practice-steps">
+                    <li>Запустите Visual Studio</li>
+                    <li>Нажмите "Создать новый проект"</li>
+                    <li>В строке поиска введите "Windows Forms App"</li>
+                    <li>Выберите "Windows Forms App (.NET Framework)"</li>
+                    <li>Укажите имя проекта: "MyFirstGraphicsApp"</li>
+                    <li>Выберите расположение для сохранения проекта</li>
+                    <li>Нажмите "Создать"</li>
+                    <li>Дождитесь загрузки Visual Studio и появления дизайнера форм</li>
+                </ol>
+            </div>
+            
+            <div class="practice-section">
+                <h3>Задание 2: Изучение интерфейса Visual Studio</h3>
+                <ol class="practice-steps">
+                    <li>Изучите структуру проекта в Solution Explorer (Ctrl+Alt+L)</li>
+                    <li>Найдите и откройте Toolbox (Ctrl+Alt+X)</li>
+                    <li>Откройте окно свойств (F4)</li>
+                    <li>Переключитесь между Дизайнером (Shift+F7) и Кодом (F7)</li>
+                    <li>Попробуйте изменить размер формы, перетаскивая её края</li>
+                </ol>
+            </div>
+            
+            <div class="practice-section">
+                <h3>Задание 3: Настройка формы</h3>
+                <ol class="practice-steps">
+                    <li>В Дизайнере форм выделите форму (кликните по ней)</li>
+                    <li>В окне Properties измените следующие свойства:
+                        <ul>
+                            <li>(Name): MainForm</li>
+                            <li>Text: "Мое первое приложение"</li>
+                            <li>Size: 800, 600</li>
+                            <li>StartPosition: CenterScreen</li>
+                            <li>BackColor: LightBlue</li>
+                        </ul>
+                    </li>
+                    <li>Сохраните проект (Ctrl+Shift+S)</li>
+                    <li>Запустите приложение (F5)</li>
+                    <li>Убедитесь, что форма отображается по центру экрана с новыми настройками</li>
+                    <li>Закройте приложение</li>
+                </ol>
+            </div>
+
+            <div class="practice-section">
+                <h3>Задание 4: Программная настройка формы</h3>
+                <ol class="practice-steps">
+                    <li>Перейдите к коду формы (F7)</li>
+                    <li>Найдите конструктор MainForm()</li>
+                    <li>Добавьте следующий код после InitializeComponent():
+                        <div class="code-block">
+<pre><code class="language-csharp">public MainForm()
+{
+    InitializeComponent();
+
+    // Настройка формы программно
+    this.Text = "Мое первое приложение";
+    this.Size = new Size(600, 400);
+    this.StartPosition = FormStartPosition.CenterScreen;
+    this.BackColor = Color.White;
+}</code></pre>
+                        </div>
+                    </li>
+                    <li>Убедитесь, что в начале файла есть using System.Drawing;</li>
+                    <li>Запустите приложение (F5) и проверьте результат</li>
+                </ol>
+            </div>
+
+            <div class="practice-section">
+                <h3>Задание 5: Изучение файлов проекта</h3>
+                <ol class="practice-steps">
+                    <li>В Solution Explorer откройте файл Program.cs</li>
+                    <li>Изучите метод Main() — точку входа приложения</li>
+                    <li>Откройте файл Form1.Designer.cs (не редактируйте!)</li>
+                    <li>Посмотрите на метод InitializeComponent()</li>
+                    <li>Разверните папку Properties и откройте AssemblyInfo.cs</li>
+                    <li>Измените версию сборки и перекомпилируйте проект (Ctrl+Shift+B)</li>
+                </ol>
+            </div>
+
+            <div class="practice-tip">
+                <strong>💡 Совет:</strong> Используйте горячие клавиши для быстрой работы: F5 — запуск, Shift+F5 — остановка, Ctrl+S — сохранить, Ctrl+Shift+S — сохранить все.
+            </div>
+
+            </div>
+            
+            
+            <div class="tab-content" data-tab="tests">
+                <div class="test-section">
+                <h2>Проверка знаний</h2>
+                <p>Ответьте на вопросы, чтобы проверить, насколько хорошо вы усвоили материал:</p>
+                
+                <div class="question" data-correct="0">
+                    <div class="question-text">1. Какой шаблон проекта нужно выбрать для создания Windows Forms приложения?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Windows Forms App (.NET Framework)</li>
+                        <li class="answer-option">Console App</li>
+                        <li class="answer-option">Class Library</li>
+                        <li class="answer-option">WPF Application</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="2">
+                    <div class="question-text">2. Что такое CLR в .NET Framework?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Библиотека базовых классов</li>
+                        <li class="answer-option">Язык программирования</li>
+                        <li class="answer-option">Среда выполнения, которая управляет выполнением кода</li>
+                        <li class="answer-option">Инструмент разработки</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="1">
+                    <div class="question-text">3. Какой метод является точкой входа в C# приложении?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Start()</li>
+                        <li class="answer-option">Main()</li>
+                        <li class="answer-option">Run()</li>
+                        <li class="answer-option">Begin()</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="3">
+                    <div class="question-text">4. В каком файле находится точка входа приложения Windows Forms?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Form1.cs</li>
+                        <li class="answer-option">Form1.Designer.cs</li>
+                        <li class="answer-option">Program.cs</li>
+                        <li class="answer-option">AssemblyInfo.cs</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">5. Какая горячая клавиша запускает приложение с отладкой?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">F5</li>
+                        <li class="answer-option">F4</li>
+                        <li class="answer-option">F7</li>
+                        <li class="answer-option">F9</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="2">
+                    <div class="question-text">6. Какое свойство формы задает заголовок окна?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Name</li>
+                        <li class="answer-option">Caption</li>
+                        <li class="answer-option">Text</li>
+                        <li class="answer-option">Title</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="1">
+                    <div class="question-text">7. Какое значение StartPosition разместит форму по центру экрана?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Manual</li>
+                        <li class="answer-option">CenterScreen</li>
+                        <li class="answer-option">WindowsDefaultLocation</li>
+                        <li class="answer-option">CenterParent</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="3">
+                    <div class="question-text">8. Какое свойство формы задает цвет фона?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">ForeColor</li>
+                        <li class="answer-option">BorderColor</li>
+                        <li class="answer-option">BackgroundColor</li>
+                        <li class="answer-option">BackColor</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="0">
+                    <div class="question-text">9. Какой тип данных используется для хранения целых чисел в C#?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">int</li>
+                        <li class="answer-option">float</li>
+                        <li class="answer-option">string</li>
+                        <li class="answer-option">bool</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="question" data-correct="2">
+                    <div class="question-text">10. Что такое объект в C#?</div>
+                    <ul class="answer-options">
+                        <li class="answer-option">Шаблон для создания классов</li>
+                        <li class="answer-option">Метод класса</li>
+                        <li class="answer-option">Экземпляр класса</li>
+                        <li class="answer-option">Переменная</li>
+                    </ul>
+                    <button class="check-answer-btn" disabled>Проверить ответ</button>
+                    <div class="feedback"></div>
+                </div>
+                </div>
+        </div>
+        </div>
+        </div>
+
+        <div class="navigation">
+            <a href="../modules/module1.html" class="nav-btn secondary">← К модулю</a>
+            <a href="lesson1-2.html" class="nav-btn">Следующий урок →</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Курс "Графическое программирование на C#"</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+

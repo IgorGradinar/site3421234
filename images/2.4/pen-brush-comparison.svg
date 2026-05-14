@@ -1,0 +1,44 @@
+<svg width="500" height="300" viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="500" height="300" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="250" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#333">Pen vs Brush — Сравнение</text>
+  
+  <!-- Pen Section -->
+  <rect x="25" y="50" width="210" height="200" rx="8" fill="#fff3cd" stroke="#ffc107" stroke-width="2"/>
+  <text x="130" y="80" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#856404" text-anchor="middle">Pen (Только контур)</text>
+  <text x="130" y="100" font-family="Arial, sans-serif" font-size="10" fill="#666" text-anchor="middle">DrawXXX() методы</text>
+  
+  <!-- Pen Triangle (outline only) -->
+  <polygon points="130,130 70,210 190,210" fill="none" stroke="#dc3545" stroke-width="3"/>
+  
+  <!-- Pen Label -->
+  <text x="130" y="240" font-family="Arial, sans-serif" font-size="10" fill="#dc3545" text-anchor="middle">DrawTriangle()</text>
+  
+  <!-- Brush Section -->
+  <rect x="265" y="50" width="210" height="200" rx="8" fill="#d4edda" stroke="#28a745" stroke-width="2"/>
+  <text x="370" y="80" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#155724" text-anchor="middle">Brush (Заливка)</text>
+  <text x="370" y="100" font-family="Arial, sans-serif" font-size="10" fill="#666" text-anchor="middle">FillXXX() методы</text>
+  
+  <!-- Brush Triangle (filled) -->
+  <polygon points="370,130 310,210 430,210" fill="#28a745" stroke="none"/>
+  
+  <!-- Brush Label -->
+  <text x="370" y="240" font-family="Arial, sans-serif" font-size="10" fill="#28a745" text-anchor="middle">FillTriangle()</text>
+  
+  <!-- VS Arrow -->
+  <line x1="235" y1="150" x2="265" y2="150" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Note -->
+  <rect x="25" y="260" width="450" height="30" rx="4" fill="#cce5ff" stroke="#007bff" stroke-width="1"/>
+  <text x="250" y="275" font-family="Arial, sans-serif" font-size="10" fill="#004085" text-anchor="middle">💡 Pen рисует только обводку (контур), Brush заполняет внутренность фигуры</text>
+  <text x="250" y="287" font-family="Arial, sans-serif" font-size="9" fill="#004085" text-anchor="middle">Методы: DrawXXX() — контур, FillXXX() — заливка</text>
+  
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+</svg>
